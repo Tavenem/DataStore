@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeverFoundry.DataStore
+namespace NeverFoundry.DataStorage
 {
     /// <summary>
     /// An in-memory data store for <see cref="IIdItem"/> instances.

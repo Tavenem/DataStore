@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace NeverFoundry.DataStore
+namespace NeverFoundry.DataStorage
 {
     /// <summary>
     /// Allows <see cref="IIdItem"/> instances to be stored and retrieved.

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeverFoundry.DataStore
+namespace NeverFoundry.DataStorage
 {
     /// <summary>
     /// Static methods for storing and retrieving <see cref="IdItem"/> instances.

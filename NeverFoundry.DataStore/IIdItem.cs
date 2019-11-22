@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace NeverFoundry.DataStore
+namespace NeverFoundry.DataStorage
 {
     /// <summary>
     /// An item with an ID.

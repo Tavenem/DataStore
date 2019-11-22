@@ -9,15 +9,16 @@
 
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.3.0</Version>
+    <Version>0.3.1</Version>
     <Authors>Wil Stead</Authors>
     <Description>A persistence-agnostic repository library. Intended to be used to build other libraries which are decoupled from persistence choices.</Description>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <Copyright>Copyright (c) 2019 Wil Stead</Copyright>
     <PackageTags>repository neverfoundry</PackageTags>
-    <RootNamespace>NeverFoundry.DataStore</RootNamespace>
+    <RootNamespace>NeverFoundry.DataStorage</RootNamespace>
     <PackageId>NeverFoundry.DataStore</PackageId>
     <Product>NeverFoundry.DataStore</Product>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
