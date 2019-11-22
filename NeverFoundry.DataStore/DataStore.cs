@@ -41,7 +41,7 @@ namespace NeverFoundry.DataStore
         /// cref="Guid"/> and returns the result of its <see cref="Guid.ToString()"/> method.
         /// </para>
         /// </remarks>
-        public static string CreateNewIdFor<T>() where T : class, IIdItem => Instance.CreateNewIdFor<T>();
+        public static string CreateNewIdFor<T>() where T : IIdItem => Instance.CreateNewIdFor<T>();
 
         /// <summary>
         /// Creates a new id for an item of the given <paramref name="type"/>.
@@ -82,12 +82,43 @@ namespace NeverFoundry.DataStore
             => Instance.GetItemAsync<T>(id);
 
         /// <summary>
+        /// Gets the <see cref="IIdItem"/> with the given <paramref name="id"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="IIdItem"/> to retrieve.</typeparam>
+        /// <param name="id">The unique id of the item to retrieve.</param>
+        /// <returns>The item with the given id, or <see langword="null"/> if no item was found with
+        /// that id.</returns>
+        /// <remarks>
+        /// This presumes that <paramref name="id"/> is a unique key, and therefore returns only one
+        /// result. If your persistence model allows for non-unique keys and multiple results, use
+        /// <see cref="GetItemsWhere{T}(Func{T, bool})"/> with an appropriately formed
+        /// condition.
+        /// </remarks>
+        public static T? GetStruct<T>(string? id) where T : struct, IIdItem => Instance.GetStruct<T>(id);
+
+        /// <summary>
+        /// Gets the <see cref="IIdItem"/> with the given <paramref name="id"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="IIdItem"/> to retrieve.</typeparam>
+        /// <param name="id">The unique id of the item to retrieve.</param>
+        /// <returns>The item with the given id, or <see langword="null"/> if no item was found with
+        /// that id.</returns>
+        /// <remarks>
+        /// This presumes that <paramref name="id"/> is a unique key, and therefore returns only one
+        /// result. If your persistence model allows for non-unique keys and multiple results, use
+        /// <see cref="GetItemsWhereAsync{T}(Func{T, bool})"/> with an appropriately formed
+        /// condition.
+        /// </remarks>
+        public static Task<T?> GetStructAsync<T>(string? id) where T : struct, IIdItem
+            => Instance.GetStructAsync<T>(id);
+
+        /// <summary>
         /// Gets all items in the data store of the given type.
         /// </summary>
         /// <typeparam name="T">The type of items to retrieve.</typeparam>
         /// <returns>An <see cref="IQueryable{T}"/> of items in the data store of the given
         /// type.</returns>
-        public static IQueryable<T> GetItems<T>() where T : class, IIdItem => Instance.GetItems<T>();
+        public static IQueryable<T> GetItems<T>() where T : IIdItem => Instance.GetItems<T>();
 
         /// <summary>
         /// Gets all items in the data store of the given type.
@@ -95,7 +126,7 @@ namespace NeverFoundry.DataStore
         /// <typeparam name="T">The type of items to retrieve.</typeparam>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public static Task<IReadOnlyList<T>> GetItemsAsync<T>() where T : class, IIdItem
+        public static Task<IReadOnlyList<T>> GetItemsAsync<T>() where T : IIdItem
             => Instance.GetItemsAsync<T>();
 
         /// <summary>
@@ -105,7 +136,7 @@ namespace NeverFoundry.DataStore
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>An <see cref="IQueryable{T}"/> of items in the data store of the given
         /// type.</returns>
-        public static IQueryable<T> GetItemsWhere<T>(Func<T, bool> condition) where T : class, IIdItem
+        public static IQueryable<T> GetItemsWhere<T>(Func<T, bool> condition) where T : IIdItem
             => Instance.GetItemsWhere(condition);
 
         /// <summary>
@@ -115,7 +146,7 @@ namespace NeverFoundry.DataStore
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public static Task<IReadOnlyList<T>> GetItemsWhereAsync<T>(Func<T, bool> condition) where T : class, IIdItem
+        public static Task<IReadOnlyList<T>> GetItemsWhereAsync<T>(Func<T, bool> condition) where T : IIdItem
             => Instance.GetItemsWhereAsync(condition);
 
         /// <summary>
@@ -125,7 +156,7 @@ namespace NeverFoundry.DataStore
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public static Task<IReadOnlyList<T>> GetItemsWhereAwaitAsync<T>(Func<T, Task<bool>> condition) where T : class, IIdItem
+        public static Task<IReadOnlyList<T>> GetItemsWhereAwaitAsync<T>(Func<T, Task<bool>> condition) where T : IIdItem
             => Instance.GetItemsWhereAwaitAsync(condition);
 
         /// <summary>
@@ -195,5 +226,36 @@ namespace NeverFoundry.DataStore
         /// </remarks>
         public static Task<bool> StoreItemAsync<T>(T item) where T : class, IIdItem
             => Instance.StoreItemAsync(item);
+
+        /// <summary>
+        /// Upserts the given <paramref name="item"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="IIdItem"/> to upsert.</typeparam>
+        /// <returns>
+        /// <see langword="true"/> if the item was successfully persisted to the data store;
+        /// otherwise <see langword="false"/>.
+        /// </returns>
+        /// <remarks>
+        /// If the item is <see langword="null"/>, does nothing and returns <see langword="true"/>,
+        /// to indicate that the operation did not fail (even though no storage operation took
+        /// place, neither did any failure).
+        /// </remarks>
+        public static bool StoreStruct<T>(T? item) where T : struct, IIdItem => Instance.StoreStruct(item);
+
+        /// <summary>
+        /// Upserts the given <paramref name="item"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="IIdItem"/> to upsert.</typeparam>
+        /// <returns>
+        /// <see langword="true"/> if the item was successfully persisted to the data store;
+        /// otherwise <see langword="false"/>.
+        /// </returns>
+        /// <remarks>
+        /// If the item is <see langword="null"/>, does nothing and returns <see langword="true"/>,
+        /// to indicate that the operation did not fail (even though no storage operation took
+        /// place, neither did any failure).
+        /// </remarks>
+        public static Task<bool> StoreStructAsync<T>(T? item) where T : struct, IIdItem
+            => Instance.StoreStructAsync(item);
     }
 }
