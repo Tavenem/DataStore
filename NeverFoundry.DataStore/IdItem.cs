@@ -43,6 +43,12 @@ namespace NeverFoundry.DataStorage
         protected IdItem() => Id = DataStore.CreateNewIdFor(GetType());
 
         /// <summary>
+        /// Initializes a new instance of <see cref="IdItem"/>.
+        /// </summary>
+        /// <param name="id">The item's <see cref="Id"/>.</param>
+        protected IdItem(string id) => Id = id;
+
+        /// <summary>
         /// Removes this item from the data store.
         /// </summary>
         /// <returns>
