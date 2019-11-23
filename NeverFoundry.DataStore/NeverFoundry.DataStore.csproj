@@ -9,7 +9,7 @@
 
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.4.0</Version>
+    <Version>0.4.1</Version>
     <Authors>Wil Stead</Authors>
     <Description>A persistence-agnostic repository library. Intended to be used to build other libraries which are decoupled from persistence choices.</Description>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>

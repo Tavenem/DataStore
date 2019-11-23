@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace NeverFoundry.DataStorage
 {
@@ -18,7 +19,7 @@ namespace NeverFoundry.DataStorage
     /// Delete methods which invoke the static DataStore object's own methods to do so.
     /// </para>
     /// </remarks>
-    public interface IIdItem
+    public interface IIdItem : IEquatable<IIdItem>
     {
         /// <summary>
         /// The ID of this item.

@@ -58,6 +58,15 @@ namespace NeverFoundry.DataStorage
         public virtual Task<bool> DeleteAsync() => DataStore.RemoveItemAsync(Id);
 
         /// <summary>
+        /// Determines whether the specified <see cref="IIdItem"/> instance is equal to this one.
+        /// </summary>
+        /// <param name="other">The <see cref="IIdItem"/> instance to compare with this one.</param>
+        /// <returns><see langword="true"/> if the specified <see cref="IIdItem"/> instance is equal
+        /// to this once; otherwise, <see langword="false"/>.</returns>
+        public bool Equals(IIdItem? other)
+            => !string.IsNullOrEmpty(Id) && string.Equals(Id, other?.Id, StringComparison.Ordinal);
+
+        /// <summary>
         /// Determines whether the specified <see cref="IdItem"/> instance is equal to this one.
         /// </summary>
         /// <param name="other">The <see cref="IdItem"/> instance to compare with this one.</param>
