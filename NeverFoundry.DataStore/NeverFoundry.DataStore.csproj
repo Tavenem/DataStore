@@ -9,7 +9,7 @@
 
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.3.2</Version>
+    <Version>0.4.0</Version>
     <Authors>Wil Stead</Authors>
     <Description>A persistence-agnostic repository library. Intended to be used to build other libraries which are decoupled from persistence choices.</Description>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
@@ -22,7 +22,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netstandard2.1\DataStore.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\netstandard2.1\NeverFoundry.DataStore.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,6 +30,10 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Linq.Async" Version="4.0.0" />
   </ItemGroup>
 
 </Project>

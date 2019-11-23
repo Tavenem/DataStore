@@ -118,8 +118,7 @@ namespace NeverFoundry.DataStorage
         /// <typeparam name="T">The type of items to retrieve.</typeparam>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public Task<IReadOnlyList<T>> GetItemsAsync<T>() where T : IIdItem
-            => Task.FromResult<IReadOnlyList<T>>(GetItems<T>().ToList());
+        public IAsyncEnumerable<T> GetItemsAsync<T>() where T : IIdItem => GetItems<T>().ToAsyncEnumerable();
 
         /// <summary>
         /// Gets all items in the data store of the given type which satisfy the given condition.
@@ -138,8 +137,8 @@ namespace NeverFoundry.DataStorage
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public Task<IReadOnlyList<T>> GetItemsWhereAsync<T>(Func<T, bool> condition) where T : IIdItem
-            => Task.FromResult<IReadOnlyList<T>>(GetItemsWhere<T>(condition).ToList());
+        public IAsyncEnumerable<T> GetItemsWhereAsync<T>(Func<T, bool> condition) where T : IIdItem
+            => GetItemsWhere<T>(condition).ToAsyncEnumerable();
 
         /// <summary>
         /// Gets all items in the data store of the given type which satisfy the given condition.
@@ -148,18 +147,8 @@ namespace NeverFoundry.DataStorage
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public async Task<IReadOnlyList<T>> GetItemsWhereAwaitAsync<T>(Func<T, Task<bool>> condition) where T : IIdItem
-        {
-            var items = new List<T>();
-            foreach (var item in _data.Values.OfType<T>())
-            {
-                if (await condition.Invoke(item).ConfigureAwait(false))
-                {
-                    items.Add(item);
-                }
-            }
-            return items;
-        }
+        public IAsyncEnumerable<T> GetItemsWhereAwaitAsync<T>(Func<T, ValueTask<bool>> condition) where T : IIdItem
+            => _data.Values.OfType<T>().ToAsyncEnumerable().WhereAwait(condition);
 
         /// <summary>
         /// Removes the stored item with the given id.
