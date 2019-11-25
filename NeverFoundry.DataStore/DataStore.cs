@@ -162,6 +162,7 @@ namespace NeverFoundry.DataStorage
         /// <summary>
         /// Removes the stored item with the given id.
         /// </summary>
+        /// <typeparam name="T">The type of items to remove.</typeparam>
         /// <param name="id">
         /// <para>
         /// The id of the item to remove.
@@ -175,11 +176,30 @@ namespace NeverFoundry.DataStorage
         /// <see langword="true"/> if the item was successfully removed; otherwise <see
         /// langword="false"/>.
         /// </returns>
-        public static bool RemoveItem(string? id) => Instance.RemoveItem(id);
+        public static bool RemoveItem<T>(string? id) where T : IIdItem => Instance.RemoveItem<T>(id);
 
         /// <summary>
         /// Removes the stored item with the given id.
         /// </summary>
+        /// <param name="item">
+        /// <para>
+        /// The item to remove.
+        /// </para>
+        /// <para>
+        /// If <see langword="null"/> or empty no operation takes place, and <see langword="true"/>
+        /// is returned to indicate that there was no failure.
+        /// </para>
+        /// </param>
+        /// <returns>
+        /// <see langword="true"/> if the item was successfully removed; otherwise <see
+        /// langword="false"/>.
+        /// </returns>
+        public static bool RemoveItem(IIdItem? item) => Instance.RemoveItem(item);
+
+        /// <summary>
+        /// Removes the stored item with the given id.
+        /// </summary>
+        /// <typeparam name="T">The type of items to remove.</typeparam>
         /// <param name="id">
         /// <para>
         /// The id of the item to remove.
@@ -193,8 +213,27 @@ namespace NeverFoundry.DataStorage
         /// <see langword="true"/> if the item was successfully removed; otherwise <see
         /// langword="false"/>.
         /// </returns>
-        public static Task<bool> RemoveItemAsync(string? id)
-            => Instance.RemoveItemAsync(id);
+        public static Task<bool> RemoveItemAsync<T>(string? id) where T : IIdItem
+            => Instance.RemoveItemAsync<T>(id);
+
+        /// <summary>
+        /// Removes the stored item with the given id.
+        /// </summary>
+        /// <param name="item">
+        /// <para>
+        /// The item to remove.
+        /// </para>
+        /// <para>
+        /// If <see langword="null"/> or empty no operation takes place, and <see langword="true"/>
+        /// is returned to indicate that there was no failure.
+        /// </para>
+        /// </param>
+        /// <returns>
+        /// <see langword="true"/> if the item was successfully removed; otherwise <see
+        /// langword="false"/>.
+        /// </returns>
+        public static Task<bool> RemoveItemAsync(IIdItem? item)
+            => Instance.RemoveItemAsync(item);
 
         /// <summary>
         /// Upserts the given <paramref name="item"/>.

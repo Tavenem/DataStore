@@ -55,7 +55,7 @@ namespace NeverFoundry.DataStorage
         /// <see langword="true"/> if the item was successfully deleted; otherwise <see
         /// langword="false"/>.
         /// </returns>
-        public virtual Task<bool> DeleteAsync() => DataStore.RemoveItemAsync(Id);
+        public virtual Task<bool> DeleteAsync() => DataStore.RemoveItemAsync(this);
 
         /// <summary>
         /// Determines whether the specified <see cref="IIdItem"/> instance is equal to this one.

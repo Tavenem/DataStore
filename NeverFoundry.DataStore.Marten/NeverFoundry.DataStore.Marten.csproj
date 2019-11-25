@@ -9,20 +9,20 @@
 
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.4.2</Version>
+    <Version>0.0.1</Version>
     <Authors>Wil Stead</Authors>
-    <Description>A persistence-agnostic repository library. Intended to be used to build other libraries which are decoupled from persistence choices.</Description>
+    <Description>An implementation of NeverFoundry.DataStore for Marten.</Description>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <Copyright>Copyright (c) 2019 Wil Stead</Copyright>
     <PackageTags>repository neverfoundry</PackageTags>
-    <RootNamespace>NeverFoundry.DataStorage</RootNamespace>
-    <PackageId>NeverFoundry.DataStore</PackageId>
-    <Product>NeverFoundry.DataStore</Product>
+    <RootNamespace>NeverFoundry.DataStorage.Marten</RootNamespace>
+    <PackageId>NeverFoundry.DataStore.Marten</PackageId>
+    <Product>NeverFoundry.DataStore.Marten</Product>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netstandard2.1\NeverFoundry.DataStore.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\netstandard2.1\NeverFoundry.DataStore.Marten.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -33,7 +33,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Linq.Async" Version="4.0.0" />
+    <PackageReference Include="Marten" Version="3.10.0" />
+    <PackageReference Include="NeverFoundry.DataStore" Version="0.4.2" />
   </ItemGroup>
 
 </Project>

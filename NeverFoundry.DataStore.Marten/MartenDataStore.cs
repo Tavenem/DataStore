@@ -1,16 +1,30 @@
-﻿using System;
+﻿using Marten;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace NeverFoundry.DataStorage
+namespace NeverFoundry.DataStorage.Marten
 {
     /// <summary>
-    /// Allows <see cref="IIdItem"/> instances to be stored and retrieved.
+    /// A data store for <see cref="IIdItem"/> instances backed by a Marten implementation of
+    /// PostgreSQL.
     /// </summary>
-    public interface IDataStore
+    public class MartenDataStore : IDataStore
     {
+        private static readonly string _DocumentStoreNotSetError = $"The {nameof(DocumentStore)} has not been set.";
+
+        /// <summary>
+        /// <para>
+        /// The <see cref="IDocumentStore"/> used for all transactions.
+        /// </para>
+        /// <para>
+        /// Must be set prior to any operations, or else an <see cref="Exception"/> will be thrown.
+        /// </para>
+        /// </summary>
+        public IDocumentStore? DocumentStore { get; set; }
+
         /// <summary>
         /// Creates a new <see cref="IIdItem.Id"/> for an <see cref="IIdItem"/> of the given type.
         /// </summary>
@@ -19,10 +33,12 @@ namespace NeverFoundry.DataStorage
         /// <returns>A new <see cref="IIdItem.Id"/> for an <see cref="IIdItem"/> of the given
         /// type.</returns>
         /// <remarks>
-        /// Whether the id is guaranteed to be unique or not depends on your persistence model and
-        /// choice of implementation.
+        /// <para>
+        /// The <see cref="MartenDataStore"/> implementation generates a new <see cref="Guid"/>
+        /// and returns the result of its <see cref="Guid.ToString()"/> method.
+        /// </para>
         /// </remarks>
-        string CreateNewIdFor<T>() where T : IIdItem;
+        public string CreateNewIdFor<T>() where T : IIdItem => Guid.NewGuid().ToString();
 
         /// <summary>
         /// Creates a new id for an item of the given <paramref name="type"/>.
@@ -35,7 +51,7 @@ namespace NeverFoundry.DataStorage
         /// Whether the id is guaranteed to be unique or not depends on your persistence model and
         /// choice of implementation.
         /// </remarks>
-        string CreateNewIdFor(Type type);
+        public string CreateNewIdFor(Type type) => Guid.NewGuid().ToString();
 
         /// <summary>
         /// Gets the <see cref="IIdItem"/> with the given <paramref name="id"/>.
@@ -50,7 +66,19 @@ namespace NeverFoundry.DataStorage
         /// <see cref="GetItemsWhere{T}(Func{T, bool})"/> with an appropriately formed
         /// condition.
         /// </remarks>
-        T? GetItem<T>(string? id) where T : class, IIdItem;
+        public T? GetItem<T>(string? id) where T : class, IIdItem
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return null;
+            }
+            if (DocumentStore is null)
+            {
+                throw new Exception(_DocumentStoreNotSetError);
+            }
+            using var session = DocumentStore.LightweightSession();
+            return session.Load<T>(id);
+        }
 
         /// <summary>
         /// Gets the <see cref="IIdItem"/> with the given <paramref name="id"/>.
@@ -65,7 +93,19 @@ namespace NeverFoundry.DataStorage
         /// <see cref="GetItemsWhereAsync{T}(Func{T, bool})"/> with an appropriately formed
         /// condition.
         /// </remarks>
-        Task<T?> GetItemAsync<T>(string? id) where T : class, IIdItem;
+        public async Task<T?> GetItemAsync<T>(string? id) where T : class, IIdItem
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return null;
+            }
+            if (DocumentStore is null)
+            {
+                throw new Exception(_DocumentStoreNotSetError);
+            }
+            using var session = DocumentStore.LightweightSession();
+            return await session.LoadAsync<T>(id).ConfigureAwait(false);
+        }
 
         /// <summary>
         /// Gets the <see cref="IIdItem"/> with the given <paramref name="id"/>.
@@ -80,7 +120,21 @@ namespace NeverFoundry.DataStorage
         /// <see cref="GetItemsWhere{T}(Func{T, bool})"/> with an appropriately formed
         /// condition.
         /// </remarks>
-        T? GetStruct<T>(string? id) where T : struct, IIdItem;
+        public T? GetStruct<T>(string? id) where T : struct, IIdItem
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return null;
+            }
+            if (DocumentStore is null)
+            {
+                throw new Exception(_DocumentStoreNotSetError);
+            }
+            using var session = DocumentStore.LightweightSession();
+            return session.Query<T>().Where(x => string.Equals(x.Id, id, StringComparison.Ordinal)).Any()
+                ? session.Load<T>(id)
+                : (T?)null;
+        }
 
         /// <summary>
         /// Gets the <see cref="IIdItem"/> with the given <paramref name="id"/>.
@@ -95,7 +149,21 @@ namespace NeverFoundry.DataStorage
         /// <see cref="GetItemsWhereAsync{T}(Func{T, bool})"/> with an appropriately formed
         /// condition.
         /// </remarks>
-        Task<T?> GetStructAsync<T>(string? id) where T : struct, IIdItem;
+        public async Task<T?> GetStructAsync<T>(string? id) where T : struct, IIdItem
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return null;
+            }
+            if (DocumentStore is null)
+            {
+                throw new Exception(_DocumentStoreNotSetError);
+            }
+            using var session = DocumentStore.LightweightSession();
+            return await session.Query<T>().Where(x => string.Equals(x.Id, id, StringComparison.Ordinal)).AnyAsync().ConfigureAwait(false)
+                ? await session.LoadAsync<T>(id).ConfigureAwait(false)
+                : (T?)null;
+        }
 
         /// <summary>
         /// Gets all items in the data store of the given type.
@@ -103,7 +171,15 @@ namespace NeverFoundry.DataStorage
         /// <typeparam name="T">The type of items to retrieve.</typeparam>
         /// <returns>An <see cref="IQueryable{T}"/> of items in the data store of the given
         /// type.</returns>
-        IQueryable<T> GetItems<T>() where T : IIdItem;
+        public IQueryable<T> GetItems<T>() where T : IIdItem
+        {
+            if (DocumentStore is null)
+            {
+                throw new Exception(_DocumentStoreNotSetError);
+            }
+            using var session = DocumentStore.LightweightSession();
+            return session.Query<T>();
+        }
 
         /// <summary>
         /// Gets all items in the data store of the given type.
@@ -111,7 +187,15 @@ namespace NeverFoundry.DataStorage
         /// <typeparam name="T">The type of items to retrieve.</typeparam>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        IAsyncEnumerable<T> GetItemsAsync<T>() where T : IIdItem;
+        public IAsyncEnumerable<T> GetItemsAsync<T>() where T : IIdItem
+        {
+            if (DocumentStore is null)
+            {
+                throw new Exception(_DocumentStoreNotSetError);
+            }
+            using var session = DocumentStore.LightweightSession();
+            return session.Query<T>().ToAsyncEnumerable();
+        }
 
         /// <summary>
         /// Gets all items in the data store of the given type which satisfy the given condition.
@@ -120,7 +204,15 @@ namespace NeverFoundry.DataStorage
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>An <see cref="IQueryable{T}"/> of items in the data store of the given
         /// type.</returns>
-        IQueryable<T> GetItemsWhere<T>(Func<T, bool> condition) where T : IIdItem;
+        public IQueryable<T> GetItemsWhere<T>(Func<T, bool> condition) where T : IIdItem
+        {
+            if (DocumentStore is null)
+            {
+                throw new Exception(_DocumentStoreNotSetError);
+            }
+            using var session = DocumentStore.LightweightSession();
+            return session.Query<T>();
+        }
 
         /// <summary>
         /// Gets all items in the data store of the given type which satisfy the given condition.
@@ -129,7 +221,15 @@ namespace NeverFoundry.DataStorage
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        IAsyncEnumerable<T> GetItemsWhereAsync<T>(Func<T, bool> condition) where T : IIdItem;
+        public IAsyncEnumerable<T> GetItemsWhereAsync<T>(Func<T, bool> condition) where T : IIdItem
+        {
+            if (DocumentStore is null)
+            {
+                throw new Exception(_DocumentStoreNotSetError);
+            }
+            using var session = DocumentStore.LightweightSession();
+            return session.Query<T>().Where(x => condition.Invoke(x)).ToAsyncEnumerable();
+        }
 
         /// <summary>
         /// Gets all items in the data store of the given type which satisfy the given condition.
@@ -138,7 +238,27 @@ namespace NeverFoundry.DataStorage
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        IAsyncEnumerable<T> GetItemsWhereAwaitAsync<T>(Func<T, ValueTask<bool>> condition) where T : IIdItem;
+        public IAsyncEnumerable<T> GetItemsWhereAwaitAsync<T>(Func<T, ValueTask<bool>> condition) where T : IIdItem
+        {
+            if (DocumentStore is null)
+            {
+                throw new Exception(_DocumentStoreNotSetError);
+            }
+
+            return GetItemsWhereAwaitLocalAsync();
+
+            async IAsyncEnumerable<T> GetItemsWhereAwaitLocalAsync()
+            {
+                using var session = DocumentStore!.LightweightSession();
+                foreach (var item in session.Query<T>())
+                {
+                    if (await condition.Invoke(item).ConfigureAwait(false))
+                    {
+                        yield return item;
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Removes the stored item with the given id.
@@ -157,7 +277,21 @@ namespace NeverFoundry.DataStorage
         /// <see langword="true"/> if the item was successfully removed; otherwise <see
         /// langword="false"/>.
         /// </returns>
-        bool RemoveItem<T>(string? id) where T : IIdItem;
+        public bool RemoveItem<T>(string? id) where T : IIdItem
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return true;
+            }
+            if (DocumentStore is null)
+            {
+                throw new Exception(_DocumentStoreNotSetError);
+            }
+            using var session = DocumentStore.LightweightSession();
+            session.Delete<T>(id);
+            session.SaveChanges();
+            return true;
+        }
 
         /// <summary>
         /// Removes the stored item with the given id.
@@ -175,7 +309,21 @@ namespace NeverFoundry.DataStorage
         /// <see langword="true"/> if the item was successfully removed; otherwise <see
         /// langword="false"/>.
         /// </returns>
-        bool RemoveItem(IIdItem? item);
+        public bool RemoveItem(IIdItem? item)
+        {
+            if (item is null)
+            {
+                return true;
+            }
+            if (DocumentStore is null)
+            {
+                throw new Exception(_DocumentStoreNotSetError);
+            }
+            using var session = DocumentStore.LightweightSession();
+            session.Delete(item);
+            session.SaveChanges();
+            return true;
+        }
 
         /// <summary>
         /// Removes the stored item with the given id.
@@ -194,7 +342,21 @@ namespace NeverFoundry.DataStorage
         /// <see langword="true"/> if the item was successfully removed; otherwise <see
         /// langword="false"/>.
         /// </returns>
-        Task<bool> RemoveItemAsync<T>(string? id) where T : IIdItem;
+        public async Task<bool> RemoveItemAsync<T>(string? id) where T : IIdItem
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return false;
+            }
+            if (DocumentStore is null)
+            {
+                throw new Exception(_DocumentStoreNotSetError);
+            }
+            using var session = DocumentStore.LightweightSession();
+            session.Delete<T>(id);
+            await session.SaveChangesAsync().ConfigureAwait(false);
+            return true;
+        }
 
         /// <summary>
         /// Removes the stored item with the given id.
@@ -212,7 +374,21 @@ namespace NeverFoundry.DataStorage
         /// <see langword="true"/> if the item was successfully removed; otherwise <see
         /// langword="false"/>.
         /// </returns>
-        Task<bool> RemoveItemAsync(IIdItem? item);
+        public async Task<bool> RemoveItemAsync(IIdItem? item)
+        {
+            if (item is null)
+            {
+                return true;
+            }
+            if (DocumentStore is null)
+            {
+                throw new Exception(_DocumentStoreNotSetError);
+            }
+            using var session = DocumentStore.LightweightSession();
+            session.Delete(item);
+            await session.SaveChangesAsync().ConfigureAwait(false);
+            return true;
+        }
 
         /// <summary>
         /// Upserts the given <paramref name="item"/>.
@@ -227,7 +403,21 @@ namespace NeverFoundry.DataStorage
         /// to indicate that the operation did not fail (even though no storage operation took
         /// place, neither did any failure).
         /// </remarks>
-        bool StoreItem<T>(T? item) where T : class, IIdItem;
+        public bool StoreItem<T>(T? item) where T : class, IIdItem
+        {
+            if (item is null)
+            {
+                return true;
+            }
+            if (DocumentStore is null)
+            {
+                throw new Exception(_DocumentStoreNotSetError);
+            }
+            using var session = DocumentStore.LightweightSession();
+            session.Store(item);
+            session.SaveChanges();
+            return true;
+        }
 
         /// <summary>
         /// Upserts the given <paramref name="item"/>.
@@ -242,7 +432,21 @@ namespace NeverFoundry.DataStorage
         /// to indicate that the operation did not fail (even though no storage operation took
         /// place, neither did any failure).
         /// </remarks>
-        Task<bool> StoreItemAsync<T>(T? item) where T : class, IIdItem;
+        public async Task<bool> StoreItemAsync<T>(T? item) where T : class, IIdItem
+        {
+            if (item is null)
+            {
+                return true;
+            }
+            if (DocumentStore is null)
+            {
+                throw new Exception(_DocumentStoreNotSetError);
+            }
+            using var session = DocumentStore.LightweightSession();
+            session.Store(item);
+            await session.SaveChangesAsync().ConfigureAwait(false);
+            return true;
+        }
 
         /// <summary>
         /// Upserts the given <paramref name="item"/>.
@@ -257,7 +461,21 @@ namespace NeverFoundry.DataStorage
         /// to indicate that the operation did not fail (even though no storage operation took
         /// place, neither did any failure).
         /// </remarks>
-        bool StoreStruct<T>(T? item) where T : struct, IIdItem;
+        public bool StoreStruct<T>(T? item) where T : struct, IIdItem
+        {
+            if (!item.HasValue)
+            {
+                return true;
+            }
+            if (DocumentStore is null)
+            {
+                throw new Exception(_DocumentStoreNotSetError);
+            }
+            using var session = DocumentStore.LightweightSession();
+            session.Store(item);
+            session.SaveChanges();
+            return true;
+        }
 
         /// <summary>
         /// Upserts the given <paramref name="item"/>.
@@ -272,6 +490,20 @@ namespace NeverFoundry.DataStorage
         /// to indicate that the operation did not fail (even though no storage operation took
         /// place, neither did any failure).
         /// </remarks>
-        Task<bool> StoreStructAsync<T>(T? item) where T : struct, IIdItem;
+        public async Task<bool> StoreStructAsync<T>(T? item) where T : struct, IIdItem
+        {
+            if (!item.HasValue)
+            {
+                return true;
+            }
+            if (DocumentStore is null)
+            {
+                throw new Exception(_DocumentStoreNotSetError);
+            }
+            using var session = DocumentStore.LightweightSession();
+            session.Store(item);
+            await session.SaveChangesAsync().ConfigureAwait(false);
+            return true;
+        }
     }
 }

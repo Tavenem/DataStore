@@ -33,7 +33,7 @@ namespace NeverFoundry.DataStorage
         /// <see langword="true"/> if the item was successfully deleted; otherwise <see
         /// langword="false"/>.
         /// </returns>
-        public virtual Task<bool> DeleteAsync() => DataStore.RemoveItemAsync(Id);
+        public virtual Task<bool> DeleteAsync() => DataStore.RemoveItemAsync(this);
 
         /// <summary>
         /// Saves this item to the data store.
