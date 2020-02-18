@@ -1,7 +1,6 @@
 ﻿using Marten;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,17 +12,16 @@ namespace NeverFoundry.DataStorage.Marten
     /// </summary>
     public class MartenDataStore : IDataStore
     {
-        private static readonly string _DocumentStoreNotSetError = $"The {nameof(DocumentStore)} has not been set.";
+        /// <summary>
+        /// The <see cref="IDocumentStore"/> used for all transactions.
+        /// </summary>
+        public IDocumentStore DocumentStore { get; set; }
 
         /// <summary>
-        /// <para>
-        /// The <see cref="IDocumentStore"/> used for all transactions.
-        /// </para>
-        /// <para>
-        /// Must be set prior to any operations, or else an <see cref="Exception"/> will be thrown.
-        /// </para>
+        /// Initializes a new instance of <see cref="MartenDataStore"/>.
         /// </summary>
-        public IDocumentStore? DocumentStore { get; set; }
+        /// <param name="documentStore">The <see cref="IDocumentStore"/> used for all transactions.</param>
+        public MartenDataStore(IDocumentStore documentStore) => DocumentStore = documentStore;
 
         /// <summary>
         /// Creates a new <see cref="IIdItem.Id"/> for an <see cref="IIdItem"/> of the given type.
@@ -72,10 +70,6 @@ namespace NeverFoundry.DataStorage.Marten
             {
                 return null;
             }
-            if (DocumentStore is null)
-            {
-                throw new Exception(_DocumentStoreNotSetError);
-            }
             using var session = DocumentStore.LightweightSession();
             return session.Load<T>(id);
         }
@@ -99,10 +93,6 @@ namespace NeverFoundry.DataStorage.Marten
             {
                 return null;
             }
-            if (DocumentStore is null)
-            {
-                throw new Exception(_DocumentStoreNotSetError);
-            }
             using var session = DocumentStore.LightweightSession();
             return await session.LoadAsync<T>(id).ConfigureAwait(false);
         }
@@ -125,10 +115,6 @@ namespace NeverFoundry.DataStorage.Marten
             if (string.IsNullOrEmpty(id))
             {
                 return null;
-            }
-            if (DocumentStore is null)
-            {
-                throw new Exception(_DocumentStoreNotSetError);
             }
             using var session = DocumentStore.LightweightSession();
             return session.Query<T>().Where(x => string.Equals(x.Id, id, StringComparison.Ordinal)).Any()
@@ -155,10 +141,6 @@ namespace NeverFoundry.DataStorage.Marten
             {
                 return null;
             }
-            if (DocumentStore is null)
-            {
-                throw new Exception(_DocumentStoreNotSetError);
-            }
             using var session = DocumentStore.LightweightSession();
             return await session.Query<T>().Where(x => string.Equals(x.Id, id, StringComparison.Ordinal)).AnyAsync().ConfigureAwait(false)
                 ? await session.LoadAsync<T>(id).ConfigureAwait(false)
@@ -169,32 +151,31 @@ namespace NeverFoundry.DataStorage.Marten
         /// Gets all items in the data store of the given type.
         /// </summary>
         /// <typeparam name="T">The type of items to retrieve.</typeparam>
-        /// <returns>An <see cref="IQueryable{T}"/> of items in the data store of the given
+        /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public IQueryable<T> GetItems<T>() where T : IIdItem
+        public IReadOnlyList<T> GetItems<T>() where T : IIdItem
         {
-            if (DocumentStore is null)
-            {
-                throw new Exception(_DocumentStoreNotSetError);
-            }
             using var session = DocumentStore.LightweightSession();
-            return session.Query<T>();
+            return session.Query<T>().ToList().AsReadOnly();
         }
 
         /// <summary>
         /// Gets all items in the data store of the given type.
         /// </summary>
         /// <typeparam name="T">The type of items to retrieve.</typeparam>
-        /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
+        /// <returns>An <see cref="IAsyncEnumerable{T}"/> of items in the data store of the given
         /// type.</returns>
-        public IAsyncEnumerable<T> GetItemsAsync<T>() where T : IIdItem
+        public async IAsyncEnumerable<T> GetItemsAsync<T>() where T : IIdItem
         {
-            if (DocumentStore is null)
+            IReadOnlyList<T> list;
+            using (var session = DocumentStore.LightweightSession())
             {
-                throw new Exception(_DocumentStoreNotSetError);
+                list = await session.Query<T>().ToListAsync().ConfigureAwait(false);
             }
-            using var session = DocumentStore.LightweightSession();
-            return session.Query<T>().ToAsyncEnumerable();
+            foreach (var item in list)
+            {
+                yield return item;
+            }
         }
 
         /// <summary>
@@ -204,14 +185,10 @@ namespace NeverFoundry.DataStorage.Marten
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>An <see cref="IQueryable{T}"/> of items in the data store of the given
         /// type.</returns>
-        public IQueryable<T> GetItemsWhere<T>(Func<T, bool> condition) where T : IIdItem
+        public IReadOnlyList<T> GetItemsWhere<T>(Func<T, bool> condition) where T : IIdItem
         {
-            if (DocumentStore is null)
-            {
-                throw new Exception(_DocumentStoreNotSetError);
-            }
             using var session = DocumentStore.LightweightSession();
-            return session.Query<T>();
+            return session.Query<T>().Where(condition).ToList().AsReadOnly();
         }
 
         /// <summary>
@@ -221,14 +198,17 @@ namespace NeverFoundry.DataStorage.Marten
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public IAsyncEnumerable<T> GetItemsWhereAsync<T>(Func<T, bool> condition) where T : IIdItem
+        public async IAsyncEnumerable<T> GetItemsWhereAsync<T>(Func<T, bool> condition) where T : IIdItem
         {
-            if (DocumentStore is null)
+            IReadOnlyList<T> list;
+            using (var session = DocumentStore.LightweightSession())
             {
-                throw new Exception(_DocumentStoreNotSetError);
+                list = await session.Query<T>().Where(condition).AsQueryable().ToListAsync().ConfigureAwait(false);
             }
-            using var session = DocumentStore.LightweightSession();
-            return session.Query<T>().Where(x => condition.Invoke(x)).ToAsyncEnumerable();
+            foreach (var item in list)
+            {
+                yield return item;
+            }
         }
 
         /// <summary>
@@ -238,24 +218,18 @@ namespace NeverFoundry.DataStorage.Marten
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public IAsyncEnumerable<T> GetItemsWhereAwaitAsync<T>(Func<T, ValueTask<bool>> condition) where T : IIdItem
+        public async IAsyncEnumerable<T> GetItemsWhereAwaitAsync<T>(Func<T, ValueTask<bool>> condition) where T : IIdItem
         {
-            if (DocumentStore is null)
+            IReadOnlyList<T> list;
+            using (var session = DocumentStore.LightweightSession())
             {
-                throw new Exception(_DocumentStoreNotSetError);
+                list = await session.Query<T>().ToListAsync().ConfigureAwait(false);
             }
-
-            return GetItemsWhereAwaitLocalAsync();
-
-            async IAsyncEnumerable<T> GetItemsWhereAwaitLocalAsync()
+            foreach (var item in list)
             {
-                using var session = DocumentStore!.LightweightSession();
-                foreach (var item in session.Query<T>())
+                if (await condition.Invoke(item).ConfigureAwait(false))
                 {
-                    if (await condition.Invoke(item).ConfigureAwait(false))
-                    {
-                        yield return item;
-                    }
+                    yield return item;
                 }
             }
         }
@@ -282,10 +256,6 @@ namespace NeverFoundry.DataStorage.Marten
             if (string.IsNullOrEmpty(id))
             {
                 return true;
-            }
-            if (DocumentStore is null)
-            {
-                throw new Exception(_DocumentStoreNotSetError);
             }
             using var session = DocumentStore.LightweightSession();
             session.Delete<T>(id);
@@ -314,10 +284,6 @@ namespace NeverFoundry.DataStorage.Marten
             if (item is null)
             {
                 return true;
-            }
-            if (DocumentStore is null)
-            {
-                throw new Exception(_DocumentStoreNotSetError);
             }
             using var session = DocumentStore.LightweightSession();
             session.Delete(item);
@@ -348,10 +314,6 @@ namespace NeverFoundry.DataStorage.Marten
             {
                 return false;
             }
-            if (DocumentStore is null)
-            {
-                throw new Exception(_DocumentStoreNotSetError);
-            }
             using var session = DocumentStore.LightweightSession();
             session.Delete<T>(id);
             await session.SaveChangesAsync().ConfigureAwait(false);
@@ -380,10 +342,6 @@ namespace NeverFoundry.DataStorage.Marten
             {
                 return true;
             }
-            if (DocumentStore is null)
-            {
-                throw new Exception(_DocumentStoreNotSetError);
-            }
             using var session = DocumentStore.LightweightSession();
             session.Delete(item);
             await session.SaveChangesAsync().ConfigureAwait(false);
@@ -408,10 +366,6 @@ namespace NeverFoundry.DataStorage.Marten
             if (item is null)
             {
                 return true;
-            }
-            if (DocumentStore is null)
-            {
-                throw new Exception(_DocumentStoreNotSetError);
             }
             using var session = DocumentStore.LightweightSession();
             session.Store(item);
@@ -438,10 +392,6 @@ namespace NeverFoundry.DataStorage.Marten
             {
                 return true;
             }
-            if (DocumentStore is null)
-            {
-                throw new Exception(_DocumentStoreNotSetError);
-            }
             using var session = DocumentStore.LightweightSession();
             session.Store(item);
             await session.SaveChangesAsync().ConfigureAwait(false);
@@ -467,10 +417,6 @@ namespace NeverFoundry.DataStorage.Marten
             {
                 return true;
             }
-            if (DocumentStore is null)
-            {
-                throw new Exception(_DocumentStoreNotSetError);
-            }
             using var session = DocumentStore.LightweightSession();
             session.Store(item);
             session.SaveChanges();
@@ -495,10 +441,6 @@ namespace NeverFoundry.DataStorage.Marten
             if (!item.HasValue)
             {
                 return true;
-            }
-            if (DocumentStore is null)
-            {
-                throw new Exception(_DocumentStoreNotSetError);
             }
             using var session = DocumentStore.LightweightSession();
             session.Store(item);

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace NeverFoundry.DataStorage
@@ -116,9 +114,9 @@ namespace NeverFoundry.DataStorage
         /// Gets all items in the data store of the given type.
         /// </summary>
         /// <typeparam name="T">The type of items to retrieve.</typeparam>
-        /// <returns>An <see cref="IQueryable{T}"/> of items in the data store of the given
+        /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public static IQueryable<T> GetItems<T>() where T : IIdItem => Instance.GetItems<T>();
+        public static IReadOnlyList<T> GetItems<T>() where T : IIdItem => Instance.GetItems<T>();
 
         /// <summary>
         /// Gets all items in the data store of the given type.
@@ -134,9 +132,9 @@ namespace NeverFoundry.DataStorage
         /// </summary>
         /// <typeparam name="T">The type of items to retrieve.</typeparam>
         /// <param name="condition">A condition which items must satisfy.</param>
-        /// <returns>An <see cref="IQueryable{T}"/> of items in the data store of the given
+        /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public static IQueryable<T> GetItemsWhere<T>(Func<T, bool> condition) where T : IIdItem
+        public static IReadOnlyList<T> GetItemsWhere<T>(Func<T, bool> condition) where T : IIdItem
             => Instance.GetItemsWhere(condition);
 
         /// <summary>

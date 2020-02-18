@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -101,15 +100,15 @@ namespace NeverFoundry.DataStorage
         /// Gets all items in the data store of the given type.
         /// </summary>
         /// <typeparam name="T">The type of items to retrieve.</typeparam>
-        /// <returns>An <see cref="IQueryable{T}"/> of items in the data store of the given
+        /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        IQueryable<T> GetItems<T>() where T : IIdItem;
+        IReadOnlyList<T> GetItems<T>() where T : IIdItem;
 
         /// <summary>
         /// Gets all items in the data store of the given type.
         /// </summary>
         /// <typeparam name="T">The type of items to retrieve.</typeparam>
-        /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
+        /// <returns>An <see cref="IAsyncEnumerable{T}"/> of items in the data store of the given
         /// type.</returns>
         IAsyncEnumerable<T> GetItemsAsync<T>() where T : IIdItem;
 
@@ -118,16 +117,16 @@ namespace NeverFoundry.DataStorage
         /// </summary>
         /// <typeparam name="T">The type of items to retrieve.</typeparam>
         /// <param name="condition">A condition which items must satisfy.</param>
-        /// <returns>An <see cref="IQueryable{T}"/> of items in the data store of the given
+        /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        IQueryable<T> GetItemsWhere<T>(Func<T, bool> condition) where T : IIdItem;
+        IReadOnlyList<T> GetItemsWhere<T>(Func<T, bool> condition) where T : IIdItem;
 
         /// <summary>
         /// Gets all items in the data store of the given type which satisfy the given condition.
         /// </summary>
         /// <typeparam name="T">The type of items to retrieve.</typeparam>
         /// <param name="condition">A condition which items must satisfy.</param>
-        /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
+        /// <returns>An <see cref="IAsyncEnumerable{T}"/> of items in the data store of the given
         /// type.</returns>
         IAsyncEnumerable<T> GetItemsWhereAsync<T>(Func<T, bool> condition) where T : IIdItem;
 
@@ -136,7 +135,7 @@ namespace NeverFoundry.DataStorage
         /// </summary>
         /// <typeparam name="T">The type of items to enumerate.</typeparam>
         /// <param name="condition">A condition which items must satisfy.</param>
-        /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
+        /// <returns>An <see cref="IAsyncEnumerable{T}"/> of items in the data store of the given
         /// type.</returns>
         IAsyncEnumerable<T> GetItemsWhereAwaitAsync<T>(Func<T, ValueTask<bool>> condition) where T : IIdItem;
 

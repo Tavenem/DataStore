@@ -4,12 +4,10 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>Latest</LangVersion>
     <Nullable>enable</Nullable>
-    <CodeAnalysisRuleSet>../RoslynatorRuleSet.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <PropertyGroup>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.4.2</Version>
+    <Version>0.5.0</Version>
     <Authors>Wil Stead</Authors>
     <Description>A persistence-agnostic repository library. Intended to be used to build other libraries which are decoupled from persistence choices.</Description>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
@@ -21,8 +19,8 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netstandard2.1\NeverFoundry.DataStore.xml</DocumentationFile>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,5 +33,9 @@
   <ItemGroup>
     <PackageReference Include="System.Linq.Async" Version="4.0.0" />
   </ItemGroup>
+
+  <Target Name="NugetAdd" AfterTargets="Pack">
+    <exec command="nuget push -Source &quot;WS-NuGet&quot; -ApiKey AzureDevOps $(OutputPath)..\$(PackageId).$(PackageVersion).nupkg" />
+  </Target>
 
 </Project>

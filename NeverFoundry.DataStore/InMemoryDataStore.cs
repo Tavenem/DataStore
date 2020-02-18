@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace NeverFoundry.DataStorage
@@ -56,7 +54,20 @@ namespace NeverFoundry.DataStorage
         /// condition.
         /// </remarks>
         public T? GetItem<T>(string? id) where T : class, IIdItem
-            => string.IsNullOrEmpty(id) ? null : _data.TryGetValue(id!, out var item) ? item as T : null;
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return null;
+            }
+            else if (_data.TryGetValue(id, out var item))
+            {
+                return item as T;
+            }
+            else
+            {
+                return null;
+            }
+        }
 
         /// <summary>
         /// Gets the <see cref="IIdItem"/> with the given <paramref name="id"/>.
@@ -87,7 +98,20 @@ namespace NeverFoundry.DataStorage
         /// condition.
         /// </remarks>
         public T? GetStruct<T>(string? id) where T : struct, IIdItem
-            => string.IsNullOrEmpty(id) ? null : _data.TryGetValue(id!, out var item) && item is T ? (T)item : (T?)null;
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return null;
+            }
+            else if (_data.TryGetValue(id, out var item) && item is T tItem)
+            {
+                return tItem;
+            }
+            else
+            {
+                return null;
+            }
+        }
 
         /// <summary>
         /// Gets the <see cref="IIdItem"/> with the given <paramref name="id"/>.
@@ -108,9 +132,9 @@ namespace NeverFoundry.DataStorage
         /// Gets all items in the data store of the given type.
         /// </summary>
         /// <typeparam name="T">The type of items to retrieve.</typeparam>
-        /// <returns>An <see cref="IQueryable{T}"/> of items in the data store of the given
+        /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public IQueryable<T> GetItems<T>() where T : IIdItem => _data.Values.OfType<T>().AsQueryable();
+        public IReadOnlyList<T> GetItems<T>() where T : IIdItem => _data.Values.OfType<T>().ToList().AsReadOnly();
 
         /// <summary>
         /// Gets all items in the data store of the given type.
@@ -125,10 +149,10 @@ namespace NeverFoundry.DataStorage
         /// </summary>
         /// <typeparam name="T">The type of items to retrieve.</typeparam>
         /// <param name="condition">A condition which items must satisfy.</param>
-        /// <returns>An <see cref="IQueryable{T}"/> of items in the data store of the given
+        /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public IQueryable<T> GetItemsWhere<T>(Func<T, bool> condition) where T : IIdItem
-            => _data.Values.OfType<T>().Where(x => condition.Invoke(x)).AsQueryable();
+        public IReadOnlyList<T> GetItemsWhere<T>(Func<T, bool> condition) where T : IIdItem
+            => _data.Values.OfType<T>().Where(x => condition.Invoke(x)).ToList().AsReadOnly();
 
         /// <summary>
         /// Gets all items in the data store of the given type which satisfy the given condition.
