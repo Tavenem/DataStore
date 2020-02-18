@@ -1,4 +1,5 @@
 ﻿using Marten;
+using Marten.Pagination;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -232,6 +233,72 @@ namespace NeverFoundry.DataStorage.Marten
                     yield return item;
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets a number of items in the data store of the given type equal to <paramref
+        /// name="pageSize"/>, after skipping <paramref name="pageNumber"/> multiples of that
+        /// amount.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <param name="pageNumber">The current page number.</param>
+        /// <param name="pageSize">The page size.</param>
+        /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
+        /// type.</returns>
+        public IPagedList<T> GetPage<T>(int pageNumber, int pageSize)
+        {
+            using var session = DocumentStore.LightweightSession();
+            return session.Query<T>().ToPagedList(pageNumber, pageSize).AsPagedList();
+        }
+
+        /// <summary>
+        /// Gets a number of items in the data store of the given type equal to <paramref
+        /// name="pageSize"/>, after skipping <paramref name="pageNumber"/> multiples of that
+        /// amount.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <param name="pageNumber">The current page number.</param>
+        /// <param name="pageSize">The page size.</param>
+        /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
+        /// type.</returns>
+        public async Task<IPagedList<T>> GetPageAsync<T>(int pageNumber, int pageSize)
+        {
+            using var session = DocumentStore.LightweightSession();
+            return (await session.Query<T>().ToPagedListAsync(pageNumber, pageSize).ConfigureAwait(false)).AsPagedList();
+        }
+
+        /// <summary>
+        /// Gets a number of items in the data store of the given type which satisfy the given
+        /// condition equal to <paramref name="pageSize"/>, after skipping <paramref
+        /// name="pageNumber"/> multiples of that amount.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <param name="condition">A condition which items must satisfy.</param>
+        /// <param name="pageNumber">The current page number.</param>
+        /// <param name="pageSize">The page size.</param>
+        /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
+        /// type.</returns>
+        public IPagedList<T> GetPageWhere<T>(Func<T, bool> condition, int pageNumber, int pageSize)
+        {
+            using var session = DocumentStore.LightweightSession();
+            return session.Query<T>().Where(condition).AsQueryable().ToPagedList(pageNumber, pageSize).AsPagedList();
+        }
+
+        /// <summary>
+        /// Gets a number of items in the data store of the given type which satisfy the given
+        /// condition equal to <paramref name="pageSize"/>, after skipping <paramref
+        /// name="pageNumber"/> multiples of that amount.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <param name="condition">A condition which items must satisfy.</param>
+        /// <param name="pageNumber">The current page number.</param>
+        /// <param name="pageSize">The page size.</param>
+        /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
+        /// type.</returns>
+        public async Task<IPagedList<T>> GetPageWhereAsync<T>(Func<T, bool> condition, int pageNumber, int pageSize)
+        {
+            using var session = DocumentStore.LightweightSession();
+            return (await session.Query<T>().Where(condition).AsQueryable().ToPagedListAsync(pageNumber, pageSize).ConfigureAwait(false)).AsPagedList();
         }
 
         /// <summary>

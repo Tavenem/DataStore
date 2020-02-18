@@ -140,6 +140,56 @@ namespace NeverFoundry.DataStorage
         IAsyncEnumerable<T> GetItemsWhereAwaitAsync<T>(Func<T, ValueTask<bool>> condition) where T : IIdItem;
 
         /// <summary>
+        /// Gets a number of items in the data store of the given type equal to <paramref
+        /// name="pageSize"/>, after skipping <paramref name="pageNumber"/> multiples of that
+        /// amount.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <param name="pageNumber">The current page number.</param>
+        /// <param name="pageSize">The page size.</param>
+        /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
+        /// type.</returns>
+        IPagedList<T> GetPage<T>(int pageNumber, int pageSize);
+
+        /// <summary>
+        /// Gets a number of items in the data store of the given type equal to <paramref
+        /// name="pageSize"/>, after skipping <paramref name="pageNumber"/> multiples of that
+        /// amount.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <param name="pageNumber">The current page number.</param>
+        /// <param name="pageSize">The page size.</param>
+        /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
+        /// type.</returns>
+        Task<IPagedList<T>> GetPageAsync<T>(int pageNumber, int pageSize);
+
+        /// <summary>
+        /// Gets a number of items in the data store of the given type which satisfy the given
+        /// condition equal to <paramref name="pageSize"/>, after skipping <paramref
+        /// name="pageNumber"/> multiples of that amount.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <param name="condition">A condition which items must satisfy.</param>
+        /// <param name="pageNumber">The current page number.</param>
+        /// <param name="pageSize">The page size.</param>
+        /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
+        /// type.</returns>
+        IPagedList<T> GetPageWhere<T>(Func<T, bool> condition, int pageNumber, int pageSize);
+
+        /// <summary>
+        /// Gets a number of items in the data store of the given type which satisfy the given
+        /// condition equal to <paramref name="pageSize"/>, after skipping <paramref
+        /// name="pageNumber"/> multiples of that amount.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <param name="condition">A condition which items must satisfy.</param>
+        /// <param name="pageNumber">The current page number.</param>
+        /// <param name="pageSize">The page size.</param>
+        /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
+        /// type.</returns>
+        Task<IPagedList<T>> GetPageWhereAsync<T>(Func<T, bool> condition, int pageNumber, int pageSize);
+
+        /// <summary>
         /// Removes the stored item with the given id.
         /// </summary>
         /// <typeparam name="T">The type of items to remove.</typeparam>

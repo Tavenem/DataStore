@@ -162,7 +162,7 @@ namespace NeverFoundry.DataStorage
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
         public IAsyncEnumerable<T> GetItemsWhereAsync<T>(Func<T, bool> condition) where T : IIdItem
-            => GetItemsWhere<T>(condition).ToAsyncEnumerable();
+            => GetItemsWhere(condition).ToAsyncEnumerable();
 
         /// <summary>
         /// Gets all items in the data store of the given type which satisfy the given condition.
@@ -173,6 +173,67 @@ namespace NeverFoundry.DataStorage
         /// type.</returns>
         public IAsyncEnumerable<T> GetItemsWhereAwaitAsync<T>(Func<T, ValueTask<bool>> condition) where T : IIdItem
             => _data.Values.OfType<T>().ToAsyncEnumerable().WhereAwait(condition);
+
+        /// <summary>
+        /// Gets a number of items in the data store of the given type equal to <paramref
+        /// name="pageSize"/>, after skipping <paramref name="pageNumber"/> multiples of that
+        /// amount.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <param name="pageNumber">The current page number.</param>
+        /// <param name="pageSize">The page size.</param>
+        /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
+        /// type.</returns>
+        public IPagedList<T> GetPage<T>(int pageNumber, int pageSize) => _data.Values
+            .OfType<T>()
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .AsPagedList(pageNumber, pageSize, _data.Values.OfType<T>().Count());
+
+        /// <summary>
+        /// Gets a number of items in the data store of the given type equal to <paramref
+        /// name="pageSize"/>, after skipping <paramref name="pageNumber"/> multiples of that
+        /// amount.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <param name="pageNumber">The current page number.</param>
+        /// <param name="pageSize">The page size.</param>
+        /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
+        /// type.</returns>
+        public Task<IPagedList<T>> GetPageAsync<T>(int pageNumber, int pageSize)
+            => Task.FromResult(GetPage<T>(pageNumber, pageSize));
+
+        /// <summary>
+        /// Gets a number of items in the data store of the given type which satisfy the given
+        /// condition equal to <paramref name="pageSize"/>, after skipping <paramref
+        /// name="pageNumber"/> multiples of that amount.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <param name="condition">A condition which items must satisfy.</param>
+        /// <param name="pageNumber">The current page number.</param>
+        /// <param name="pageSize">The page size.</param>
+        /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
+        /// type.</returns>
+        public IPagedList<T> GetPageWhere<T>(Func<T, bool> condition, int pageNumber, int pageSize) => _data.Values
+            .OfType<T>()
+            .Where(condition)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .AsPagedList(pageNumber, pageSize, _data.Values.OfType<T>().Count());
+
+        /// <summary>
+        /// Gets a number of items in the data store of the given type which satisfy the given
+        /// condition equal to <paramref name="pageSize"/>, after skipping <paramref
+        /// name="pageNumber"/> multiples of that amount.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <param name="condition">A condition which items must satisfy.</param>
+        /// <param name="pageNumber">The current page number.</param>
+        /// <param name="pageSize">The page size.</param>
+        /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
+        /// type.</returns>
+        public Task<IPagedList<T>> GetPageWhereAsync<T>(Func<T, bool> condition, int pageNumber, int pageSize)
+            => Task.FromResult(GetPageWhere<T>(condition, pageNumber, pageSize));
 
         /// <summary>
         /// Removes the stored item with the given id.
