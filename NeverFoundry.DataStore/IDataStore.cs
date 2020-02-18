@@ -164,6 +164,38 @@ namespace NeverFoundry.DataStorage
         Task<IPagedList<T>> GetPageAsync<T>(int pageNumber, int pageSize);
 
         /// <summary>
+        /// Gets a number of items in the data store of the given type equal to <paramref
+        /// name="pageSize"/>, after skipping <paramref name="pageNumber"/> multiples of that
+        /// amount, when sorted by the given criteria.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="pageNumber">The current page number.</param>
+        /// <param name="pageSize">The page size.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
+        /// type.</returns>
+        IPagedList<T> GetPageOrderedBy<T, TKey>(Func<T, TKey> selector, int pageNumber, int pageSize, bool descending = false);
+
+        /// <summary>
+        /// Gets a number of items in the data store of the given type equal to <paramref
+        /// name="pageSize"/>, after skipping <paramref name="pageNumber"/> multiples of that
+        /// amount, when sorted by the given criteria.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="pageNumber">The current page number.</param>
+        /// <param name="pageSize">The page size.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
+        /// type.</returns>
+        Task<IPagedList<T>> GetPageOrderedByAsync<T, TKey>(Func<T, TKey> selector, int pageNumber, int pageSize, bool descending = false);
+
+        /// <summary>
         /// Gets a number of items in the data store of the given type which satisfy the given
         /// condition equal to <paramref name="pageSize"/>, after skipping <paramref
         /// name="pageNumber"/> multiples of that amount.
@@ -188,6 +220,40 @@ namespace NeverFoundry.DataStorage
         /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
         /// type.</returns>
         Task<IPagedList<T>> GetPageWhereAsync<T>(Func<T, bool> condition, int pageNumber, int pageSize);
+
+        /// <summary>
+        /// Gets a number of items in the data store of the given type which satisfy the given
+        /// condition equal to <paramref name="pageSize"/>, after skipping <paramref
+        /// name="pageNumber"/> multiples of that amount, when sorted by the given criteria.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="condition">A condition which items must satisfy.</param>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="pageNumber">The current page number.</param>
+        /// <param name="pageSize">The page size.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
+        /// type.</returns>
+        IPagedList<T> GetPageWhereOrderedBy<T, TKey>(Func<T, bool> condition, Func<T, TKey> selector, int pageNumber, int pageSize, bool descending = false);
+
+        /// <summary>
+        /// Gets a number of items in the data store of the given type which satisfy the given
+        /// condition equal to <paramref name="pageSize"/>, after skipping <paramref
+        /// name="pageNumber"/> multiples of that amount, when sorted by the given criteria.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="condition">A condition which items must satisfy.</param>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="pageNumber">The current page number.</param>
+        /// <param name="pageSize">The page size.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
+        /// type.</returns>
+        Task<IPagedList<T>> GetPageWhereOrderedByAsync<T, TKey>(Func<T, bool> condition, Func<T, TKey> selector, int pageNumber, int pageSize, bool descending = false);
 
         /// <summary>
         /// Removes the stored item with the given id.
