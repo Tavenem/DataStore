@@ -41,6 +41,174 @@ namespace NeverFoundry.DataStorage
         public string CreateNewIdFor(Type type) => Guid.NewGuid().ToString();
 
         /// <summary>
+        /// Gets the first item in the data store of the given type which satisfies the given
+        /// condition.
+        /// </summary>
+        /// <typeparam name="T">The type of item to retrieve.</typeparam>
+        /// <param name="condition">A condition which items must satisfy.</param>
+        /// <returns>The first item in the data store of the given type.</returns>
+        public T? GetFirstItemWhere<T>(Func<T, bool> condition) where T : class, IIdItem
+            => _data.Values.OfType<T>().FirstOrDefault(condition);
+
+        /// <summary>
+        /// Gets the first item in the data store of the given type which satisfies the given
+        /// condition.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <param name="condition">A condition which items must satisfy.</param>
+        /// <returns>The first item in the data store of the given type.</returns>
+        public Task<T?> GetFirstItemWhereAsync<T>(Func<T, bool> condition) where T : class, IIdItem
+            => Task.FromResult(GetFirstItemWhere(condition));
+
+        /// <summary>
+        /// Gets the first item in the data store of the given type which satisfies the given
+        /// condition.
+        /// </summary>
+        /// <typeparam name="T">The type of items to enumerate.</typeparam>
+        /// <param name="condition">A condition which items must satisfy.</param>
+        /// <returns>The first item in the data store of the given type.</returns>
+        public async Task<T?> GetFirstItemWhereAwaitAsync<T>(Func<T, ValueTask<bool>> condition) where T : class, IIdItem
+            => await _data.Values.OfType<T>().ToAsyncEnumerable().FirstOrDefaultAwaitAsync(condition).ConfigureAwait(false);
+
+        /// <summary>
+        /// Gets the first item in the data store of the given type which satisfies the given
+        /// condition, in the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="condition">A condition which items must satisfy.</param>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>The first item in the data store of the given type.</returns>
+        public T? GetFirstItemWhereOrderedBy<T, TKey>(Func<T, bool> condition, Func<T, TKey> selector, bool descending = false) where T : class, IIdItem
+            => descending
+            ? _data.Values.OfType<T>().Where(x => condition.Invoke(x)).OrderByDescending(selector).FirstOrDefault()
+            : _data.Values.OfType<T>().Where(x => condition.Invoke(x)).OrderBy(selector).FirstOrDefault();
+
+        /// <summary>
+        /// Gets the first item in the data store of the given type which satisfies the given
+        /// condition, in the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="condition">A condition which items must satisfy.</param>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>The first item in the data store of the given type.</returns>
+        public Task<T?> GetFirstItemWhereOrderedByAsync<T, TKey>(Func<T, bool> condition, Func<T, TKey> selector, bool descending = false) where T : class, IIdItem
+            => Task.FromResult(GetFirstItemWhereOrderedBy(condition, selector, descending));
+
+        /// <summary>
+        /// Gets the first item in the data store of the given type which satisfies the given
+        /// condition, in the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to enumerate.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="condition">A condition which items must satisfy.</param>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>The first item in the data store of the given type.</returns>
+        public async Task<T?> GetFirstItemWhereOrderedByAwaitAsync<T, TKey>(Func<T, ValueTask<bool>> condition, Func<T, TKey> selector, bool descending = false) where T : class, IIdItem
+            => descending
+            ? await _data.Values.OfType<T>().ToAsyncEnumerable().WhereAwait(condition).OrderByDescending(selector).FirstOrDefaultAsync().ConfigureAwait(false)
+            : await _data.Values.OfType<T>().ToAsyncEnumerable().WhereAwait(condition).OrderBy(selector).FirstOrDefaultAsync().ConfigureAwait(false);
+
+        /// <summary>
+        /// Gets the first item in the data store of the given type which satisfies the given
+        /// condition.
+        /// </summary>
+        /// <typeparam name="T">The type of item to retrieve.</typeparam>
+        /// <param name="condition">A condition which items must satisfy.</param>
+        /// <returns>The first item in the data store of the given type.</returns>
+        public T? GetFirstStructWhere<T>(Func<T, bool> condition) where T : struct, IIdItem
+            => _data.Values.OfType<T>().Any(condition)
+            ? _data.Values.OfType<T>().First(condition)
+            : (T?)null;
+
+        /// <summary>
+        /// Gets the first item in the data store of the given type which satisfies the given
+        /// condition.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <param name="condition">A condition which items must satisfy.</param>
+        /// <returns>The first item in the data store of the given type.</returns>
+        public Task<T?> GetFirstStructWhereAsync<T>(Func<T, bool> condition) where T : struct, IIdItem
+            => Task.FromResult(GetFirstStructWhere(condition));
+
+        /// <summary>
+        /// Gets the first item in the data store of the given type which satisfies the given
+        /// condition.
+        /// </summary>
+        /// <typeparam name="T">The type of items to enumerate.</typeparam>
+        /// <param name="condition">A condition which items must satisfy.</param>
+        /// <returns>The first item in the data store of the given type.</returns>
+        public async Task<T?> GetFirstStructWhereAwaitAsync<T>(Func<T, ValueTask<bool>> condition) where T : struct, IIdItem
+            => await _data.Values.OfType<T>().ToAsyncEnumerable().AnyAwaitAsync(condition).ConfigureAwait(false)
+            ? await _data.Values.OfType<T>().ToAsyncEnumerable().FirstAwaitAsync(condition).ConfigureAwait(false)
+            : (T?)null;
+
+        /// <summary>
+        /// Gets the first item in the data store of the given type which satisfies the given
+        /// condition, in the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="condition">A condition which items must satisfy.</param>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>The first item in the data store of the given type.</returns>
+        public T? GetFirstStructWhereOrderedBy<T, TKey>(Func<T, bool> condition, Func<T, TKey> selector, bool descending = false) where T : struct, IIdItem
+        {
+            if (!_data.Values.OfType<T>().Any(x => condition.Invoke(x)))
+            {
+                return null;
+            }
+            return descending
+                ? _data.Values.OfType<T>().Where(x => condition.Invoke(x)).OrderByDescending(selector).First()
+                : _data.Values.OfType<T>().Where(x => condition.Invoke(x)).OrderBy(selector).First();
+        }
+
+        /// <summary>
+        /// Gets the first item in the data store of the given type which satisfies the given
+        /// condition, in the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="condition">A condition which items must satisfy.</param>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>The first item in the data store of the given type.</returns>
+        public Task<T?> GetFirstStructWhereOrderedByAsync<T, TKey>(Func<T, bool> condition, Func<T, TKey> selector, bool descending = false) where T : struct, IIdItem
+            => Task.FromResult(GetFirstStructWhereOrderedBy(condition, selector, descending));
+
+        /// <summary>
+        /// Gets the first item in the data store of the given type which satisfies the given
+        /// condition, in the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to enumerate.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="condition">A condition which items must satisfy.</param>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>The first item in the data store of the given type.</returns>
+        public async Task<T?> GetFirstStructWhereOrderedByAwaitAsync<T, TKey>(Func<T, ValueTask<bool>> condition, Func<T, TKey> selector, bool descending = false) where T : struct, IIdItem
+        {
+            if (!await _data.Values.OfType<T>().ToAsyncEnumerable().WhereAwait(condition).OrderByDescending(selector).AnyAsync().ConfigureAwait(false))
+            {
+                return null;
+            }
+            return descending
+                ? await _data.Values.OfType<T>().ToAsyncEnumerable().WhereAwait(condition).OrderByDescending(selector).FirstAsync().ConfigureAwait(false)
+                : await _data.Values.OfType<T>().ToAsyncEnumerable().WhereAwait(condition).OrderBy(selector).FirstAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Gets the <see cref="IIdItem"/> with the given <paramref name="id"/>.
         /// </summary>
         /// <typeparam name="T">The type of <see cref="IIdItem"/> to retrieve.</typeparam>
@@ -83,50 +251,6 @@ namespace NeverFoundry.DataStorage
         /// condition.
         /// </remarks>
         public Task<T?> GetItemAsync<T>(string? id) where T : class, IIdItem => Task.FromResult(GetItem<T>(id));
-
-        /// <summary>
-        /// Gets the <see cref="IIdItem"/> with the given <paramref name="id"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of <see cref="IIdItem"/> to retrieve.</typeparam>
-        /// <param name="id">The unique id of the item to retrieve.</param>
-        /// <returns>The item with the given id, or <see langword="null"/> if no item was found with
-        /// that id.</returns>
-        /// <remarks>
-        /// This presumes that <paramref name="id"/> is a unique key, and therefore returns only one
-        /// result. If your persistence model allows for non-unique keys and multiple results, use
-        /// <see cref="GetItemsWhere{T}(Func{T, bool})"/> with an appropriately formed
-        /// condition.
-        /// </remarks>
-        public T? GetStruct<T>(string? id) where T : struct, IIdItem
-        {
-            if (string.IsNullOrEmpty(id))
-            {
-                return null;
-            }
-            else if (_data.TryGetValue(id, out var item) && item is T tItem)
-            {
-                return tItem;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Gets the <see cref="IIdItem"/> with the given <paramref name="id"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of <see cref="IIdItem"/> to retrieve.</typeparam>
-        /// <param name="id">The unique id of the item to retrieve.</param>
-        /// <returns>The item with the given id, or <see langword="null"/> if no item was found with
-        /// that id.</returns>
-        /// <remarks>
-        /// This presumes that <paramref name="id"/> is a unique key, and therefore returns only one
-        /// result. If your persistence model allows for non-unique keys and multiple results, use
-        /// <see cref="GetItemsWhereAsync{T}(Func{T, bool})"/> with an appropriately formed
-        /// condition.
-        /// </remarks>
-        public Task<T?> GetStructAsync<T>(string? id) where T : struct, IIdItem => Task.FromResult(GetStruct<T>(id));
 
         /// <summary>
         /// Gets all items in the data store of the given type.
@@ -173,6 +297,55 @@ namespace NeverFoundry.DataStorage
         /// type.</returns>
         public IAsyncEnumerable<T> GetItemsWhereAwaitAsync<T>(Func<T, ValueTask<bool>> condition) where T : IIdItem
             => _data.Values.OfType<T>().ToAsyncEnumerable().WhereAwait(condition);
+
+        /// <summary>
+        /// Gets all items in the data store of the given type which satisfy the given condition, in
+        /// the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="condition">A condition which items must satisfy.</param>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
+        /// type.</returns>
+        public IReadOnlyList<T> GetItemsWhereOrderedBy<T, TKey>(Func<T, bool> condition, Func<T, TKey> selector, bool descending = false) where T : IIdItem
+            => descending
+            ? _data.Values.OfType<T>().Where(x => condition.Invoke(x)).OrderByDescending(selector).ToList().AsReadOnly()
+            : _data.Values.OfType<T>().Where(x => condition.Invoke(x)).OrderBy(selector).ToList().AsReadOnly();
+
+        /// <summary>
+        /// Gets all items in the data store of the given type which satisfy the given condition, in
+        /// the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="condition">A condition which items must satisfy.</param>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
+        /// type.</returns>
+        public IAsyncEnumerable<T> GetItemsWhereOrderedByAsync<T, TKey>(Func<T, bool> condition, Func<T, TKey> selector, bool descending = false) where T : IIdItem
+            => GetItemsWhereOrderedBy(condition, selector, descending).ToAsyncEnumerable();
+
+        /// <summary>
+        /// Gets all items in the data store of the given type which satisfy the given condition, in
+        /// the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to enumerate.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="condition">A condition which items must satisfy.</param>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
+        /// type.</returns>
+        public IAsyncEnumerable<T> GetItemsWhereOrderedByAwaitAsync<T, TKey>(Func<T, ValueTask<bool>> condition, Func<T, TKey> selector, bool descending = false) where T : IIdItem
+            => descending
+            ? _data.Values.OfType<T>().ToAsyncEnumerable().WhereAwait(condition).OrderByDescending(selector)
+            : _data.Values.OfType<T>().ToAsyncEnumerable().WhereAwait(condition).OrderBy(selector);
 
         /// <summary>
         /// Gets a number of items in the data store of the given type equal to <paramref
@@ -328,6 +501,50 @@ namespace NeverFoundry.DataStorage
         /// type.</returns>
         public Task<IPagedList<T>> GetPageWhereOrderedByAsync<T, TKey>(Func<T, bool> condition, Func<T, TKey> selector, int pageNumber, int pageSize, bool descending = false)
             => Task.FromResult(GetPageWhereOrderedBy(condition, selector, pageNumber, pageSize, descending));
+
+        /// <summary>
+        /// Gets the <see cref="IIdItem"/> with the given <paramref name="id"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="IIdItem"/> to retrieve.</typeparam>
+        /// <param name="id">The unique id of the item to retrieve.</param>
+        /// <returns>The item with the given id, or <see langword="null"/> if no item was found with
+        /// that id.</returns>
+        /// <remarks>
+        /// This presumes that <paramref name="id"/> is a unique key, and therefore returns only one
+        /// result. If your persistence model allows for non-unique keys and multiple results, use
+        /// <see cref="GetItemsWhere{T}(Func{T, bool})"/> with an appropriately formed
+        /// condition.
+        /// </remarks>
+        public T? GetStruct<T>(string? id) where T : struct, IIdItem
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return null;
+            }
+            else if (_data.TryGetValue(id, out var item) && item is T tItem)
+            {
+                return tItem;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets the <see cref="IIdItem"/> with the given <paramref name="id"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="IIdItem"/> to retrieve.</typeparam>
+        /// <param name="id">The unique id of the item to retrieve.</param>
+        /// <returns>The item with the given id, or <see langword="null"/> if no item was found with
+        /// that id.</returns>
+        /// <remarks>
+        /// This presumes that <paramref name="id"/> is a unique key, and therefore returns only one
+        /// result. If your persistence model allows for non-unique keys and multiple results, use
+        /// <see cref="GetItemsWhereAsync{T}(Func{T, bool})"/> with an appropriately formed
+        /// condition.
+        /// </remarks>
+        public Task<T?> GetStructAsync<T>(string? id) where T : struct, IIdItem => Task.FromResult(GetStruct<T>(id));
 
         /// <summary>
         /// Removes the stored item with the given id.
