@@ -53,6 +53,50 @@ namespace NeverFoundry.DataStorage.Marten
         public string CreateNewIdFor(Type type) => Guid.NewGuid().ToString();
 
         /// <summary>
+        /// Gets the first item in the data store of the given type, in the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>The first item in the data store of the given type.</returns>
+        public T? GetFirstItemOrderedBy<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : class, IIdItem
+        {
+            using var session = DocumentStore.LightweightSession();
+            if (descending)
+            {
+                return session.Query<T>().OrderByDescending(selector).FirstOrDefault();
+            }
+            else
+            {
+                return session.Query<T>().OrderBy(selector).FirstOrDefault();
+            }
+        }
+
+        /// <summary>
+        /// Gets the first item in the data store of the given type, in the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>The first item in the data store of the given type.</returns>
+        public async Task<T?> GetFirstItemOrderedByAsync<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : class, IIdItem
+        {
+            using var session = DocumentStore.LightweightSession();
+            if (descending)
+            {
+                return await session.Query<T>().OrderByDescending(selector).AsQueryable().FirstOrDefaultAsync().ConfigureAwait(false);
+            }
+            else
+            {
+                return await session.Query<T>().OrderBy(selector).AsQueryable().FirstOrDefaultAsync().ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
         /// Gets the first item in the data store of the given type which satisfies the given
         /// condition.
         /// </summary>
@@ -183,6 +227,58 @@ namespace NeverFoundry.DataStorage.Marten
                 }
             }
             return null;
+        }
+
+        /// <summary>
+        /// Gets the first item in the data store of the given type, in the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>The first item in the data store of the given type.</returns>
+        public T? GetFirstStructOrderedBy<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : struct, IIdItem
+        {
+            using var session = DocumentStore.LightweightSession();
+            if (!session.Query<T>().Any())
+            {
+                return null;
+            }
+            if (descending)
+            {
+                return session.Query<T>().OrderByDescending(selector).First();
+            }
+            else
+            {
+                return session.Query<T>().OrderBy(selector).First();
+            }
+        }
+
+        /// <summary>
+        /// Gets the first item in the data store of the given type, in the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>The first item in the data store of the given type.</returns>
+        public async Task<T?> GetFirstStructOrderedByAsync<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : struct, IIdItem
+        {
+            using var session = DocumentStore.LightweightSession();
+            if (!await session.Query<T>().AnyAsync().ConfigureAwait(false))
+            {
+                return null;
+            }
+            if (descending)
+            {
+                return await session.Query<T>().OrderByDescending(selector).AsQueryable().FirstAsync().ConfigureAwait(false);
+            }
+            else
+            {
+                return await session.Query<T>().OrderBy(selector).AsQueryable().FirstAsync().ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -410,6 +506,59 @@ namespace NeverFoundry.DataStorage.Marten
             using (var session = DocumentStore.LightweightSession())
             {
                 list = await session.Query<T>().ToListAsync().ConfigureAwait(false);
+            }
+            foreach (var item in list)
+            {
+                yield return item;
+            }
+        }
+
+        /// <summary>
+        /// Gets all items in the data store of the given type, in the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
+        /// type.</returns>
+        public IReadOnlyList<T> GetItemsOrderedBy<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : IIdItem
+        {
+            using var session = DocumentStore.LightweightSession();
+            if (descending)
+            {
+                return session.Query<T>().OrderByDescending(selector).ToList();
+            }
+            else
+            {
+                return session.Query<T>().OrderBy(selector).ToList();
+            }
+        }
+
+        /// <summary>
+        /// Gets all items in the data store of the given type, in the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
+        /// type.</returns>
+        public async IAsyncEnumerable<T> GetItemsOrderedByAsync<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : IIdItem
+        {
+            IReadOnlyList<T> list;
+            using (var session = DocumentStore.LightweightSession())
+            {
+                if (descending)
+                {
+                    list = await session.Query<T>().OrderByDescending(selector).AsQueryable().ToListAsync().ConfigureAwait(false);
+                }
+                else
+                {
+                    list = await session.Query<T>().OrderBy(selector).AsQueryable().ToListAsync().ConfigureAwait(false);
+                }
             }
             foreach (var item in list)
             {

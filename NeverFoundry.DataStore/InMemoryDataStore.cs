@@ -41,6 +41,32 @@ namespace NeverFoundry.DataStorage
         public string CreateNewIdFor(Type type) => Guid.NewGuid().ToString();
 
         /// <summary>
+        /// Gets the first item in the data store of the given type, in the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>The first item in the data store of the given type.</returns>
+        public T? GetFirstItemOrderedBy<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : class, IIdItem
+            => descending
+            ? _data.Values.OfType<T>().OrderByDescending(selector).FirstOrDefault()
+            : _data.Values.OfType<T>().OrderBy(selector).FirstOrDefault();
+
+        /// <summary>
+        /// Gets the first item in the data store of the given type, in the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>The first item in the data store of the given type.</returns>
+        public Task<T?> GetFirstItemOrderedByAsync<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : class, IIdItem
+            => Task.FromResult(GetFirstItemOrderedBy(selector, descending));
+
+        /// <summary>
         /// Gets the first item in the data store of the given type which satisfies the given
         /// condition.
         /// </summary>
@@ -115,6 +141,38 @@ namespace NeverFoundry.DataStorage
             => descending
             ? await _data.Values.OfType<T>().ToAsyncEnumerable().WhereAwait(condition).OrderByDescending(selector).FirstOrDefaultAsync().ConfigureAwait(false)
             : await _data.Values.OfType<T>().ToAsyncEnumerable().WhereAwait(condition).OrderBy(selector).FirstOrDefaultAsync().ConfigureAwait(false);
+
+        /// <summary>
+        /// Gets the first item in the data store of the given type, in the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>The first item in the data store of the given type.</returns>
+        public T? GetFirstStructOrderedBy<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : struct, IIdItem
+        {
+            if (!_data.Values.OfType<T>().Any())
+            {
+                return null;
+            }
+            return descending
+                ? _data.Values.OfType<T>().OrderByDescending(selector).First()
+                : _data.Values.OfType<T>().OrderBy(selector).First();
+        }
+
+        /// <summary>
+        /// Gets the first item in the data store of the given type, in the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>The first item in the data store of the given type.</returns>
+        public Task<T?> GetFirstStructOrderedByAsync<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : struct, IIdItem
+            => Task.FromResult(GetFirstStructOrderedBy(selector, descending));
 
         /// <summary>
         /// Gets the first item in the data store of the given type which satisfies the given
@@ -267,6 +325,36 @@ namespace NeverFoundry.DataStorage
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
         public IAsyncEnumerable<T> GetItemsAsync<T>() where T : IIdItem => GetItems<T>().ToAsyncEnumerable();
+
+        /// <summary>
+        /// Gets all items in the data store of the given type, in
+        /// the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
+        /// type.</returns>
+        public IReadOnlyList<T> GetItemsOrderedBy<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : IIdItem
+            => descending
+            ? _data.Values.OfType<T>().OrderByDescending(selector).ToList().AsReadOnly()
+            : _data.Values.OfType<T>().OrderBy(selector).ToList().AsReadOnly();
+
+        /// <summary>
+        /// Gets all items in the data store of the given type, in
+        /// the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
+        /// type.</returns>
+        public IAsyncEnumerable<T> GetItemsOrderedByAsync<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : IIdItem
+            => GetItemsOrderedBy(selector, descending).ToAsyncEnumerable();
 
         /// <summary>
         /// Gets all items in the data store of the given type which satisfy the given condition.

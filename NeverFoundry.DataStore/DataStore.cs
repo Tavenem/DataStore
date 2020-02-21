@@ -55,6 +55,30 @@ namespace NeverFoundry.DataStorage
         public static string CreateNewIdFor(Type type) => Instance.CreateNewIdFor(type);
 
         /// <summary>
+        /// Gets the first item in the data store of the given type, in the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>The first item in the data store of the given type.</returns>
+        public static T? GetFirstItemOrderedBy<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : class, IIdItem
+            => Instance.GetFirstItemOrderedBy(selector, descending);
+
+        /// <summary>
+        /// Gets the first item in the data store of the given type, in the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>The first item in the data store of the given type.</returns>
+        public static Task<T?> GetFirstItemOrderedByAsync<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : class, IIdItem
+            => Instance.GetFirstItemOrderedByAsync(selector, descending);
+
+        /// <summary>
         /// Gets the first item in the data store of the given type which satisfies the given
         /// condition.
         /// </summary>
@@ -125,6 +149,30 @@ namespace NeverFoundry.DataStorage
         /// <returns>The first item in the data store of the given type.</returns>
         public static Task<T?> GetFirstItemWhereOrderedByAwaitAsync<T, TKey>(Func<T, ValueTask<bool>> condition, Func<T, TKey> selector, bool descending = false) where T : class, IIdItem
             => Instance.GetFirstItemWhereOrderedByAwaitAsync(condition, selector, descending);
+
+        /// <summary>
+        /// Gets the first item in the data store of the given type, in the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>The first item in the data store of the given type.</returns>
+        public static T? GetFirstStructOrderedBy<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : struct, IIdItem
+            => Instance.GetFirstStructOrderedBy(selector, descending);
+
+        /// <summary>
+        /// Gets the first item in the data store of the given type, in the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>The first item in the data store of the given type.</returns>
+        public static Task<T?> GetFirstStructOrderedByAsync<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : struct, IIdItem
+            => Instance.GetFirstStructOrderedByAsync(selector, descending);
 
         /// <summary>
         /// Gets the first item in the data store of the given type which satisfies the given
@@ -239,6 +287,34 @@ namespace NeverFoundry.DataStorage
         /// type.</returns>
         public static IAsyncEnumerable<T> GetItemsAsync<T>() where T : IIdItem
             => Instance.GetItemsAsync<T>();
+
+        /// <summary>
+        /// Gets all items in the data store of the given type, in
+        /// the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
+        /// type.</returns>
+        public static IReadOnlyList<T> GetItemsOrderedBy<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : IIdItem
+            => Instance.GetItemsOrderedBy(selector, descending);
+
+        /// <summary>
+        /// Gets all items in the data store of the given type, in
+        /// the given order.
+        /// </summary>
+        /// <typeparam name="T">The type of items to retrieve.</typeparam>
+        /// <typeparam name="TKey">The type of the field used to sort the items.</typeparam>
+        /// <param name="selector">A function to select the field by which results will be
+        /// ordered.</param>
+        /// <param name="descending">Whether results will be ordered in descending order.</param>
+        /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
+        /// type.</returns>
+        public static IAsyncEnumerable<T> GetItemsOrderedByAsync<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : IIdItem
+            => Instance.GetItemsOrderedByAsync(selector, descending);
 
         /// <summary>
         /// Gets all items in the data store of the given type which satisfy the given condition.
