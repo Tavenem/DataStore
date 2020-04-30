@@ -3,6 +3,7 @@ using Marten.Pagination;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace NeverFoundry.DataStorage.Marten
@@ -61,7 +62,7 @@ namespace NeverFoundry.DataStorage.Marten
         /// ordered.</param>
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        public T? GetFirstItemOrderedBy<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : class, IIdItem
+        public T? GetFirstItemOrderedBy<T, TKey>(Expression<Func<T, TKey>> selector, bool descending = false) where T : class, IIdItem
         {
             using var session = DocumentStore.LightweightSession();
             if (descending)
@@ -83,16 +84,16 @@ namespace NeverFoundry.DataStorage.Marten
         /// ordered.</param>
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        public async Task<T?> GetFirstItemOrderedByAsync<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : class, IIdItem
+        public async Task<T?> GetFirstItemOrderedByAsync<T, TKey>(Expression<Func<T, TKey>> selector, bool descending = false) where T : class, IIdItem
         {
             using var session = DocumentStore.LightweightSession();
             if (descending)
             {
-                return await session.Query<T>().OrderByDescending(selector).AsQueryable().FirstOrDefaultAsync().ConfigureAwait(false);
+                return await session.Query<T>().OrderByDescending(selector).FirstOrDefaultAsync().ConfigureAwait(false);
             }
             else
             {
-                return await session.Query<T>().OrderBy(selector).AsQueryable().FirstOrDefaultAsync().ConfigureAwait(false);
+                return await session.Query<T>().OrderBy(selector).FirstOrDefaultAsync().ConfigureAwait(false);
             }
         }
 
@@ -103,7 +104,7 @@ namespace NeverFoundry.DataStorage.Marten
         /// <typeparam name="T">The type of item to retrieve.</typeparam>
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        public T? GetFirstItemWhere<T>(Func<T, bool> condition) where T : class, IIdItem
+        public T? GetFirstItemWhere<T>(Expression<Func<T, bool>> condition) where T : class, IIdItem
         {
             using var session = DocumentStore.LightweightSession();
             return session.Query<T>().FirstOrDefault(condition);
@@ -116,10 +117,10 @@ namespace NeverFoundry.DataStorage.Marten
         /// <typeparam name="T">The type of items to retrieve.</typeparam>
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        public async Task<T?> GetFirstItemWhereAsync<T>(Func<T, bool> condition) where T : class, IIdItem
+        public async Task<T?> GetFirstItemWhereAsync<T>(Expression<Func<T, bool>> condition) where T : class, IIdItem
         {
             using var session = DocumentStore.LightweightSession();
-            return await session.Query<T>().Where(condition).AsQueryable().FirstOrDefaultAsync().ConfigureAwait(false);
+            return await session.Query<T>().Where(condition).FirstOrDefaultAsync().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -129,7 +130,7 @@ namespace NeverFoundry.DataStorage.Marten
         /// <typeparam name="T">The type of items to enumerate.</typeparam>
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        public async Task<T?> GetFirstItemWhereAwaitAsync<T>(Func<T, ValueTask<bool>> condition) where T : class, IIdItem
+        public async Task<T?> GetFirstItemWhereAwaitAsync<T>(Expression<Func<T, ValueTask<bool>>> condition) where T : class, IIdItem
         {
             IReadOnlyList<T> list;
             using (var session = DocumentStore.LightweightSession())
@@ -138,7 +139,7 @@ namespace NeverFoundry.DataStorage.Marten
             }
             foreach (var item in list)
             {
-                if (await condition.Invoke(item).ConfigureAwait(false))
+                if (await condition.Compile().Invoke(item).ConfigureAwait(false))
                 {
                     return item;
                 }
@@ -157,7 +158,7 @@ namespace NeverFoundry.DataStorage.Marten
         /// ordered.</param>
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        public T? GetFirstItemWhereOrderedBy<T, TKey>(Func<T, bool> condition, Func<T, TKey> selector, bool descending = false) where T : class, IIdItem
+        public T? GetFirstItemWhereOrderedBy<T, TKey>(Expression<Func<T, bool>> condition, Expression<Func<T, TKey>> selector, bool descending = false) where T : class, IIdItem
         {
             using var session = DocumentStore.LightweightSession();
             if (descending)
@@ -181,16 +182,16 @@ namespace NeverFoundry.DataStorage.Marten
         /// ordered.</param>
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        public async Task<T?> GetFirstItemWhereOrderedByAsync<T, TKey>(Func<T, bool> condition, Func<T, TKey> selector, bool descending = false) where T : class, IIdItem
+        public async Task<T?> GetFirstItemWhereOrderedByAsync<T, TKey>(Expression<Func<T, bool>> condition, Expression<Func<T, TKey>> selector, bool descending = false) where T : class, IIdItem
         {
             using var session = DocumentStore.LightweightSession();
             if (descending)
             {
-                return await session.Query<T>().Where(condition).OrderByDescending(selector).AsQueryable().FirstOrDefaultAsync().ConfigureAwait(false);
+                return await session.Query<T>().Where(condition).OrderByDescending(selector).FirstOrDefaultAsync().ConfigureAwait(false);
             }
             else
             {
-                return await session.Query<T>().Where(condition).OrderBy(selector).AsQueryable().FirstOrDefaultAsync().ConfigureAwait(false);
+                return await session.Query<T>().Where(condition).OrderBy(selector).FirstOrDefaultAsync().ConfigureAwait(false);
             }
         }
 
@@ -205,23 +206,23 @@ namespace NeverFoundry.DataStorage.Marten
         /// ordered.</param>
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        public async Task<T?> GetFirstItemWhereOrderedByAwaitAsync<T, TKey>(Func<T, ValueTask<bool>> condition, Func<T, TKey> selector, bool descending = false) where T : class, IIdItem
+        public async Task<T?> GetFirstItemWhereOrderedByAwaitAsync<T, TKey>(Expression<Func<T, ValueTask<bool>>> condition, Expression<Func<T, TKey>> selector, bool descending = false) where T : class, IIdItem
         {
             IReadOnlyList<T> list;
             using (var session = DocumentStore.LightweightSession())
             {
                 if (descending)
                 {
-                    list = await session.Query<T>().OrderByDescending(selector).AsQueryable().ToListAsync().ConfigureAwait(false);
+                    list = await session.Query<T>().OrderByDescending(selector).ToListAsync().ConfigureAwait(false);
                 }
                 else
                 {
-                    list = await session.Query<T>().OrderBy(selector).AsQueryable().ToListAsync().ConfigureAwait(false);
+                    list = await session.Query<T>().OrderBy(selector).ToListAsync().ConfigureAwait(false);
                 }
             }
             foreach (var item in list)
             {
-                if (await condition.Invoke(item).ConfigureAwait(false))
+                if (await condition.Compile().Invoke(item).ConfigureAwait(false))
                 {
                     return item;
                 }
@@ -238,7 +239,7 @@ namespace NeverFoundry.DataStorage.Marten
         /// ordered.</param>
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        public T? GetFirstStructOrderedBy<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : struct, IIdItem
+        public T? GetFirstStructOrderedBy<T, TKey>(Expression<Func<T, TKey>> selector, bool descending = false) where T : struct, IIdItem
         {
             using var session = DocumentStore.LightweightSession();
             if (!session.Query<T>().Any())
@@ -264,7 +265,7 @@ namespace NeverFoundry.DataStorage.Marten
         /// ordered.</param>
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        public async Task<T?> GetFirstStructOrderedByAsync<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : struct, IIdItem
+        public async Task<T?> GetFirstStructOrderedByAsync<T, TKey>(Expression<Func<T, TKey>> selector, bool descending = false) where T : struct, IIdItem
         {
             using var session = DocumentStore.LightweightSession();
             if (!await session.Query<T>().AnyAsync().ConfigureAwait(false))
@@ -273,11 +274,11 @@ namespace NeverFoundry.DataStorage.Marten
             }
             if (descending)
             {
-                return await session.Query<T>().OrderByDescending(selector).AsQueryable().FirstAsync().ConfigureAwait(false);
+                return await session.Query<T>().OrderByDescending(selector).FirstAsync().ConfigureAwait(false);
             }
             else
             {
-                return await session.Query<T>().OrderBy(selector).AsQueryable().FirstAsync().ConfigureAwait(false);
+                return await session.Query<T>().OrderBy(selector).FirstAsync().ConfigureAwait(false);
             }
         }
 
@@ -288,7 +289,7 @@ namespace NeverFoundry.DataStorage.Marten
         /// <typeparam name="T">The type of item to retrieve.</typeparam>
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        public T? GetFirstStructWhere<T>(Func<T, bool> condition) where T : struct, IIdItem
+        public T? GetFirstStructWhere<T>(Expression<Func<T, bool>> condition) where T : struct, IIdItem
         {
             using var session = DocumentStore.LightweightSession();
             if (session.Query<T>().Any(condition))
@@ -308,12 +309,12 @@ namespace NeverFoundry.DataStorage.Marten
         /// <typeparam name="T">The type of items to retrieve.</typeparam>
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        public async Task<T?> GetFirstStructWhereAsync<T>(Func<T, bool> condition) where T : struct, IIdItem
+        public async Task<T?> GetFirstStructWhereAsync<T>(Expression<Func<T, bool>> condition) where T : struct, IIdItem
         {
             using var session = DocumentStore.LightweightSession();
-            if (await session.Query<T>().Where(condition).AsQueryable().AnyAsync().ConfigureAwait(false))
+            if (await session.Query<T>().Where(condition).AnyAsync().ConfigureAwait(false))
             {
-                return await session.Query<T>().Where(condition).AsQueryable().FirstAsync().ConfigureAwait(false);
+                return await session.Query<T>().Where(condition).FirstAsync().ConfigureAwait(false);
             }
             else
             {
@@ -328,7 +329,7 @@ namespace NeverFoundry.DataStorage.Marten
         /// <typeparam name="T">The type of items to enumerate.</typeparam>
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        public async Task<T?> GetFirstStructWhereAwaitAsync<T>(Func<T, ValueTask<bool>> condition) where T : struct, IIdItem
+        public async Task<T?> GetFirstStructWhereAwaitAsync<T>(Expression<Func<T, ValueTask<bool>>> condition) where T : struct, IIdItem
         {
             IReadOnlyList<T> list;
             using (var session = DocumentStore.LightweightSession())
@@ -337,7 +338,7 @@ namespace NeverFoundry.DataStorage.Marten
             }
             foreach (var item in list)
             {
-                if (await condition.Invoke(item).ConfigureAwait(false))
+                if (await condition.Compile().Invoke(item).ConfigureAwait(false))
                 {
                     return item;
                 }
@@ -356,7 +357,7 @@ namespace NeverFoundry.DataStorage.Marten
         /// ordered.</param>
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        public T? GetFirstStructWhereOrderedBy<T, TKey>(Func<T, bool> condition, Func<T, TKey> selector, bool descending = false) where T : struct, IIdItem
+        public T? GetFirstStructWhereOrderedBy<T, TKey>(Expression<Func<T, bool>> condition, Expression<Func<T, TKey>> selector, bool descending = false) where T : struct, IIdItem
         {
             using var session = DocumentStore.LightweightSession();
             if (!session.Query<T>().Any(condition))
@@ -384,20 +385,20 @@ namespace NeverFoundry.DataStorage.Marten
         /// ordered.</param>
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        public async Task<T?> GetFirstStructWhereOrderedByAsync<T, TKey>(Func<T, bool> condition, Func<T, TKey> selector, bool descending = false) where T : struct, IIdItem
+        public async Task<T?> GetFirstStructWhereOrderedByAsync<T, TKey>(Expression<Func<T, bool>> condition, Expression<Func<T, TKey>> selector, bool descending = false) where T : struct, IIdItem
         {
             using var session = DocumentStore.LightweightSession();
-            if (!await session.Query<T>().Where(condition).AsQueryable().AnyAsync().ConfigureAwait(false))
+            if (!await session.Query<T>().Where(condition).AnyAsync().ConfigureAwait(false))
             {
                 return null;
             }
             if (descending)
             {
-                return await session.Query<T>().Where(condition).OrderByDescending(selector).AsQueryable().FirstAsync().ConfigureAwait(false);
+                return await session.Query<T>().Where(condition).OrderByDescending(selector).FirstAsync().ConfigureAwait(false);
             }
             else
             {
-                return await session.Query<T>().Where(condition).OrderBy(selector).AsQueryable().FirstAsync().ConfigureAwait(false);
+                return await session.Query<T>().Where(condition).OrderBy(selector).FirstAsync().ConfigureAwait(false);
             }
         }
 
@@ -412,23 +413,23 @@ namespace NeverFoundry.DataStorage.Marten
         /// ordered.</param>
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        public async Task<T?> GetFirstStructWhereOrderedByAwaitAsync<T, TKey>(Func<T, ValueTask<bool>> condition, Func<T, TKey> selector, bool descending = false) where T : struct, IIdItem
+        public async Task<T?> GetFirstStructWhereOrderedByAwaitAsync<T, TKey>(Expression<Func<T, ValueTask<bool>>> condition, Expression<Func<T, TKey>> selector, bool descending = false) where T : struct, IIdItem
         {
             IReadOnlyList<T> list;
             using (var session = DocumentStore.LightweightSession())
             {
                 if (descending)
                 {
-                    list = await session.Query<T>().OrderByDescending(selector).AsQueryable().ToListAsync().ConfigureAwait(false);
+                    list = await session.Query<T>().OrderByDescending(selector).ToListAsync().ConfigureAwait(false);
                 }
                 else
                 {
-                    list = await session.Query<T>().OrderBy(selector).AsQueryable().ToListAsync().ConfigureAwait(false);
+                    list = await session.Query<T>().OrderBy(selector).ToListAsync().ConfigureAwait(false);
                 }
             }
             foreach (var item in list)
             {
-                if (await condition.Invoke(item).ConfigureAwait(false))
+                if (await condition.Compile().Invoke(item).ConfigureAwait(false))
                 {
                     return item;
                 }
@@ -446,7 +447,7 @@ namespace NeverFoundry.DataStorage.Marten
         /// <remarks>
         /// This presumes that <paramref name="id"/> is a unique key, and therefore returns only one
         /// result. If your persistence model allows for non-unique keys and multiple results, use
-        /// <see cref="GetItemsWhere{T}(Func{T, bool})"/> with an appropriately formed
+        /// <see cref="GetItemsWhere{T}(Expression{Func{T, bool}})"/> with an appropriately formed
         /// condition.
         /// </remarks>
         public T? GetItem<T>(string? id) where T : class, IIdItem
@@ -469,7 +470,7 @@ namespace NeverFoundry.DataStorage.Marten
         /// <remarks>
         /// This presumes that <paramref name="id"/> is a unique key, and therefore returns only one
         /// result. If your persistence model allows for non-unique keys and multiple results, use
-        /// <see cref="GetItemsWhereAsync{T}(Func{T, bool})"/> with an appropriately formed
+        /// <see cref="GetItemsWhereAsync{T}(Expression{Func{T, bool}})"/> with an appropriately formed
         /// condition.
         /// </remarks>
         public async Task<T?> GetItemAsync<T>(string? id) where T : class, IIdItem
@@ -523,7 +524,7 @@ namespace NeverFoundry.DataStorage.Marten
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public IReadOnlyList<T> GetItemsOrderedBy<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : IIdItem
+        public IReadOnlyList<T> GetItemsOrderedBy<T, TKey>(Expression<Func<T, TKey>> selector, bool descending = false) where T : IIdItem
         {
             using var session = DocumentStore.LightweightSession();
             if (descending)
@@ -546,18 +547,18 @@ namespace NeverFoundry.DataStorage.Marten
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public async IAsyncEnumerable<T> GetItemsOrderedByAsync<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : IIdItem
+        public async IAsyncEnumerable<T> GetItemsOrderedByAsync<T, TKey>(Expression<Func<T, TKey>> selector, bool descending = false) where T : IIdItem
         {
             IReadOnlyList<T> list;
             using (var session = DocumentStore.LightweightSession())
             {
                 if (descending)
                 {
-                    list = await session.Query<T>().OrderByDescending(selector).AsQueryable().ToListAsync().ConfigureAwait(false);
+                    list = await session.Query<T>().OrderByDescending(selector).ToListAsync().ConfigureAwait(false);
                 }
                 else
                 {
-                    list = await session.Query<T>().OrderBy(selector).AsQueryable().ToListAsync().ConfigureAwait(false);
+                    list = await session.Query<T>().OrderBy(selector).ToListAsync().ConfigureAwait(false);
                 }
             }
             foreach (var item in list)
@@ -573,7 +574,7 @@ namespace NeverFoundry.DataStorage.Marten
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>An <see cref="IQueryable{T}"/> of items in the data store of the given
         /// type.</returns>
-        public IReadOnlyList<T> GetItemsWhere<T>(Func<T, bool> condition) where T : IIdItem
+        public IReadOnlyList<T> GetItemsWhere<T>(Expression<Func<T, bool>> condition) where T : IIdItem
         {
             using var session = DocumentStore.LightweightSession();
             return session.Query<T>().Where(condition).ToList().AsReadOnly();
@@ -586,12 +587,12 @@ namespace NeverFoundry.DataStorage.Marten
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public async IAsyncEnumerable<T> GetItemsWhereAsync<T>(Func<T, bool> condition) where T : IIdItem
+        public async IAsyncEnumerable<T> GetItemsWhereAsync<T>(Expression<Func<T, bool>> condition) where T : IIdItem
         {
             IReadOnlyList<T> list;
             using (var session = DocumentStore.LightweightSession())
             {
-                list = await session.Query<T>().Where(condition).AsQueryable().ToListAsync().ConfigureAwait(false);
+                list = await session.Query<T>().Where(condition).ToListAsync().ConfigureAwait(false);
             }
             foreach (var item in list)
             {
@@ -606,7 +607,7 @@ namespace NeverFoundry.DataStorage.Marten
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public async IAsyncEnumerable<T> GetItemsWhereAwaitAsync<T>(Func<T, ValueTask<bool>> condition) where T : IIdItem
+        public async IAsyncEnumerable<T> GetItemsWhereAwaitAsync<T>(Expression<Func<T, ValueTask<bool>>> condition) where T : IIdItem
         {
             IReadOnlyList<T> list;
             using (var session = DocumentStore.LightweightSession())
@@ -615,7 +616,7 @@ namespace NeverFoundry.DataStorage.Marten
             }
             foreach (var item in list)
             {
-                if (await condition.Invoke(item).ConfigureAwait(false))
+                if (await condition.Compile().Invoke(item).ConfigureAwait(false))
                 {
                     yield return item;
                 }
@@ -634,7 +635,7 @@ namespace NeverFoundry.DataStorage.Marten
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public IReadOnlyList<T> GetItemsWhereOrderedBy<T, TKey>(Func<T, bool> condition, Func<T, TKey> selector, bool descending = false) where T : IIdItem
+        public IReadOnlyList<T> GetItemsWhereOrderedBy<T, TKey>(Expression<Func<T, bool>> condition, Expression<Func<T, TKey>> selector, bool descending = false) where T : IIdItem
         {
             using var session = DocumentStore.LightweightSession();
             if (descending)
@@ -659,18 +660,18 @@ namespace NeverFoundry.DataStorage.Marten
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public async IAsyncEnumerable<T> GetItemsWhereOrderedByAsync<T, TKey>(Func<T, bool> condition, Func<T, TKey> selector, bool descending = false) where T : IIdItem
+        public async IAsyncEnumerable<T> GetItemsWhereOrderedByAsync<T, TKey>(Expression<Func<T, bool>> condition, Expression<Func<T, TKey>> selector, bool descending = false) where T : IIdItem
         {
             IReadOnlyList<T> list;
             using (var session = DocumentStore.LightweightSession())
             {
                 if (descending)
                 {
-                    list = await session.Query<T>().Where(condition).OrderByDescending(selector).AsQueryable().ToListAsync().ConfigureAwait(false);
+                    list = await session.Query<T>().Where(condition).OrderByDescending(selector).ToListAsync().ConfigureAwait(false);
                 }
                 else
                 {
-                    list = await session.Query<T>().Where(condition).OrderBy(selector).AsQueryable().ToListAsync().ConfigureAwait(false);
+                    list = await session.Query<T>().Where(condition).OrderBy(selector).ToListAsync().ConfigureAwait(false);
                 }
             }
             foreach (var item in list)
@@ -691,23 +692,23 @@ namespace NeverFoundry.DataStorage.Marten
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public async IAsyncEnumerable<T> GetItemsWhereOrderedByAwaitAsync<T, TKey>(Func<T, ValueTask<bool>> condition, Func<T, TKey> selector, bool descending = false) where T : IIdItem
+        public async IAsyncEnumerable<T> GetItemsWhereOrderedByAwaitAsync<T, TKey>(Expression<Func<T, ValueTask<bool>>> condition, Expression<Func<T, TKey>> selector, bool descending = false) where T : IIdItem
         {
             IReadOnlyList<T> list;
             using (var session = DocumentStore.LightweightSession())
             {
                 if (descending)
                 {
-                    list = await session.Query<T>().OrderByDescending(selector).AsQueryable().ToListAsync().ConfigureAwait(false);
+                    list = await session.Query<T>().OrderByDescending(selector).ToListAsync().ConfigureAwait(false);
                 }
                 else
                 {
-                    list = await session.Query<T>().OrderBy(selector).AsQueryable().ToListAsync().ConfigureAwait(false);
+                    list = await session.Query<T>().OrderBy(selector).ToListAsync().ConfigureAwait(false);
                 }
             }
             foreach (var item in list)
             {
-                if (await condition.Invoke(item).ConfigureAwait(false))
+                if (await condition.Compile().Invoke(item).ConfigureAwait(false))
                 {
                     yield return item;
                 }
@@ -760,12 +761,12 @@ namespace NeverFoundry.DataStorage.Marten
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public IPagedList<T> GetPageOrderedBy<T, TKey>(Func<T, TKey> selector, int pageNumber, int pageSize, bool descending = false)
+        public IPagedList<T> GetPageOrderedBy<T, TKey>(Expression<Func<T, TKey>> selector, int pageNumber, int pageSize, bool descending = false)
         {
             using var session = DocumentStore.LightweightSession();
             return descending
-                ? session.Query<T>().OrderByDescending(selector).AsQueryable().ToPagedList(pageNumber, pageSize).AsPagedList()
-                : session.Query<T>().OrderBy(selector).AsQueryable().ToPagedList(pageNumber, pageSize).AsPagedList();
+                ? session.Query<T>().OrderByDescending(selector).ToPagedList(pageNumber, pageSize).AsPagedList()
+                : session.Query<T>().OrderBy(selector).ToPagedList(pageNumber, pageSize).AsPagedList();
         }
 
         /// <summary>
@@ -782,12 +783,12 @@ namespace NeverFoundry.DataStorage.Marten
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public async Task<IPagedList<T>> GetPageOrderedByAsync<T, TKey>(Func<T, TKey> selector, int pageNumber, int pageSize, bool descending = false)
+        public async Task<IPagedList<T>> GetPageOrderedByAsync<T, TKey>(Expression<Func<T, TKey>> selector, int pageNumber, int pageSize, bool descending = false)
         {
             using var session = DocumentStore.LightweightSession();
             return descending
-                ? (await session.Query<T>().OrderByDescending(selector).AsQueryable().ToPagedListAsync(pageNumber, pageSize).ConfigureAwait(false)).AsPagedList()
-                : (await session.Query<T>().OrderBy(selector).AsQueryable().ToPagedListAsync(pageNumber, pageSize).ConfigureAwait(false)).AsPagedList();
+                ? (await session.Query<T>().OrderByDescending(selector).ToPagedListAsync(pageNumber, pageSize).ConfigureAwait(false)).AsPagedList()
+                : (await session.Query<T>().OrderBy(selector).ToPagedListAsync(pageNumber, pageSize).ConfigureAwait(false)).AsPagedList();
         }
 
         /// <summary>
@@ -801,10 +802,10 @@ namespace NeverFoundry.DataStorage.Marten
         /// <param name="pageSize">The page size.</param>
         /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public IPagedList<T> GetPageWhere<T>(Func<T, bool> condition, int pageNumber, int pageSize)
+        public IPagedList<T> GetPageWhere<T>(Expression<Func<T, bool>> condition, int pageNumber, int pageSize)
         {
             using var session = DocumentStore.LightweightSession();
-            return session.Query<T>().Where(condition).AsQueryable().ToPagedList(pageNumber, pageSize).AsPagedList();
+            return session.Query<T>().Where(condition).ToPagedList(pageNumber, pageSize).AsPagedList();
         }
 
         /// <summary>
@@ -818,10 +819,10 @@ namespace NeverFoundry.DataStorage.Marten
         /// <param name="pageSize">The page size.</param>
         /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public async Task<IPagedList<T>> GetPageWhereAsync<T>(Func<T, bool> condition, int pageNumber, int pageSize)
+        public async Task<IPagedList<T>> GetPageWhereAsync<T>(Expression<Func<T, bool>> condition, int pageNumber, int pageSize)
         {
             using var session = DocumentStore.LightweightSession();
-            return (await session.Query<T>().Where(condition).AsQueryable().ToPagedListAsync(pageNumber, pageSize).ConfigureAwait(false)).AsPagedList();
+            return (await session.Query<T>().Where(condition).ToPagedListAsync(pageNumber, pageSize).ConfigureAwait(false)).AsPagedList();
         }
 
         /// <summary>
@@ -839,12 +840,12 @@ namespace NeverFoundry.DataStorage.Marten
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public IPagedList<T> GetPageWhereOrderedBy<T, TKey>(Func<T, bool> condition, Func<T, TKey> selector, int pageNumber, int pageSize, bool descending = false)
+        public IPagedList<T> GetPageWhereOrderedBy<T, TKey>(Expression<Func<T, bool>> condition, Expression<Func<T, TKey>> selector, int pageNumber, int pageSize, bool descending = false)
         {
             using var session = DocumentStore.LightweightSession();
             return descending
-                ? session.Query<T>().Where(condition).OrderByDescending(selector).AsQueryable().ToPagedList(pageNumber, pageSize).AsPagedList()
-                : session.Query<T>().Where(condition).OrderBy(selector).AsQueryable().ToPagedList(pageNumber, pageSize).AsPagedList();
+                ? session.Query<T>().Where(condition).OrderByDescending(selector).ToPagedList(pageNumber, pageSize).AsPagedList()
+                : session.Query<T>().Where(condition).OrderBy(selector).ToPagedList(pageNumber, pageSize).AsPagedList();
         }
 
         /// <summary>
@@ -862,12 +863,12 @@ namespace NeverFoundry.DataStorage.Marten
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public async Task<IPagedList<T>> GetPageWhereOrderedByAsync<T, TKey>(Func<T, bool> condition, Func<T, TKey> selector, int pageNumber, int pageSize, bool descending = false)
+        public async Task<IPagedList<T>> GetPageWhereOrderedByAsync<T, TKey>(Expression<Func<T, bool>> condition, Expression<Func<T, TKey>> selector, int pageNumber, int pageSize, bool descending = false)
         {
             using var session = DocumentStore.LightweightSession();
             return descending
-                ? (await session.Query<T>().Where(condition).OrderByDescending(selector).AsQueryable().ToPagedListAsync(pageNumber, pageSize).ConfigureAwait(false)).AsPagedList()
-                : (await session.Query<T>().Where(condition).OrderBy(selector).AsQueryable().ToPagedListAsync(pageNumber, pageSize).ConfigureAwait(false)).AsPagedList();
+                ? (await session.Query<T>().Where(condition).OrderByDescending(selector).ToPagedListAsync(pageNumber, pageSize).ConfigureAwait(false)).AsPagedList()
+                : (await session.Query<T>().Where(condition).OrderBy(selector).ToPagedListAsync(pageNumber, pageSize).ConfigureAwait(false)).AsPagedList();
         }
 
         /// <summary>
@@ -880,7 +881,7 @@ namespace NeverFoundry.DataStorage.Marten
         /// <remarks>
         /// This presumes that <paramref name="id"/> is a unique key, and therefore returns only one
         /// result. If your persistence model allows for non-unique keys and multiple results, use
-        /// <see cref="GetItemsWhere{T}(Func{T, bool})"/> with an appropriately formed
+        /// <see cref="GetItemsWhere{T}(Expression{Func{T, bool}})"/> with an appropriately formed
         /// condition.
         /// </remarks>
         public T? GetStruct<T>(string? id) where T : struct, IIdItem
@@ -905,7 +906,7 @@ namespace NeverFoundry.DataStorage.Marten
         /// <remarks>
         /// This presumes that <paramref name="id"/> is a unique key, and therefore returns only one
         /// result. If your persistence model allows for non-unique keys and multiple results, use
-        /// <see cref="GetItemsWhereAsync{T}(Func{T, bool})"/> with an appropriately formed
+        /// <see cref="GetItemsWhereAsync{T}(Expression{Func{T, bool}})"/> with an appropriately formed
         /// condition.
         /// </remarks>
         public async Task<T?> GetStructAsync<T>(string? id) where T : struct, IIdItem

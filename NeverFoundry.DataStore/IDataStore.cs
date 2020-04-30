@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace NeverFoundry.DataStorage
@@ -45,7 +46,7 @@ namespace NeverFoundry.DataStorage
         /// ordered.</param>
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        T? GetFirstItemOrderedBy<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : class, IIdItem;
+        T? GetFirstItemOrderedBy<T, TKey>(Expression<Func<T, TKey>> selector, bool descending = false) where T : class, IIdItem;
 
         /// <summary>
         /// Gets the first item in the data store of the given type, in the given order.
@@ -56,7 +57,7 @@ namespace NeverFoundry.DataStorage
         /// ordered.</param>
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        Task<T?> GetFirstItemOrderedByAsync<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : class, IIdItem;
+        Task<T?> GetFirstItemOrderedByAsync<T, TKey>(Expression<Func<T, TKey>> selector, bool descending = false) where T : class, IIdItem;
 
         /// <summary>
         /// Gets the first item in the data store of the given type which satisfies the given
@@ -65,7 +66,7 @@ namespace NeverFoundry.DataStorage
         /// <typeparam name="T">The type of item to retrieve.</typeparam>
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        T? GetFirstItemWhere<T>(Func<T, bool> condition) where T : class, IIdItem;
+        T? GetFirstItemWhere<T>(Expression<Func<T, bool>> condition) where T : class, IIdItem;
 
         /// <summary>
         /// Gets the first item in the data store of the given type which satisfies the given
@@ -74,7 +75,7 @@ namespace NeverFoundry.DataStorage
         /// <typeparam name="T">The type of items to retrieve.</typeparam>
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        Task<T?> GetFirstItemWhereAsync<T>(Func<T, bool> condition) where T : class, IIdItem;
+        Task<T?> GetFirstItemWhereAsync<T>(Expression<Func<T, bool>> condition) where T : class, IIdItem;
 
         /// <summary>
         /// Gets the first item in the data store of the given type which satisfies the given
@@ -83,7 +84,7 @@ namespace NeverFoundry.DataStorage
         /// <typeparam name="T">The type of items to enumerate.</typeparam>
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        Task<T?> GetFirstItemWhereAwaitAsync<T>(Func<T, ValueTask<bool>> condition) where T : class, IIdItem;
+        Task<T?> GetFirstItemWhereAwaitAsync<T>(Expression<Func<T, ValueTask<bool>>> condition) where T : class, IIdItem;
 
         /// <summary>
         /// Gets the first item in the data store of the given type which satisfies the given
@@ -96,7 +97,7 @@ namespace NeverFoundry.DataStorage
         /// ordered.</param>
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        T? GetFirstItemWhereOrderedBy<T, TKey>(Func<T, bool> condition, Func<T, TKey> selector, bool descending = false) where T : class, IIdItem;
+        T? GetFirstItemWhereOrderedBy<T, TKey>(Expression<Func<T, bool>> condition, Expression<Func<T, TKey>> selector, bool descending = false) where T : class, IIdItem;
 
         /// <summary>
         /// Gets the first item in the data store of the given type which satisfies the given
@@ -109,7 +110,7 @@ namespace NeverFoundry.DataStorage
         /// ordered.</param>
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        Task<T?> GetFirstItemWhereOrderedByAsync<T, TKey>(Func<T, bool> condition, Func<T, TKey> selector, bool descending = false) where T : class, IIdItem;
+        Task<T?> GetFirstItemWhereOrderedByAsync<T, TKey>(Expression<Func<T, bool>> condition, Expression<Func<T, TKey>> selector, bool descending = false) where T : class, IIdItem;
 
         /// <summary>
         /// Gets the first item in the data store of the given type which satisfies the given
@@ -122,7 +123,7 @@ namespace NeverFoundry.DataStorage
         /// ordered.</param>
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        Task<T?> GetFirstItemWhereOrderedByAwaitAsync<T, TKey>(Func<T, ValueTask<bool>> condition, Func<T, TKey> selector, bool descending = false) where T : class, IIdItem;
+        Task<T?> GetFirstItemWhereOrderedByAwaitAsync<T, TKey>(Expression<Func<T, ValueTask<bool>>> condition, Expression<Func<T, TKey>> selector, bool descending = false) where T : class, IIdItem;
 
         /// <summary>
         /// Gets the first item in the data store of the given type, in the given order.
@@ -133,7 +134,7 @@ namespace NeverFoundry.DataStorage
         /// ordered.</param>
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        T? GetFirstStructOrderedBy<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : struct, IIdItem;
+        T? GetFirstStructOrderedBy<T, TKey>(Expression<Func<T, TKey>> selector, bool descending = false) where T : struct, IIdItem;
 
         /// <summary>
         /// Gets the first item in the data store of the given type, in the given order.
@@ -144,7 +145,7 @@ namespace NeverFoundry.DataStorage
         /// ordered.</param>
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        Task<T?> GetFirstStructOrderedByAsync<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : struct, IIdItem;
+        Task<T?> GetFirstStructOrderedByAsync<T, TKey>(Expression<Func<T, TKey>> selector, bool descending = false) where T : struct, IIdItem;
 
         /// <summary>
         /// Gets the first item in the data store of the given type which satisfies the given
@@ -153,7 +154,7 @@ namespace NeverFoundry.DataStorage
         /// <typeparam name="T">The type of item to retrieve.</typeparam>
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        T? GetFirstStructWhere<T>(Func<T, bool> condition) where T : struct, IIdItem;
+        T? GetFirstStructWhere<T>(Expression<Func<T, bool>> condition) where T : struct, IIdItem;
 
         /// <summary>
         /// Gets the first item in the data store of the given type which satisfies the given
@@ -162,7 +163,7 @@ namespace NeverFoundry.DataStorage
         /// <typeparam name="T">The type of items to retrieve.</typeparam>
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        Task<T?> GetFirstStructWhereAsync<T>(Func<T, bool> condition) where T : struct, IIdItem;
+        Task<T?> GetFirstStructWhereAsync<T>(Expression<Func<T, bool>> condition) where T : struct, IIdItem;
 
         /// <summary>
         /// Gets the first item in the data store of the given type which satisfies the given
@@ -171,7 +172,7 @@ namespace NeverFoundry.DataStorage
         /// <typeparam name="T">The type of items to enumerate.</typeparam>
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        Task<T?> GetFirstStructWhereAwaitAsync<T>(Func<T, ValueTask<bool>> condition) where T : struct, IIdItem;
+        Task<T?> GetFirstStructWhereAwaitAsync<T>(Expression<Func<T, ValueTask<bool>>> condition) where T : struct, IIdItem;
 
         /// <summary>
         /// Gets the first item in the data store of the given type which satisfies the given
@@ -184,7 +185,7 @@ namespace NeverFoundry.DataStorage
         /// ordered.</param>
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        T? GetFirstStructWhereOrderedBy<T, TKey>(Func<T, bool> condition, Func<T, TKey> selector, bool descending = false) where T : struct, IIdItem;
+        T? GetFirstStructWhereOrderedBy<T, TKey>(Expression<Func<T, bool>> condition, Expression<Func<T, TKey>> selector, bool descending = false) where T : struct, IIdItem;
 
         /// <summary>
         /// Gets the first item in the data store of the given type which satisfies the given
@@ -197,7 +198,7 @@ namespace NeverFoundry.DataStorage
         /// ordered.</param>
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        Task<T?> GetFirstStructWhereOrderedByAsync<T, TKey>(Func<T, bool> condition, Func<T, TKey> selector, bool descending = false) where T : struct, IIdItem;
+        Task<T?> GetFirstStructWhereOrderedByAsync<T, TKey>(Expression<Func<T, bool>> condition, Expression<Func<T, TKey>> selector, bool descending = false) where T : struct, IIdItem;
 
         /// <summary>
         /// Gets the first item in the data store of the given type which satisfies the given
@@ -210,7 +211,7 @@ namespace NeverFoundry.DataStorage
         /// ordered.</param>
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>The first item in the data store of the given type.</returns>
-        Task<T?> GetFirstStructWhereOrderedByAwaitAsync<T, TKey>(Func<T, ValueTask<bool>> condition, Func<T, TKey> selector, bool descending = false) where T : struct, IIdItem;
+        Task<T?> GetFirstStructWhereOrderedByAwaitAsync<T, TKey>(Expression<Func<T, ValueTask<bool>>> condition, Expression<Func<T, TKey>> selector, bool descending = false) where T : struct, IIdItem;
 
         /// <summary>
         /// Gets the <see cref="IIdItem"/> with the given <paramref name="id"/>.
@@ -222,7 +223,7 @@ namespace NeverFoundry.DataStorage
         /// <remarks>
         /// This presumes that <paramref name="id"/> is a unique key, and therefore returns only one
         /// result. If your persistence model allows for non-unique keys and multiple results, use
-        /// <see cref="GetItemsWhere{T}(Func{T, bool})"/> with an appropriately formed
+        /// <see cref="GetItemsWhere{T}(Expression{Func{T, bool}})"/> with an appropriately formed
         /// condition.
         /// </remarks>
         T? GetItem<T>(string? id) where T : class, IIdItem;
@@ -237,7 +238,7 @@ namespace NeverFoundry.DataStorage
         /// <remarks>
         /// This presumes that <paramref name="id"/> is a unique key, and therefore returns only one
         /// result. If your persistence model allows for non-unique keys and multiple results, use
-        /// <see cref="GetItemsWhereAsync{T}(Func{T, bool})"/> with an appropriately formed
+        /// <see cref="GetItemsWhereAsync{T}(Expression{Func{T, bool}})"/> with an appropriately formed
         /// condition.
         /// </remarks>
         Task<T?> GetItemAsync<T>(string? id) where T : class, IIdItem;
@@ -268,7 +269,7 @@ namespace NeverFoundry.DataStorage
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        IReadOnlyList<T> GetItemsOrderedBy<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : IIdItem;
+        IReadOnlyList<T> GetItemsOrderedBy<T, TKey>(Expression<Func<T, TKey>> selector, bool descending = false) where T : IIdItem;
 
         /// <summary>
         /// Gets all items in the data store of the given type, in the given order.
@@ -280,7 +281,7 @@ namespace NeverFoundry.DataStorage
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        IAsyncEnumerable<T> GetItemsOrderedByAsync<T, TKey>(Func<T, TKey> selector, bool descending = false) where T : IIdItem;
+        IAsyncEnumerable<T> GetItemsOrderedByAsync<T, TKey>(Expression<Func<T, TKey>> selector, bool descending = false) where T : IIdItem;
 
         /// <summary>
         /// Gets all items in the data store of the given type which satisfy the given condition.
@@ -289,7 +290,7 @@ namespace NeverFoundry.DataStorage
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        IReadOnlyList<T> GetItemsWhere<T>(Func<T, bool> condition) where T : IIdItem;
+        IReadOnlyList<T> GetItemsWhere<T>(Expression<Func<T, bool>> condition) where T : IIdItem;
 
         /// <summary>
         /// Gets all items in the data store of the given type which satisfy the given condition.
@@ -298,7 +299,7 @@ namespace NeverFoundry.DataStorage
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>An <see cref="IAsyncEnumerable{T}"/> of items in the data store of the given
         /// type.</returns>
-        IAsyncEnumerable<T> GetItemsWhereAsync<T>(Func<T, bool> condition) where T : IIdItem;
+        IAsyncEnumerable<T> GetItemsWhereAsync<T>(Expression<Func<T, bool>> condition) where T : IIdItem;
 
         /// <summary>
         /// Gets all items in the data store of the given type which satisfy the given condition.
@@ -307,7 +308,7 @@ namespace NeverFoundry.DataStorage
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>An <see cref="IAsyncEnumerable{T}"/> of items in the data store of the given
         /// type.</returns>
-        IAsyncEnumerable<T> GetItemsWhereAwaitAsync<T>(Func<T, ValueTask<bool>> condition) where T : IIdItem;
+        IAsyncEnumerable<T> GetItemsWhereAwaitAsync<T>(Expression<Func<T, ValueTask<bool>>> condition) where T : IIdItem;
 
         /// <summary>
         /// Gets all items in the data store of the given type which satisfy the given condition, in
@@ -321,7 +322,7 @@ namespace NeverFoundry.DataStorage
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        IReadOnlyList<T> GetItemsWhereOrderedBy<T, TKey>(Func<T, bool> condition, Func<T, TKey> selector, bool descending = false) where T : IIdItem;
+        IReadOnlyList<T> GetItemsWhereOrderedBy<T, TKey>(Expression<Func<T, bool>> condition, Expression<Func<T, TKey>> selector, bool descending = false) where T : IIdItem;
 
         /// <summary>
         /// Gets all items in the data store of the given type which satisfy the given condition, in
@@ -335,7 +336,7 @@ namespace NeverFoundry.DataStorage
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        IAsyncEnumerable<T> GetItemsWhereOrderedByAsync<T, TKey>(Func<T, bool> condition, Func<T, TKey> selector, bool descending = false) where T : IIdItem;
+        IAsyncEnumerable<T> GetItemsWhereOrderedByAsync<T, TKey>(Expression<Func<T, bool>> condition, Expression<Func<T, TKey>> selector, bool descending = false) where T : IIdItem;
 
         /// <summary>
         /// Gets all items in the data store of the given type which satisfy the given condition, in
@@ -349,7 +350,7 @@ namespace NeverFoundry.DataStorage
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        IAsyncEnumerable<T> GetItemsWhereOrderedByAwaitAsync<T, TKey>(Func<T, ValueTask<bool>> condition, Func<T, TKey> selector, bool descending = false) where T : IIdItem;
+        IAsyncEnumerable<T> GetItemsWhereOrderedByAwaitAsync<T, TKey>(Expression<Func<T, ValueTask<bool>>> condition, Expression<Func<T, TKey>> selector, bool descending = false) where T : IIdItem;
 
         /// <summary>
         /// Gets a number of items in the data store of the given type equal to <paramref
@@ -389,7 +390,7 @@ namespace NeverFoundry.DataStorage
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
         /// type.</returns>
-        IPagedList<T> GetPageOrderedBy<T, TKey>(Func<T, TKey> selector, int pageNumber, int pageSize, bool descending = false);
+        IPagedList<T> GetPageOrderedBy<T, TKey>(Expression<Func<T, TKey>> selector, int pageNumber, int pageSize, bool descending = false);
 
         /// <summary>
         /// Gets a number of items in the data store of the given type equal to <paramref
@@ -405,7 +406,7 @@ namespace NeverFoundry.DataStorage
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
         /// type.</returns>
-        Task<IPagedList<T>> GetPageOrderedByAsync<T, TKey>(Func<T, TKey> selector, int pageNumber, int pageSize, bool descending = false);
+        Task<IPagedList<T>> GetPageOrderedByAsync<T, TKey>(Expression<Func<T, TKey>> selector, int pageNumber, int pageSize, bool descending = false);
 
         /// <summary>
         /// Gets a number of items in the data store of the given type which satisfy the given
@@ -418,7 +419,7 @@ namespace NeverFoundry.DataStorage
         /// <param name="pageSize">The page size.</param>
         /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
         /// type.</returns>
-        IPagedList<T> GetPageWhere<T>(Func<T, bool> condition, int pageNumber, int pageSize);
+        IPagedList<T> GetPageWhere<T>(Expression<Func<T, bool>> condition, int pageNumber, int pageSize);
 
         /// <summary>
         /// Gets a number of items in the data store of the given type which satisfy the given
@@ -431,7 +432,7 @@ namespace NeverFoundry.DataStorage
         /// <param name="pageSize">The page size.</param>
         /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
         /// type.</returns>
-        Task<IPagedList<T>> GetPageWhereAsync<T>(Func<T, bool> condition, int pageNumber, int pageSize);
+        Task<IPagedList<T>> GetPageWhereAsync<T>(Expression<Func<T, bool>> condition, int pageNumber, int pageSize);
 
         /// <summary>
         /// Gets a number of items in the data store of the given type which satisfy the given
@@ -448,7 +449,7 @@ namespace NeverFoundry.DataStorage
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
         /// type.</returns>
-        IPagedList<T> GetPageWhereOrderedBy<T, TKey>(Func<T, bool> condition, Func<T, TKey> selector, int pageNumber, int pageSize, bool descending = false);
+        IPagedList<T> GetPageWhereOrderedBy<T, TKey>(Expression<Func<T, bool>> condition, Expression<Func<T, TKey>> selector, int pageNumber, int pageSize, bool descending = false);
 
         /// <summary>
         /// Gets a number of items in the data store of the given type which satisfy the given
@@ -465,7 +466,7 @@ namespace NeverFoundry.DataStorage
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>An <see cref="IPagedList{T}"/> of items in the data store of the given
         /// type.</returns>
-        Task<IPagedList<T>> GetPageWhereOrderedByAsync<T, TKey>(Func<T, bool> condition, Func<T, TKey> selector, int pageNumber, int pageSize, bool descending = false);
+        Task<IPagedList<T>> GetPageWhereOrderedByAsync<T, TKey>(Expression<Func<T, bool>> condition, Expression<Func<T, TKey>> selector, int pageNumber, int pageSize, bool descending = false);
 
         /// <summary>
         /// Gets the <see cref="IIdItem"/> with the given <paramref name="id"/>.
@@ -477,7 +478,7 @@ namespace NeverFoundry.DataStorage
         /// <remarks>
         /// This presumes that <paramref name="id"/> is a unique key, and therefore returns only one
         /// result. If your persistence model allows for non-unique keys and multiple results, use
-        /// <see cref="GetItemsWhere{T}(Func{T, bool})"/> with an appropriately formed
+        /// <see cref="GetItemsWhere{T}(Expression{Func{T, bool}})"/> with an appropriately formed
         /// condition.
         /// </remarks>
         T? GetStruct<T>(string? id) where T : struct, IIdItem;
@@ -492,7 +493,7 @@ namespace NeverFoundry.DataStorage
         /// <remarks>
         /// This presumes that <paramref name="id"/> is a unique key, and therefore returns only one
         /// result. If your persistence model allows for non-unique keys and multiple results, use
-        /// <see cref="GetItemsWhereAsync{T}(Func{T, bool})"/> with an appropriately formed
+        /// <see cref="GetItemsWhereAsync{T}(Expression{Func{T, bool}})"/> with an appropriately formed
         /// condition.
         /// </remarks>
         Task<T?> GetStructAsync<T>(string? id) where T : struct, IIdItem;
