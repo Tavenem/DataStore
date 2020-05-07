@@ -39,12 +39,12 @@ namespace NeverFoundry.DataStorage
         /// <summary>
         /// Whether there is a previous page available.
         /// </summary>
-        public bool HasPreviousPage => PageNumber > 0;
+        public bool HasPreviousPage => PageNumber > 1;
 
         /// <summary>
         /// Whether the current page is the first page.
         /// </summary>
-        public bool IsFirstPage => PageNumber == 0;
+        public bool IsFirstPage => PageNumber == 1;
 
         /// <summary>
         /// Whether the current page is the last page.
@@ -91,7 +91,7 @@ namespace NeverFoundry.DataStorage
         public PagedList(IEnumerable<T>? collection, long pageNumber, long pageSize, long totalItemCount)
         {
             _list = collection?.ToList() ?? new List<T>();
-            PageNumber = Math.Max(0, pageNumber);
+            PageNumber = Math.Max(1, pageNumber);
             PageSize = Math.Max(0, pageSize);
             TotalItemCount = Math.Max(0, totalItemCount);
         }
