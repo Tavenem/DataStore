@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <LangVersion>Latest</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.10.1</Version>
+    <Version>0.12.0</Version>
     <Authors>Wil Stead</Authors>
     <Description>An implementation of NeverFoundry.DataStore for Marten.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -25,7 +25,7 @@
 
   <ItemGroup>
     <PackageReference Include="Marten" Version="3.11.0" />
-    <PackageReference Include="NeverFoundry.DataStore" Version="0.10.1" />
+    <PackageReference Include="NeverFoundry.DataStore" Version="0.12.0" />
   </ItemGroup>
 
   <Target Name="NugetAdd" AfterTargets="Pack">

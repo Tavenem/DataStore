@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <LangVersion>Latest</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>0.11.0</Version>
+    <Version>0.12.0</Version>
     <Authors>Wil Stead</Authors>
     <Description>A persistence-agnostic repository library. Intended to be used to build other
     libraries which are decoupled from persistence choices.</Description>
@@ -23,10 +23,6 @@
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="System.Linq.Async" Version="4.1.1" />
-  </ItemGroup>
 
   <Target Name="NugetAdd" AfterTargets="Pack">
     <exec command="nuget push -Source &quot;WS-NuGet&quot; -ApiKey AzureDevOps $(OutputPath)..\$(PackageId).$(PackageVersion).nupkg" />

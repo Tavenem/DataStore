@@ -95,7 +95,17 @@ namespace NeverFoundry.DataStorage
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>The first item in the data store of the given type.</returns>
         public async Task<T?> GetFirstItemWhereAwaitAsync<T>(Expression<Func<T, ValueTask<bool>>> condition) where T : class, IIdItem
-            => await _data.Values.OfType<T>().ToAsyncEnumerable().FirstOrDefaultAwaitAsync(condition.Compile()).ConfigureAwait(false);
+        {
+            var compiled = condition.Compile();
+            foreach (var value in _data.Values.OfType<T>())
+            {
+                if (await compiled.Invoke(value).ConfigureAwait(false))
+                {
+                    return value;
+                }
+            }
+            return null;
+        }
 
         /// <summary>
         /// Gets the first item in the data store of the given type which satisfies the given
@@ -139,9 +149,21 @@ namespace NeverFoundry.DataStorage
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>The first item in the data store of the given type.</returns>
         public async Task<T?> GetFirstItemWhereOrderedByAwaitAsync<T, TKey>(Expression<Func<T, ValueTask<bool>>> condition, Expression<Func<T, TKey>> selector, bool descending = false) where T : class, IIdItem
-            => descending
-            ? await _data.Values.OfType<T>().ToAsyncEnumerable().WhereAwait(condition.Compile()).OrderByDescending(selector.Compile()).FirstOrDefaultAsync().ConfigureAwait(false)
-            : await _data.Values.OfType<T>().ToAsyncEnumerable().WhereAwait(condition.Compile()).OrderBy(selector.Compile()).FirstOrDefaultAsync().ConfigureAwait(false);
+        {
+            var compiledCondition = condition.Compile();
+            var compiledSelector = selector.Compile();
+            var collection = descending
+                ? _data.Values.OfType<T>().OrderByDescending(selector.Compile())
+                : _data.Values.OfType<T>().OrderBy(selector.Compile());
+            foreach (var value in collection)
+            {
+                if (await compiledCondition.Invoke(value).ConfigureAwait(false))
+                {
+                    return value;
+                }
+            }
+            return null;
+        }
 
         /// <summary>
         /// Gets the first item in the data store of the given type, in the given order.
@@ -205,9 +227,17 @@ namespace NeverFoundry.DataStorage
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>The first item in the data store of the given type.</returns>
         public async Task<T?> GetFirstStructWhereAwaitAsync<T>(Expression<Func<T, ValueTask<bool>>> condition) where T : struct, IIdItem
-            => await _data.Values.OfType<T>().ToAsyncEnumerable().AnyAwaitAsync(condition.Compile()).ConfigureAwait(false)
-            ? await _data.Values.OfType<T>().ToAsyncEnumerable().FirstAwaitAsync(condition.Compile()).ConfigureAwait(false)
-            : (T?)null;
+        {
+            var compiled = condition.Compile();
+            foreach (var value in _data.Values.OfType<T>())
+            {
+                if (await compiled.Invoke(value).ConfigureAwait(false))
+                {
+                    return value;
+                }
+            }
+            return null;
+        }
 
         /// <summary>
         /// Gets the first item in the data store of the given type which satisfies the given
@@ -258,13 +288,19 @@ namespace NeverFoundry.DataStorage
         /// <returns>The first item in the data store of the given type.</returns>
         public async Task<T?> GetFirstStructWhereOrderedByAwaitAsync<T, TKey>(Expression<Func<T, ValueTask<bool>>> condition, Expression<Func<T, TKey>> selector, bool descending = false) where T : struct, IIdItem
         {
-            if (!await _data.Values.OfType<T>().ToAsyncEnumerable().WhereAwait(condition.Compile()).OrderByDescending(selector.Compile()).AnyAsync().ConfigureAwait(false))
+            var compiledCondition = condition.Compile();
+            var compiledSelector = selector.Compile();
+            var collection = descending
+                ? _data.Values.OfType<T>().OrderByDescending(selector.Compile())
+                : _data.Values.OfType<T>().OrderBy(selector.Compile());
+            foreach (var value in collection)
             {
-                return null;
+                if (await compiledCondition.Invoke(value).ConfigureAwait(false))
+                {
+                    return value;
+                }
             }
-            return descending
-                ? await _data.Values.OfType<T>().ToAsyncEnumerable().WhereAwait(condition.Compile()).OrderByDescending(selector.Compile()).FirstAsync().ConfigureAwait(false)
-                : await _data.Values.OfType<T>().ToAsyncEnumerable().WhereAwait(condition.Compile()).OrderBy(selector.Compile()).FirstAsync().ConfigureAwait(false);
+            return null;
         }
 
         /// <summary>
@@ -325,7 +361,15 @@ namespace NeverFoundry.DataStorage
         /// <typeparam name="T">The type of items to retrieve.</typeparam>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public IAsyncEnumerable<T> GetItemsAsync<T>() where T : IIdItem => GetItems<T>().ToAsyncEnumerable();
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public async IAsyncEnumerable<T> GetItemsAsync<T>() where T : IIdItem
+        {
+            foreach (var item in _data.Values.OfType<T>())
+            {
+                yield return item;
+            }
+        }
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
         /// <summary>
         /// Gets all items in the data store of the given type, in
@@ -354,8 +398,17 @@ namespace NeverFoundry.DataStorage
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public IAsyncEnumerable<T> GetItemsOrderedByAsync<T, TKey>(Expression<Func<T, TKey>> selector, bool descending = false) where T : IIdItem
-            => GetItemsOrderedBy(selector, descending).ToAsyncEnumerable();
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public async IAsyncEnumerable<T> GetItemsOrderedByAsync<T, TKey>(Expression<Func<T, TKey>> selector, bool descending = false) where T : IIdItem
+        {
+            foreach (var item in descending
+                ? _data.Values.OfType<T>().OrderByDescending(selector.Compile())
+                : _data.Values.OfType<T>().OrderBy(selector.Compile()))
+            {
+                yield return item;
+            }
+        }
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
         /// <summary>
         /// Gets all items in the data store of the given type which satisfy the given condition.
@@ -374,8 +427,15 @@ namespace NeverFoundry.DataStorage
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public IAsyncEnumerable<T> GetItemsWhereAsync<T>(Expression<Func<T, bool>> condition) where T : IIdItem
-            => GetItemsWhere(condition).ToAsyncEnumerable();
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public async IAsyncEnumerable<T> GetItemsWhereAsync<T>(Expression<Func<T, bool>> condition) where T : IIdItem
+        {
+            foreach (var item in _data.Values.OfType<T>().Where(x => condition.Compile().Invoke(x)))
+            {
+                yield return item;
+            }
+        }
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
         /// <summary>
         /// Gets all items in the data store of the given type which satisfy the given condition.
@@ -384,8 +444,17 @@ namespace NeverFoundry.DataStorage
         /// <param name="condition">A condition which items must satisfy.</param>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public IAsyncEnumerable<T> GetItemsWhereAwaitAsync<T>(Expression<Func<T, ValueTask<bool>>> condition) where T : IIdItem
-            => _data.Values.OfType<T>().ToAsyncEnumerable().WhereAwait(condition.Compile());
+        public async IAsyncEnumerable<T> GetItemsWhereAwaitAsync<T>(Expression<Func<T, ValueTask<bool>>> condition) where T : IIdItem
+        {
+            var compiledCondition = condition.Compile();
+            foreach (var item in _data.Values.OfType<T>())
+            {
+                if (await compiledCondition.Invoke(item).ConfigureAwait(false))
+                {
+                    yield return item;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets all items in the data store of the given type which satisfy the given condition, in
@@ -416,8 +485,17 @@ namespace NeverFoundry.DataStorage
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public IAsyncEnumerable<T> GetItemsWhereOrderedByAsync<T, TKey>(Expression<Func<T, bool>> condition, Expression<Func<T, TKey>> selector, bool descending = false) where T : IIdItem
-            => GetItemsWhereOrderedBy(condition, selector, descending).ToAsyncEnumerable();
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public async IAsyncEnumerable<T> GetItemsWhereOrderedByAsync<T, TKey>(Expression<Func<T, bool>> condition, Expression<Func<T, TKey>> selector, bool descending = false) where T : IIdItem
+        {
+            foreach (var item in descending
+                ? _data.Values.OfType<T>().Where(x => condition.Compile().Invoke(x)).OrderByDescending(selector.Compile())
+                : _data.Values.OfType<T>().Where(x => condition.Compile().Invoke(x)).OrderBy(selector.Compile()))
+            {
+                yield return item;
+            }
+        }
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
         /// <summary>
         /// Gets all items in the data store of the given type which satisfy the given condition, in
@@ -431,10 +509,19 @@ namespace NeverFoundry.DataStorage
         /// <param name="descending">Whether results will be ordered in descending order.</param>
         /// <returns>An <see cref="IReadOnlyList{T}"/> of items in the data store of the given
         /// type.</returns>
-        public IAsyncEnumerable<T> GetItemsWhereOrderedByAwaitAsync<T, TKey>(Expression<Func<T, ValueTask<bool>>> condition, Expression<Func<T, TKey>> selector, bool descending = false) where T : IIdItem
-            => descending
-            ? _data.Values.OfType<T>().ToAsyncEnumerable().WhereAwait(condition.Compile()).OrderByDescending(selector.Compile())
-            : _data.Values.OfType<T>().ToAsyncEnumerable().WhereAwait(condition.Compile()).OrderBy(selector.Compile());
+        public async IAsyncEnumerable<T> GetItemsWhereOrderedByAwaitAsync<T, TKey>(Expression<Func<T, ValueTask<bool>>> condition, Expression<Func<T, TKey>> selector, bool descending = false) where T : IIdItem
+        {
+            var compiledCondition = condition.Compile();
+            foreach (var item in descending
+                ? _data.Values.OfType<T>().OrderByDescending(selector.Compile())
+                : _data.Values.OfType<T>().OrderBy(selector.Compile()))
+            {
+                if (await compiledCondition.Invoke(item).ConfigureAwait(false))
+                {
+                    yield return item;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets a number of items in the data store of the given type equal to <paramref
