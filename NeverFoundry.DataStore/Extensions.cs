@@ -16,10 +16,10 @@ namespace NeverFoundry.DataStorage
         /// <param name="collection">The current collection.</param>
         /// <param name="pageNumber">The current page number.</param>
         /// <param name="pageSize">The page size.</param>
-        /// <param name="totalItemCount">The total number of records.</param>
+        /// <param name="totalCount">The total number of results, of which this page is a subset.</param>
         /// <returns>An <see cref="IPagedList{T}"/> containing the items in the current collection.</returns>
-        public static IPagedList<T> AsPagedList<T>(this IEnumerable<T> collection, long pageNumber, long pageSize, long totalItemCount)
-            => new PagedList<T>(collection, pageNumber, pageSize, totalItemCount);
+        public static IPagedList<T> AsPagedList<T>(this IEnumerable<T> collection, long pageNumber, long pageSize, long totalCount)
+            => new PagedList<T>(collection, pageNumber, pageSize, totalCount);
 
         /// <summary>
         /// Combines this <see cref="Expression{T}"/> with the given <see cref="Expression{T}"/> in

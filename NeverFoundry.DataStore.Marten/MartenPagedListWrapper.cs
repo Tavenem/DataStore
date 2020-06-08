@@ -1,6 +1,6 @@
-﻿using MartenPagination = Marten.Pagination;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using MartenPagination = Marten.Pagination;
 
 namespace NeverFoundry.DataStorage.Marten
 {
@@ -23,7 +23,7 @@ namespace NeverFoundry.DataStorage.Marten
         /// <summary>
         /// The zero-based index of the first item in the current page, within the whole collection.
         /// </summary>
-        public long FirstItemOnPage => _list.FirstItemOnPage - 1;
+        public long FirstIndexOnPage => _list.FirstItemOnPage - 1;
 
         /// <summary>
         /// Whether there is next page available.
@@ -36,19 +36,9 @@ namespace NeverFoundry.DataStorage.Marten
         public bool HasPreviousPage => _list.HasPreviousPage;
 
         /// <summary>
-        /// Whether the current page is the first page.
-        /// </summary>
-        public bool IsFirstPage => _list.IsFirstPage;
-
-        /// <summary>
-        /// Whether the current page is the last page.
-        /// </summary>
-        public bool IsLastPage => _list.IsLastPage;
-
-        /// <summary>
         /// The zero-based index of the last item in the current page, within the whole collection.
         /// </summary>
-        public long LastItemOnPage => _list.LastItemOnPage - 1;
+        public long LastIndexOnPage => _list.LastItemOnPage - 1;
 
         /// <summary>
         /// The current page number.
@@ -61,14 +51,14 @@ namespace NeverFoundry.DataStorage.Marten
         public long PageSize => _list.PageSize;
 
         /// <summary>
-        /// The number of pages.
+        /// The total number of results, of which this page is a subset.
         /// </summary>
-        public long PageCount => _list.PageCount;
+        public long TotalCount => _list.TotalItemCount;
 
         /// <summary>
-        /// The total number of records.
+        /// The total number of pages.
         /// </summary>
-        public long TotalItemCount => _list.TotalItemCount;
+        public long TotalPages => _list.PageCount;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PagedList{T}"/> class that contains

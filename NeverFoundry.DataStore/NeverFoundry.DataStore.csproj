@@ -4,17 +4,19 @@
     <TargetFramework>net5.0</TargetFramework>
     <LangVersion>Latest</LangVersion>
     <Nullable>enable</Nullable>
+    <RootNamespace>NeverFoundry.DataStorage</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>0.12.0</Version>
+    <Version>0.16.0</Version>
     <Authors>Wil Stead</Authors>
-    <Description>A persistence-agnostic repository library. Intended to be used to build other
-    libraries which are decoupled from persistence choices.</Description>
+    <Description>
+      A persistence-agnostic repository library. Intended to be used to build other
+      libraries which are decoupled from persistence choices.
+    </Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>Copyright (c) 2019-2020 Wil Stead</Copyright>
     <PackageTags>repository neverfoundry</PackageTags>
-    <RootNamespace>NeverFoundry.DataStorage</RootNamespace>
     <PackageId>NeverFoundry.DataStore</PackageId>
     <Product>NeverFoundry.DataStore</Product>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

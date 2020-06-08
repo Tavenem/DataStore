@@ -4,19 +4,19 @@
     <TargetFramework>net5.0</TargetFramework>
     <LangVersion>Latest</LangVersion>
     <Nullable>enable</Nullable>
-    <RootNamespace>NeverFoundry.DataStorage.Marten</RootNamespace>
+    <RootNamespace>NeverFoundry.DataStorage.EntityFramework</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>0.16.0</Version>
     <Authors>Wil Stead</Authors>
-    <Description>An implementation of NeverFoundry.DataStore for Marten.</Description>
+    <Description>An implementation of NeverFoundry.DataStore for Entity Framework Core.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>Copyright (c) 2019-2020 Wil Stead</Copyright>
     <PackageTags>repository neverfoundry</PackageTags>
-    <PackageId>NeverFoundry.DataStore.Marten</PackageId>
-    <Product>NeverFoundry.DataStore.Marten</Product>
+    <PackageId>NeverFoundry.DataStore.EntityFramework</PackageId>
+    <Product>NeverFoundry.DataStore.EntityFramework</Product>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
@@ -24,12 +24,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Marten" Version="3.12.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.0-preview.4.20220.10" />
     <PackageReference Include="NeverFoundry.DataStore" Version="0.16.0" />
   </ItemGroup>
-
-  <Target Name="NugetAdd" AfterTargets="Pack">
-    <exec command="nuget push -Source &quot;WS-NuGet&quot; -ApiKey AzureDevOps $(OutputPath)..\$(PackageId).$(PackageVersion).nupkg" />
-  </Target>
 
 </Project>

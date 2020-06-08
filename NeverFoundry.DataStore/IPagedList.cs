@@ -17,14 +17,14 @@ namespace NeverFoundry.DataStorage
         T this[int index] { get; }
 
         /// <summary>
-        /// The number of records in the paged query result.
+        /// The number of records on the current page.
         /// </summary>
         long Count { get; }
 
         /// <summary>
         /// The zero-based index of the first item in the current page, within the whole collection.
         /// </summary>
-        long FirstItemOnPage { get; }
+        long FirstIndexOnPage { get; }
 
         /// <summary>
         /// Whether there is next page available.
@@ -37,19 +37,9 @@ namespace NeverFoundry.DataStorage
         bool HasPreviousPage { get; }
 
         /// <summary>
-        /// Whether the current page is the first page.
-        /// </summary>
-        bool IsFirstPage { get; }
-
-        /// <summary>
-        /// Whether the current page is the last page.
-        /// </summary>
-        bool IsLastPage { get; }
-
-        /// <summary>
         /// The zero-based index of the last item in the current page, within the whole collection.
         /// </summary>
-        long LastItemOnPage { get; }
+        long LastIndexOnPage { get; }
 
         /// <summary>
         /// The current page number.
@@ -62,13 +52,13 @@ namespace NeverFoundry.DataStorage
         long PageSize { get; }
 
         /// <summary>
-        /// The number of pages.
+        /// The total number of results, of which this page is a subset.
         /// </summary>
-        long PageCount { get; }
+        long TotalCount { get; }
 
         /// <summary>
-        /// The total number of records.
+        /// The total number of pages.
         /// </summary>
-        long TotalItemCount { get; }
+        long TotalPages { get; }
     }
 }

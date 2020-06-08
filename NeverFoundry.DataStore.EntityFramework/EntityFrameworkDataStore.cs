@@ -1,16 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Threading.Tasks;
 
-namespace NeverFoundry.DataStorage
+namespace NeverFoundry.DataStorage.EntityFramework
 {
     /// <summary>
-    /// An in-memory data store for <see cref="IIdItem"/> instances.
+    /// <para>
+    /// A data store for <see cref="IIdItem"/> instances backed by Entity Framework (Core).
+    /// </para>
+    /// <para>
+    /// Note: although the <see cref="IIdItem"/> interface may apply to classes or structs, the
+    /// Entity Framework implementation further restricts most usage to reference types (classes).
+    /// </para>
     /// </summary>
-    public class InMemoryDataStore : IDataStore
+    public class EntityFrameworkDataStore : IDataStore
     {
-        private readonly Dictionary<string, IIdItem> _data = new Dictionary<string, IIdItem>();
+        /// <summary>
+        /// The <see cref="DbContext"/> used for all transactions.
+        /// </summary>
+        public DbContext Context { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="EntityFrameworkDataStore"/>.
+        /// </summary>
+        /// <param name="context">The <see cref="DbContext"/> used for all transactions.</param>
+        public EntityFrameworkDataStore(DbContext context) => Context = context;
 
         /// <summary>
         /// Creates a new <see cref="IIdItem.Id"/> for an <see cref="IIdItem"/> of the given type.
@@ -21,7 +35,7 @@ namespace NeverFoundry.DataStorage
         /// type.</returns>
         /// <remarks>
         /// <para>
-        /// The <see cref="InMemoryDataStore"/> implementation generates a new <see cref="Guid"/>
+        /// The <see cref="EntityFrameworkDataStore"/> implementation generates a new <see cref="Guid"/>
         /// and returns the result of its <see cref="Guid.ToString()"/> method.
         /// </para>
         /// </remarks>
@@ -58,12 +72,7 @@ namespace NeverFoundry.DataStorage
             {
                 return default;
             }
-            else if (_data.TryGetValue(id, out var item)
-                && item is T t)
-            {
-                return t;
-            }
-            return default;
+            return Context.Find<T>(id);
         }
 
         /// <summary>
@@ -71,22 +80,30 @@ namespace NeverFoundry.DataStorage
         /// </summary>
         /// <typeparam name="T">The type of <see cref="IIdItem"/> to retrieve.</typeparam>
         /// <param name="id">The unique id of the item to retrieve.</param>
-        /// <returns>The item with the given id, or <see langword="null"/> if no item was found with
-        /// that id.</returns>
+        /// <returns>
+        /// The item with the given id, or <see langword="null"/> if no item was found with that id.
+        /// </returns>
         /// <remarks>
         /// This presumes that <paramref name="id"/> is a unique key, and therefore returns only one
         /// result. If your persistence model allows for non-unique keys and multiple results, use
         /// an appropriately formed <see cref="Query{T}"/>.
-        /// predicate.
         /// </remarks>
-        public Task<T?> GetItemAsync<T>(string? id) where T : class, IIdItem => Task.FromResult(GetItem<T>(id));
+        public async Task<T?> GetItemAsync<T>(string? id) where T : class, IIdItem
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return default;
+            }
+            return await Context.FindAsync<T>(id).ConfigureAwait(false);
+        }
 
         /// <summary>
         /// Gets an <see cref="IDataStoreQueryable{T}"/> of the given type of item.
         /// </summary>
         /// <typeparam name="T">The type of item to query.</typeparam>
         /// <returns>An <see cref="IDataStoreQueryable{T}"/> of the given type of item.</returns>
-        public IDataStoreQueryable<T> Query<T>() where T : class, IIdItem => new InMemoryDataStoreQueryable<T>(_data.OfType<T>());
+        public IDataStoreQueryable<T> Query<T>() where T : class, IIdItem
+            => new EntityFrameworkDataStoreQueryable<T>(Context.Set<T>().AsQueryable());
 
         /// <summary>
         /// Removes the stored item with the given id.
@@ -105,7 +122,21 @@ namespace NeverFoundry.DataStorage
         /// <see langword="true"/> if the item was successfully removed; otherwise <see
         /// langword="false"/>.
         /// </returns>
-        public bool RemoveItem<T>(string? id) where T : class, IIdItem => string.IsNullOrEmpty(id) || _data.Remove(id);
+        public bool RemoveItem<T>(string? id) where T : class, IIdItem
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return true;
+            }
+            var entity = Context.Find<T>(id);
+            if (entity is null)
+            {
+                return true;
+            }
+            Context.Remove(entity);
+            Context.SaveChanges();
+            return true;
+        }
 
         /// <summary>
         /// Removes the stored item with the given id.
@@ -123,7 +154,16 @@ namespace NeverFoundry.DataStorage
         /// <see langword="true"/> if the item was successfully removed; otherwise <see
         /// langword="false"/>.
         /// </returns>
-        public bool RemoveItem(IIdItem? item) => item is null || _data.Remove(item.Id);
+        public bool RemoveItem(IIdItem? item)
+        {
+            if (item is null)
+            {
+                return true;
+            }
+            Context.Remove(item);
+            Context.SaveChanges();
+            return true;
+        }
 
         /// <summary>
         /// Removes the stored item with the given id.
@@ -142,7 +182,21 @@ namespace NeverFoundry.DataStorage
         /// <see langword="true"/> if the item was successfully removed; otherwise <see
         /// langword="false"/>.
         /// </returns>
-        public Task<bool> RemoveItemAsync<T>(string? id) where T : class, IIdItem => Task.FromResult(RemoveItem<T>(id));
+        public async Task<bool> RemoveItemAsync<T>(string? id) where T : class, IIdItem
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return false;
+            }
+            var entity = await Context.FindAsync<T>(id).ConfigureAwait(false);
+            if (entity is null)
+            {
+                return true;
+            }
+            Context.Remove(entity);
+            await Context.SaveChangesAsync().ConfigureAwait(false);
+            return true;
+        }
 
         /// <summary>
         /// Removes the stored item with the given id.
@@ -160,7 +214,16 @@ namespace NeverFoundry.DataStorage
         /// <see langword="true"/> if the item was successfully removed; otherwise <see
         /// langword="false"/>.
         /// </returns>
-        public Task<bool> RemoveItemAsync(IIdItem? item) => Task.FromResult(RemoveItem(item));
+        public async Task<bool> RemoveItemAsync(IIdItem? item)
+        {
+            if (item is null)
+            {
+                return true;
+            }
+            Context.Remove(item);
+            await Context.SaveChangesAsync().ConfigureAwait(false);
+            return true;
+        }
 
         /// <summary>
         /// Upserts the given <paramref name="item"/>.
@@ -181,7 +244,16 @@ namespace NeverFoundry.DataStorage
             {
                 return true;
             }
-            _data[item.Id] = item;
+            var entity = Context.Find<T>(item.Id);
+            if (entity is null)
+            {
+                Context.Add(item);
+            }
+            else
+            {
+                Context.Update(item);
+            }
+            Context.SaveChanges();
             return true;
         }
 
@@ -198,6 +270,23 @@ namespace NeverFoundry.DataStorage
         /// to indicate that the operation did not fail (even though no storage operation took
         /// place, neither did any failure).
         /// </remarks>
-        public Task<bool> StoreItemAsync<T>(T? item) where T : class, IIdItem => Task.FromResult(StoreItem(item));
+        public async Task<bool> StoreItemAsync<T>(T? item) where T : class, IIdItem
+        {
+            if (item is null)
+            {
+                return true;
+            }
+            var entity = Context.Find<T>(item.Id);
+            if (entity is null)
+            {
+                await Context.AddAsync(item).ConfigureAwait(false);
+            }
+            else
+            {
+                Context.Update(item);
+            }
+            await Context.SaveChangesAsync().ConfigureAwait(false);
+            return true;
+        }
     }
 }

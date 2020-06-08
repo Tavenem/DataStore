@@ -1,5 +1,4 @@
-﻿using Microsoft.Azure.Cosmos;
-using System;
+﻿using System;
 
 namespace NeverFoundry.DataStorage.Cosmos
 {

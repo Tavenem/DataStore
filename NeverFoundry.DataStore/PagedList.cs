@@ -29,12 +29,12 @@ namespace NeverFoundry.DataStorage
         /// <summary>
         /// The zero-based index of the first item in the current page, within the whole collection.
         /// </summary>
-        public long FirstItemOnPage => (PageNumber - 1) * PageSize;
+        public long FirstIndexOnPage => (PageNumber - 1) * PageSize;
 
         /// <summary>
         /// Whether there is next page available.
         /// </summary>
-        public bool HasNextPage => TotalItemCount > LastItemOnPage + 1;
+        public bool HasNextPage => LastIndexOnPage < TotalCount - 1;
 
         /// <summary>
         /// Whether there is a previous page available.
@@ -42,19 +42,9 @@ namespace NeverFoundry.DataStorage
         public bool HasPreviousPage => PageNumber > 1;
 
         /// <summary>
-        /// Whether the current page is the first page.
-        /// </summary>
-        public bool IsFirstPage => PageNumber == 1;
-
-        /// <summary>
-        /// Whether the current page is the last page.
-        /// </summary>
-        public bool IsLastPage => TotalItemCount <= LastItemOnPage + 1;
-
-        /// <summary>
         /// The zero-based index of the last item in the current page, within the whole collection.
         /// </summary>
-        public long LastItemOnPage => FirstItemOnPage + (Count - 1);
+        public long LastIndexOnPage => FirstIndexOnPage + (Count - 1);
 
         /// <summary>
         /// The current page number.
@@ -67,16 +57,16 @@ namespace NeverFoundry.DataStorage
         public long PageSize { get; }
 
         /// <summary>
-        /// The number of pages.
+        /// The total number of results, of which this page is a subset.
         /// </summary>
-        public long PageCount => TotalItemCount % PageSize == 0
-            ? TotalItemCount / PageSize
-            : (TotalItemCount / PageSize) + 1;
+        public long TotalCount { get; }
 
         /// <summary>
-        /// The total number of records.
+        /// The total number of pages.
         /// </summary>
-        public long TotalItemCount { get; }
+        public long TotalPages => TotalCount % PageSize == 0
+            ? TotalCount / PageSize
+            : (TotalCount / PageSize) + 1;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PagedList{T}"/> class that contains
@@ -87,13 +77,13 @@ namespace NeverFoundry.DataStorage
         /// list.</param>
         /// <param name="pageNumber">The current page number.</param>
         /// <param name="pageSize">The page size.</param>
-        /// <param name="totalItemCount">The total number of records.</param>
-        public PagedList(IEnumerable<T>? collection, long pageNumber, long pageSize, long totalItemCount)
+        /// <param name="totalCount">The total number of results, of which this page is a subset.</param>
+        public PagedList(IEnumerable<T>? collection, long pageNumber, long pageSize, long totalCount)
         {
             _list = collection?.ToList() ?? new List<T>();
             PageNumber = Math.Max(1, pageNumber);
             PageSize = Math.Max(0, pageSize);
-            TotalItemCount = Math.Max(0, totalItemCount);
+            TotalCount = totalCount;
         }
 
         /// <summary>
