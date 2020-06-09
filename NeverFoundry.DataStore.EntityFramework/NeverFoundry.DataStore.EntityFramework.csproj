@@ -9,7 +9,7 @@
 
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.16.0</Version>
+    <Version>0.16.1</Version>
     <Authors>Wil Stead</Authors>
     <Description>An implementation of NeverFoundry.DataStore for Entity Framework Core.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -25,7 +25,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.0-preview.4.20220.10" />
-    <PackageReference Include="NeverFoundry.DataStore" Version="0.16.0" />
+    <PackageReference Include="NeverFoundry.DataStore" Version="0.16.1" />
   </ItemGroup>
 
 </Project>

@@ -86,7 +86,7 @@ namespace NeverFoundry.DataStorage
         /// </summary>
         /// <typeparam name="T">The type of item to query.</typeparam>
         /// <returns>An <see cref="IDataStoreQueryable{T}"/> of the given type of item.</returns>
-        public IDataStoreQueryable<T> Query<T>() where T : class, IIdItem => new InMemoryDataStoreQueryable<T>(_data.OfType<T>());
+        public IDataStoreQueryable<T> Query<T>() where T : class, IIdItem => new InMemoryDataStoreQueryable<T>(_data.Values.OfType<T>());
 
         /// <summary>
         /// Removes the stored item with the given id.
