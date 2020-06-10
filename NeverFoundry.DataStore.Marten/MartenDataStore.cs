@@ -1,4 +1,5 @@
-﻿using Marten;
+﻿using LazyCache;
+using Marten;
 using System;
 using System.Threading.Tasks;
 
@@ -10,10 +11,33 @@ namespace NeverFoundry.DataStorage.Marten
     /// </summary>
     public class MartenDataStore : IDataStore
     {
+        private readonly IAppCache _cache = new CachingService();
+
+        /// <summary>
+        /// <para>
+        /// Sets the default period after which cached items are considered stale.
+        /// </para>
+        /// <para>
+        /// This defaults to ten minutes for <see cref="MartenDataStore"/>.
+        /// </para>
+        /// </summary>
+        public TimeSpan DefaultCacheTimeout { get; set; } = TimeSpan.FromMinutes(10);
+
         /// <summary>
         /// The <see cref="IDocumentStore"/> used for all transactions.
         /// </summary>
         public IDocumentStore DocumentStore { get; set; }
+
+        /// <summary>
+        /// <para>
+        /// Indicates whether this <see cref="IDataStore"/> implementation allows items to be
+        /// cached.
+        /// </para>
+        /// <para>
+        /// This is <see langword="true"/> for <see cref="MartenDataStore"/>.
+        /// </para>
+        /// </summary>
+        public bool SupportsCaching => true;
 
         /// <summary>
         /// Initializes a new instance of <see cref="MartenDataStore"/>.
@@ -54,6 +78,9 @@ namespace NeverFoundry.DataStorage.Marten
         /// </summary>
         /// <typeparam name="T">The type of <see cref="IIdItem"/> to retrieve.</typeparam>
         /// <param name="id">The unique id of the item to retrieve.</param>
+        /// <param name="cacheTimeout">
+        /// If this item is cached, this value (if supplied) will override <see cref="DefaultCacheTimeout"/>.
+        /// </param>
         /// <returns>The item with the given id, or <see langword="null"/> if no item was found with
         /// that id.</returns>
         /// <remarks>
@@ -61,37 +88,47 @@ namespace NeverFoundry.DataStorage.Marten
         /// result. If your persistence model allows for non-unique keys and multiple results, use
         /// an appropriately formed <see cref="Query{T}"/>.
         /// </remarks>
-        public T? GetItem<T>(string? id) where T : class, IIdItem
+        public T? GetItem<T>(string? id, TimeSpan? cacheTimeout = null) where T : class, IIdItem
         {
             if (string.IsNullOrEmpty(id))
             {
                 return default;
             }
-            using var session = DocumentStore.LightweightSession();
-            return session.Load<T>(id);
+            return _cache.GetOrAdd(
+                id,
+                () =>
+                {
+                    using var session = DocumentStore.LightweightSession();
+                    return session.Load<T>(id);
+                },
+                cacheTimeout ?? DefaultCacheTimeout);
         }
 
         /// <summary>
-        /// Gets the <see cref="IIdItem"/> with the given <paramref name="id"/>.
+        /// Gets the <see cref="IdItem"/> with the given <paramref name="id"/>.
         /// </summary>
-        /// <typeparam name="T">The type of <see cref="IIdItem"/> to retrieve.</typeparam>
+        /// <typeparam name="T">The type of <see cref="IdItem"/> to retrieve.</typeparam>
         /// <param name="id">The unique id of the item to retrieve.</param>
-        /// <returns>
-        /// The item with the given id, or <see langword="null"/> if no item was found with that id.
-        /// </returns>
-        /// <remarks>
-        /// This presumes that <paramref name="id"/> is a unique key, and therefore returns only one
-        /// result. If your persistence model allows for non-unique keys and multiple results, use
-        /// an appropriately formed <see cref="Query{T}"/>.
-        /// </remarks>
-        public async Task<T?> GetItemAsync<T>(string? id) where T : class, IIdItem
+        /// <param name="cacheTimeout">
+        /// If this item is cached, this value (if supplied) will override <see cref="DefaultCacheTimeout"/>.
+        /// </param>
+        /// <returns>The item with the given id, or <see langword="null"/> if no item was found with
+        /// that id.</returns>
+        public async ValueTask<T?> GetItemAsync<T>(string? id, TimeSpan? cacheTimeout = null) where T : class, IIdItem
         {
             if (string.IsNullOrEmpty(id))
             {
                 return default!;
             }
-            using var session = DocumentStore.LightweightSession();
-            return await session.LoadAsync<T>(id).ConfigureAwait(false);
+            return await _cache.GetOrAddAsync(
+                id,
+                () =>
+                {
+                    using var session = DocumentStore.LightweightSession();
+                    return session.LoadAsync<T>(id);
+                },
+                cacheTimeout ?? DefaultCacheTimeout)
+                .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -229,6 +266,10 @@ namespace NeverFoundry.DataStorage.Marten
         /// Upserts the given <paramref name="item"/>.
         /// </summary>
         /// <typeparam name="T">The type of <see cref="IIdItem"/> to upsert.</typeparam>
+        /// <param name="item">The item to store.</param>
+        /// <param name="cacheTimeout">
+        /// If this item is cached, this value (if supplied) will override <see cref="DefaultCacheTimeout"/>.
+        /// </param>
         /// <returns>
         /// <see langword="true"/> if the item was successfully persisted to the data store;
         /// otherwise <see langword="false"/>.
@@ -238,7 +279,7 @@ namespace NeverFoundry.DataStorage.Marten
         /// to indicate that the operation did not fail (even though no storage operation took
         /// place, neither did any failure).
         /// </remarks>
-        public bool StoreItem<T>(T? item) where T : class, IIdItem
+        public bool StoreItem<T>(T? item, TimeSpan? cacheTimeout = null) where T : class, IIdItem
         {
             if (item is null)
             {
@@ -247,6 +288,9 @@ namespace NeverFoundry.DataStorage.Marten
             using var session = DocumentStore.LightweightSession();
             session.Store(item);
             session.SaveChanges();
+
+            _cache.Add(item.Id, item, cacheTimeout ?? DefaultCacheTimeout);
+
             return true;
         }
 
@@ -254,6 +298,10 @@ namespace NeverFoundry.DataStorage.Marten
         /// Upserts the given <paramref name="item"/>.
         /// </summary>
         /// <typeparam name="T">The type of <see cref="IIdItem"/> to upsert.</typeparam>
+        /// <param name="item">The item to store.</param>
+        /// <param name="cacheTimeout">
+        /// If this item is cached, this value (if supplied) will override <see cref="DefaultCacheTimeout"/>.
+        /// </param>
         /// <returns>
         /// <see langword="true"/> if the item was successfully persisted to the data store;
         /// otherwise <see langword="false"/>.
@@ -263,7 +311,7 @@ namespace NeverFoundry.DataStorage.Marten
         /// to indicate that the operation did not fail (even though no storage operation took
         /// place, neither did any failure).
         /// </remarks>
-        public async Task<bool> StoreItemAsync<T>(T? item) where T : class, IIdItem
+        public async Task<bool> StoreItemAsync<T>(T? item, TimeSpan? cacheTimeout = null) where T : class, IIdItem
         {
             if (item is null)
             {
@@ -272,6 +320,9 @@ namespace NeverFoundry.DataStorage.Marten
             using var session = DocumentStore.LightweightSession();
             session.Store(item);
             await session.SaveChangesAsync().ConfigureAwait(false);
+
+            _cache.Add(item.Id, item, cacheTimeout ?? DefaultCacheTimeout);
+
             return true;
         }
     }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Cosmos;
+﻿using LazyCache;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
 using System;
 using System.Collections.Generic;
@@ -27,10 +28,33 @@ namespace NeverFoundry.DataStorage.Cosmos
     /// </remarks>
     public class CosmosDataStore : IDataStore
     {
+        private readonly IAppCache _cache = new CachingService();
+
         /// <summary>
         /// The <see cref="Microsoft.Azure.Cosmos.Container"/> used for all transactions.
         /// </summary>
         public Container Container { get; set; }
+
+        /// <summary>
+        /// <para>
+        /// Sets the default period after which cached items are considered stale.
+        /// </para>
+        /// <para>
+        /// This defaults to ten minutes for <see cref="CosmosDataStore"/>.
+        /// </para>
+        /// </summary>
+        public TimeSpan DefaultCacheTimeout { get; set; } = TimeSpan.FromMinutes(10);
+
+        /// <summary>
+        /// <para>
+        /// Indicates whether this <see cref="IDataStore"/> implementation allows items to be
+        /// cached.
+        /// </para>
+        /// <para>
+        /// This is <see langword="true"/> for <see cref="CosmosDataStore"/>.
+        /// </para>
+        /// </summary>
+        public bool SupportsCaching => true;
 
         /// <summary>
         /// Initializes a new instance of <see cref="CosmosDataStore"/>.
@@ -76,6 +100,9 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// </summary>
         /// <typeparam name="T">The type of <see cref="IIdItem"/> to retrieve.</typeparam>
         /// <param name="id">The unique id of the item to retrieve.</param>
+        /// <param name="cacheTimeout">
+        /// If this item is cached, this value (if supplied) will override <see cref="DefaultCacheTimeout"/>.
+        /// </param>
         /// <returns>The item with the given id, or <see langword="null"/> if no item was found with
         /// that id.</returns>
         /// <remarks>
@@ -83,13 +110,16 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// result. If your persistence model allows for non-unique keys and multiple results, use
         /// an appropriately formed <see cref="Query{T}"/>.
         /// </remarks>
-        public T? GetItem<T>(string? id) where T : class, IIdItem
+        public T? GetItem<T>(string? id, TimeSpan? cacheTimeout = null) where T : class, IIdItem
         {
             if (string.IsNullOrEmpty(id))
             {
                 return default;
             }
-            return Container.ReadItemAsync<T>(id, new PartitionKey(id)).GetAwaiter().GetResult();
+            return _cache.GetOrAdd(
+                id,
+                () => Container.ReadItemAsync<T>(id, new PartitionKey(id)).GetAwaiter().GetResult(),
+                cacheTimeout ?? DefaultCacheTimeout);
         }
 
         /// <summary>
@@ -98,6 +128,9 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// <typeparam name="T">The type of <see cref="IIdItem"/> to retrieve.</typeparam>
         /// <param name="id">The unique id of the item to retrieve.</param>
         /// <param name="partitionKey">The partition key for items in the container.</param>
+        /// <param name="cacheTimeout">
+        /// If this item is cached, this value (if supplied) will override <see cref="DefaultCacheTimeout"/>.
+        /// </param>
         /// <returns>The item with the given id, or <see langword="null"/> if no item was found with
         /// that id.</returns>
         /// <remarks>
@@ -105,13 +138,16 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// result. If your persistence model allows for non-unique keys and multiple results, use
         /// an appropriately formed <see cref="Query{T}"/>.
         /// </remarks>
-        public T? GetItem<T>(string? id, PartitionKey partitionKey) where T : class, IIdItem
+        public T? GetItem<T>(string? id, PartitionKey partitionKey, TimeSpan? cacheTimeout = null) where T : class, IIdItem
         {
             if (string.IsNullOrEmpty(id))
             {
                 return default;
             }
-            return Container.ReadItemAsync<T>(id, partitionKey).GetAwaiter().GetResult();
+            return _cache.GetOrAdd(
+                id,
+                () => Container.ReadItemAsync<T>(id, partitionKey).GetAwaiter().GetResult(),
+                cacheTimeout ?? DefaultCacheTimeout);
         }
 
         /// <summary>
@@ -120,6 +156,9 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// <typeparam name="T">The type of <see cref="IIdItem"/> to retrieve.</typeparam>
         /// <param name="id">The unique id of the item to retrieve.</param>
         /// <param name="partitionKey">The partition key for items in the container.</param>
+        /// <param name="cacheTimeout">
+        /// If this item is cached, this value (if supplied) will override <see cref="DefaultCacheTimeout"/>.
+        /// </param>
         /// <returns>The item with the given id, or <see langword="null"/> if no item was found with
         /// that id.</returns>
         /// <remarks>
@@ -127,7 +166,7 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// result. If your persistence model allows for non-unique keys and multiple results, use
         /// an appropriately formed <see cref="Query{T}"/>.
         /// </remarks>
-        public T? GetItem<T>(string? id, string? partitionKey) where T : class, IIdItem
+        public T? GetItem<T>(string? id, string? partitionKey, TimeSpan? cacheTimeout = null) where T : class, IIdItem
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -135,9 +174,9 @@ namespace NeverFoundry.DataStorage.Cosmos
             }
             if (string.IsNullOrEmpty(partitionKey))
             {
-                return GetItem<T>(id);
+                return GetItem<T>(id, cacheTimeout);
             }
-            return GetItem<T>(id, new PartitionKey(partitionKey));
+            return GetItem<T>(id, new PartitionKey(partitionKey), cacheTimeout);
         }
 
         /// <summary>
@@ -145,6 +184,9 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// </summary>
         /// <typeparam name="T">The type of <see cref="IIdItem"/> to retrieve.</typeparam>
         /// <param name="id">The unique id of the item to retrieve.</param>
+        /// <param name="cacheTimeout">
+        /// If this item is cached, this value (if supplied) will override <see cref="DefaultCacheTimeout"/>.
+        /// </param>
         /// <returns>The item with the given id, or <see langword="null"/> if no item was found with
         /// that id.</returns>
         /// <remarks>
@@ -158,13 +200,17 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// one of the overloads which accepts a partition key.
         /// </para>
         /// </remarks>
-        public async Task<T?> GetItemAsync<T>(string? id) where T : class, IIdItem
+        public async ValueTask<T?> GetItemAsync<T>(string? id, TimeSpan? cacheTimeout = null) where T : class, IIdItem
         {
             if (string.IsNullOrEmpty(id))
             {
                 return default;
             }
-            return await Container.ReadItemAsync<T>(id, new PartitionKey(id)).ConfigureAwait(false);
+            return await _cache.GetOrAddAsync(
+                id,
+                () => Container.ReadItemAsync<T>(id, new PartitionKey(id)),
+                cacheTimeout ?? DefaultCacheTimeout)
+                .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -173,6 +219,9 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// <typeparam name="T">The type of <see cref="IIdItem"/> to retrieve.</typeparam>
         /// <param name="id">The unique id of the item to retrieve.</param>
         /// <param name="partitionKey">The partition key for items in the container.</param>
+        /// <param name="cacheTimeout">
+        /// If this item is cached, this value (if supplied) will override <see cref="DefaultCacheTimeout"/>.
+        /// </param>
         /// <returns>The item with the given id, or <see langword="null"/> if no item was found with
         /// that id.</returns>
         /// <remarks>
@@ -180,13 +229,17 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// result. If your persistence model allows for non-unique keys and multiple results, use
         /// an appropriately formed <see cref="Query{T}"/>.
         /// </remarks>
-        public async Task<T?> GetItemAsync<T>(string? id, PartitionKey partitionKey) where T : class, IIdItem
+        public async ValueTask<T?> GetItemAsync<T>(string? id, PartitionKey partitionKey, TimeSpan? cacheTimeout = null) where T : class, IIdItem
         {
             if (string.IsNullOrEmpty(id))
             {
                 return default;
             }
-            return await Container.ReadItemAsync<T>(id, partitionKey).ConfigureAwait(false);
+            return await _cache.GetOrAddAsync(
+                id,
+                () => Container.ReadItemAsync<T>(id, partitionKey),
+                cacheTimeout ?? DefaultCacheTimeout)
+                .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -195,6 +248,9 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// <typeparam name="T">The type of <see cref="IIdItem"/> to retrieve.</typeparam>
         /// <param name="id">The unique id of the item to retrieve.</param>
         /// <param name="partitionKey">The partition key for items in the container.</param>
+        /// <param name="cacheTimeout">
+        /// If this item is cached, this value (if supplied) will override <see cref="DefaultCacheTimeout"/>.
+        /// </param>
         /// <returns>The item with the given id, or <see langword="null"/> if no item was found with
         /// that id.</returns>
         /// <remarks>
@@ -202,17 +258,17 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// result. If your persistence model allows for non-unique keys and multiple results, use
         /// an appropriately formed <see cref="Query{T}"/>.
         /// </remarks>
-        public Task<T?> GetItemAsync<T>(string? id, string? partitionKey) where T : class, IIdItem
+        public ValueTask<T?> GetItemAsync<T>(string? id, string? partitionKey, TimeSpan? cacheTimeout = null) where T : class, IIdItem
         {
             if (string.IsNullOrEmpty(id))
             {
-                return Task.FromResult<T?>(default);
+                return new ValueTask<T?>(default(T?));
             }
             if (string.IsNullOrEmpty(partitionKey))
             {
-                return GetItemAsync<T>(id);
+                return GetItemAsync<T>(id, cacheTimeout);
             }
-            return GetItemAsync<T>(id, new PartitionKey(partitionKey));
+            return GetItemAsync<T>(id, new PartitionKey(partitionKey), cacheTimeout);
         }
 
         /// <summary>
@@ -287,8 +343,8 @@ namespace NeverFoundry.DataStorage.Cosmos
             {
                 return true;
             }
-            Container.DeleteItemAsync<T>(id, new PartitionKey(id)).GetAwaiter().GetResult();
-            return true;
+            var result = Container.DeleteItemAsync<T>(id, new PartitionKey(id)).GetAwaiter().GetResult();
+            return (int)result.StatusCode >= 200 && (int)result.StatusCode < 300;
         }
 
         /// <summary>
@@ -315,8 +371,8 @@ namespace NeverFoundry.DataStorage.Cosmos
             {
                 return true;
             }
-            Container.DeleteItemAsync<T>(id, partitionKey).GetAwaiter().GetResult();
-            return true;
+            var result = Container.DeleteItemAsync<T>(id, partitionKey).GetAwaiter().GetResult();
+            return (int)result.StatusCode >= 200 && (int)result.StatusCode < 300;
         }
 
         /// <summary>
@@ -401,8 +457,8 @@ namespace NeverFoundry.DataStorage.Cosmos
             {
                 return true;
             }
-            await Container.DeleteItemAsync<T>(id, new PartitionKey(id)).ConfigureAwait(false);
-            return true;
+            var result = await Container.DeleteItemAsync<T>(id, new PartitionKey(id)).ConfigureAwait(false);
+            return (int)result.StatusCode >= 200 && (int)result.StatusCode < 300;
         }
 
         /// <summary>
@@ -429,8 +485,8 @@ namespace NeverFoundry.DataStorage.Cosmos
             {
                 return true;
             }
-            await Container.DeleteItemAsync<T>(id, partitionKey).ConfigureAwait(false);
-            return true;
+            var result = await Container.DeleteItemAsync<T>(id, partitionKey).ConfigureAwait(false);
+            return (int)result.StatusCode >= 200 && (int)result.StatusCode < 300;
         }
 
         /// <summary>
@@ -492,6 +548,10 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// Upserts the given <paramref name="item"/>.
         /// </summary>
         /// <typeparam name="T">The type of <see cref="IIdItem"/> to upsert.</typeparam>
+        /// <param name="item">The item to store.</param>
+        /// <param name="cacheTimeout">
+        /// If this item is cached, this value (if supplied) will override <see cref="DefaultCacheTimeout"/>.
+        /// </param>
         /// <returns>
         /// <see langword="true"/> if the item was successfully persisted to the data store;
         /// otherwise <see langword="false"/>.
@@ -501,20 +561,30 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// to indicate that the operation did not fail (even though no storage operation took
         /// place, neither did any failure).
         /// </remarks>
-        public bool StoreItem<T>(T? item) where T : class, IIdItem
+        public bool StoreItem<T>(T? item, TimeSpan? cacheTimeout = null) where T : class, IIdItem
         {
             if (item is null)
             {
                 return true;
             }
-            Container.UpsertItemAsync(item).GetAwaiter().GetResult();
-            return true;
+            var result = Container.UpsertItemAsync(item).GetAwaiter().GetResult();
+            if ((int)result.StatusCode >= 200 && (int)result.StatusCode < 300)
+            {
+                _cache.Add(item.Id, item, cacheTimeout ?? DefaultCacheTimeout);
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
         /// Upserts the given <paramref name="item"/>.
         /// </summary>
         /// <typeparam name="T">The type of <see cref="IIdItem"/> to upsert.</typeparam>
+        /// <param name="item">The item to store.</param>
+        /// <param name="partitionKey">The partition key for items in the container.</param>
+        /// <param name="cacheTimeout">
+        /// If this item is cached, this value (if supplied) will override <see cref="DefaultCacheTimeout"/>.
+        /// </param>
         /// <returns>
         /// <see langword="true"/> if the item was successfully persisted to the data store;
         /// otherwise <see langword="false"/>.
@@ -524,20 +594,30 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// to indicate that the operation did not fail (even though no storage operation took
         /// place, neither did any failure).
         /// </remarks>
-        public bool StoreItem<T>(T? item, PartitionKey partitionKey) where T : class, IIdItem
+        public bool StoreItem<T>(T? item, PartitionKey partitionKey, TimeSpan? cacheTimeout = null) where T : class, IIdItem
         {
             if (item is null)
             {
                 return true;
             }
-            Container.UpsertItemAsync(item, partitionKey).GetAwaiter().GetResult();
-            return true;
+            var result = Container.UpsertItemAsync(item, partitionKey).GetAwaiter().GetResult();
+            if ((int)result.StatusCode >= 200 && (int)result.StatusCode < 300)
+            {
+                _cache.Add(item.Id, item, cacheTimeout ?? DefaultCacheTimeout);
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
         /// Upserts the given <paramref name="item"/>.
         /// </summary>
         /// <typeparam name="T">The type of <see cref="IIdItem"/> to upsert.</typeparam>
+        /// <param name="item">The item to store.</param>
+        /// <param name="partitionKey">The partition key for items in the container.</param>
+        /// <param name="cacheTimeout">
+        /// If this item is cached, this value (if supplied) will override <see cref="DefaultCacheTimeout"/>.
+        /// </param>
         /// <returns>
         /// <see langword="true"/> if the item was successfully persisted to the data store;
         /// otherwise <see langword="false"/>.
@@ -547,20 +627,29 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// to indicate that the operation did not fail (even though no storage operation took
         /// place, neither did any failure).
         /// </remarks>
-        public bool StoreItem<T>(T? item, string? partitionKey) where T : class, IIdItem
+        public bool StoreItem<T>(T? item, string? partitionKey, TimeSpan? cacheTimeout = null) where T : class, IIdItem
         {
             if (item is null)
             {
                 return true;
             }
-            Container.UpsertItemAsync(item, new PartitionKey(partitionKey)).GetAwaiter().GetResult();
-            return true;
+            var result = Container.UpsertItemAsync(item, new PartitionKey(partitionKey)).GetAwaiter().GetResult();
+            if ((int)result.StatusCode >= 200 && (int)result.StatusCode < 300)
+            {
+                _cache.Add(item.Id, item, cacheTimeout ?? DefaultCacheTimeout);
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
         /// Upserts the given <paramref name="item"/>.
         /// </summary>
         /// <typeparam name="T">The type of <see cref="IIdItem"/> to upsert.</typeparam>
+        /// <param name="item">The item to store.</param>
+        /// <param name="cacheTimeout">
+        /// If this item is cached, this value (if supplied) will override <see cref="DefaultCacheTimeout"/>.
+        /// </param>
         /// <returns>
         /// <see langword="true"/> if the item was successfully persisted to the data store;
         /// otherwise <see langword="false"/>.
@@ -570,20 +659,30 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// to indicate that the operation did not fail (even though no storage operation took
         /// place, neither did any failure).
         /// </remarks>
-        public async Task<bool> StoreItemAsync<T>(T? item) where T : class, IIdItem
+        public async Task<bool> StoreItemAsync<T>(T? item, TimeSpan? cacheTimeout = null) where T : class, IIdItem
         {
             if (item is null)
             {
                 return true;
             }
-            await Container.UpsertItemAsync(item).ConfigureAwait(false);
-            return true;
+            var result = await Container.UpsertItemAsync(item).ConfigureAwait(false);
+            if ((int)result.StatusCode >= 200 && (int)result.StatusCode < 300)
+            {
+                _cache.Add(item.Id, item, cacheTimeout ?? DefaultCacheTimeout);
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
         /// Upserts the given <paramref name="item"/>.
         /// </summary>
         /// <typeparam name="T">The type of <see cref="IIdItem"/> to upsert.</typeparam>
+        /// <param name="item">The item to store.</param>
+        /// <param name="partitionKey">The partition key for items in the container.</param>
+        /// <param name="cacheTimeout">
+        /// If this item is cached, this value (if supplied) will override <see cref="DefaultCacheTimeout"/>.
+        /// </param>
         /// <returns>
         /// <see langword="true"/> if the item was successfully persisted to the data store;
         /// otherwise <see langword="false"/>.
@@ -593,20 +692,30 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// to indicate that the operation did not fail (even though no storage operation took
         /// place, neither did any failure).
         /// </remarks>
-        public async Task<bool> StoreItemAsync<T>(T? item, PartitionKey partitionKey) where T : class, IIdItem
+        public async Task<bool> StoreItemAsync<T>(T? item, PartitionKey partitionKey, TimeSpan? cacheTimeout = null) where T : class, IIdItem
         {
             if (item is null)
             {
                 return true;
             }
-            await Container.UpsertItemAsync(item, partitionKey).ConfigureAwait(false);
-            return true;
+            var result = await Container.UpsertItemAsync(item, partitionKey).ConfigureAwait(false);
+            if ((int)result.StatusCode >= 200 && (int)result.StatusCode < 300)
+            {
+                _cache.Add(item.Id, item, cacheTimeout ?? DefaultCacheTimeout);
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
         /// Upserts the given <paramref name="item"/>.
         /// </summary>
         /// <typeparam name="T">The type of <see cref="IIdItem"/> to upsert.</typeparam>
+        /// <param name="item">The item to store.</param>
+        /// <param name="partitionKey">The partition key for items in the container.</param>
+        /// <param name="cacheTimeout">
+        /// If this item is cached, this value (if supplied) will override <see cref="DefaultCacheTimeout"/>.
+        /// </param>
         /// <returns>
         /// <see langword="true"/> if the item was successfully persisted to the data store;
         /// otherwise <see langword="false"/>.
@@ -616,14 +725,19 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// to indicate that the operation did not fail (even though no storage operation took
         /// place, neither did any failure).
         /// </remarks>
-        public async Task<bool> StoreItemAsync<T>(T? item, string? partitionKey) where T : class, IIdItem
+        public async Task<bool> StoreItemAsync<T>(T? item, string? partitionKey, TimeSpan? cacheTimeout = null) where T : class, IIdItem
         {
             if (item is null)
             {
                 return true;
             }
-            await Container.UpsertItemAsync(item, new PartitionKey(partitionKey)).ConfigureAwait(false);
-            return true;
+            var result = await Container.UpsertItemAsync(item, new PartitionKey(partitionKey)).ConfigureAwait(false);
+            if ((int)result.StatusCode >= 200 && (int)result.StatusCode < 300)
+            {
+                _cache.Add(item.Id, item, cacheTimeout ?? DefaultCacheTimeout);
+                return true;
+            }
+            return false;
         }
     }
 }

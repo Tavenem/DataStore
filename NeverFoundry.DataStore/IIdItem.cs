@@ -27,21 +27,21 @@ namespace NeverFoundry.DataStorage
         string Id { get; }
 
         /// <summary>
-        /// Removes this item from the data store.
+        /// Removes this item from a data store.
         /// </summary>
         /// <returns>
         /// <see langword="true"/> if the item was successfully deleted; otherwise <see
         /// langword="false"/>.
         /// </returns>
-        public virtual Task<bool> DeleteAsync() => DataStore.RemoveItemAsync(this);
+        public virtual Task<bool> DeleteAsync(IDataStore dataStore) => dataStore.RemoveItemAsync(this);
 
         /// <summary>
-        /// Saves this item to the data store.
+        /// Saves this item to a data store.
         /// </summary>
         /// <returns>
         /// <see langword="true"/> if the item was successfully persisted to the data store;
         /// otherwise <see langword="false"/>.
         /// </returns>
-        public virtual Task<bool> SaveAsync() => DataStore.StoreItemAsync(this);
+        public virtual Task<bool> SaveAsync(IDataStore dataStore) => dataStore.StoreItemAsync(this);
     }
 }

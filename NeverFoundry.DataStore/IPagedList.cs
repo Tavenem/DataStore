@@ -7,20 +7,8 @@ namespace NeverFoundry.DataStorage
     /// of this subset within the overall collection.
     /// </summary>
     /// <typeparam name="T">The type of items in the list.</typeparam>
-    public interface IPagedList<out T> : IEnumerable<T>
+    public interface IPagedList<out T> : IReadOnlyList<T>
     {
-        /// <summary>
-        /// Return the paged query result.
-        /// </summary>
-        /// <param name="index">Index to fetch item from paged query result.</param>
-        /// <returns>Item from paged query result.</returns>
-        T this[int index] { get; }
-
-        /// <summary>
-        /// The number of records on the current page.
-        /// </summary>
-        long Count { get; }
-
         /// <summary>
         /// The zero-based index of the first item in the current page, within the whole collection.
         /// </summary>

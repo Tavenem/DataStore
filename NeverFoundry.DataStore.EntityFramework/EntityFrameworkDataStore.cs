@@ -21,6 +21,29 @@ namespace NeverFoundry.DataStorage.EntityFramework
         public DbContext Context { get; set; }
 
         /// <summary>
+        /// <para>
+        /// Sets the default period after which cached items are considered stale.
+        /// </para>
+        /// <para>
+        /// This is left at the default value for <see cref="InMemoryDataStore"/>, which does not
+        /// support caching.
+        /// </para>
+        /// </summary>
+        public TimeSpan DefaultCacheTimeout { get; set; } = TimeSpan.FromMinutes(10);
+
+        /// <summary>
+        /// <para>
+        /// Indicates whether this <see cref="IDataStore"/> implementation allows items to be
+        /// cached.
+        /// </para>
+        /// <para>
+        /// This is <see langword="false"/> for an <see cref="EntityFrameworkDataStore"/>, which
+        /// utilizes its own caching strategy.
+        /// </para>
+        /// </summary>
+        public bool SupportsCaching => !Context.Database.IsInMemory() && !Context.Database.IsSqlite();
+
+        /// <summary>
         /// Initializes a new instance of <see cref="EntityFrameworkDataStore"/>.
         /// </summary>
         /// <param name="context">The <see cref="DbContext"/> used for all transactions.</param>
@@ -59,6 +82,9 @@ namespace NeverFoundry.DataStorage.EntityFramework
         /// </summary>
         /// <typeparam name="T">The type of <see cref="IIdItem"/> to retrieve.</typeparam>
         /// <param name="id">The unique id of the item to retrieve.</param>
+        /// <param name="cacheTimeout">
+        /// If this item is cached, this value (if supplied) will override <see cref="DefaultCacheTimeout"/>.
+        /// </param>
         /// <returns>The item with the given id, or <see langword="null"/> if no item was found with
         /// that id.</returns>
         /// <remarks>
@@ -66,7 +92,7 @@ namespace NeverFoundry.DataStorage.EntityFramework
         /// result. If your persistence model allows for non-unique keys and multiple results, use
         /// an appropriately formed <see cref="Query{T}"/>.
         /// </remarks>
-        public T? GetItem<T>(string? id) where T : class, IIdItem
+        public T? GetItem<T>(string? id, TimeSpan? cacheTimeout = null) where T : class, IIdItem
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -76,19 +102,16 @@ namespace NeverFoundry.DataStorage.EntityFramework
         }
 
         /// <summary>
-        /// Gets the <see cref="IIdItem"/> with the given <paramref name="id"/>.
+        /// Gets the <see cref="IdItem"/> with the given <paramref name="id"/>.
         /// </summary>
-        /// <typeparam name="T">The type of <see cref="IIdItem"/> to retrieve.</typeparam>
+        /// <typeparam name="T">The type of <see cref="IdItem"/> to retrieve.</typeparam>
         /// <param name="id">The unique id of the item to retrieve.</param>
-        /// <returns>
-        /// The item with the given id, or <see langword="null"/> if no item was found with that id.
-        /// </returns>
-        /// <remarks>
-        /// This presumes that <paramref name="id"/> is a unique key, and therefore returns only one
-        /// result. If your persistence model allows for non-unique keys and multiple results, use
-        /// an appropriately formed <see cref="Query{T}"/>.
-        /// </remarks>
-        public async Task<T?> GetItemAsync<T>(string? id) where T : class, IIdItem
+        /// <param name="cacheTimeout">
+        /// If this item is cached, this value (if supplied) will override <see cref="DefaultCacheTimeout"/>.
+        /// </param>
+        /// <returns>The item with the given id, or <see langword="null"/> if no item was found with
+        /// that id.</returns>
+        public async ValueTask<T?> GetItemAsync<T>(string? id, TimeSpan? cacheTimeout = null) where T : class, IIdItem
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -229,6 +252,10 @@ namespace NeverFoundry.DataStorage.EntityFramework
         /// Upserts the given <paramref name="item"/>.
         /// </summary>
         /// <typeparam name="T">The type of <see cref="IIdItem"/> to upsert.</typeparam>
+        /// <param name="item">The item to store.</param>
+        /// <param name="cacheTimeout">
+        /// If this item is cached, this value (if supplied) will override <see cref="DefaultCacheTimeout"/>.
+        /// </param>
         /// <returns>
         /// <see langword="true"/> if the item was successfully persisted to the data store;
         /// otherwise <see langword="false"/>.
@@ -238,7 +265,7 @@ namespace NeverFoundry.DataStorage.EntityFramework
         /// to indicate that the operation did not fail (even though no storage operation took
         /// place, neither did any failure).
         /// </remarks>
-        public bool StoreItem<T>(T? item) where T : class, IIdItem
+        public bool StoreItem<T>(T? item, TimeSpan? cacheTimeout = null) where T : class, IIdItem
         {
             if (item is null)
             {
@@ -261,6 +288,10 @@ namespace NeverFoundry.DataStorage.EntityFramework
         /// Upserts the given <paramref name="item"/>.
         /// </summary>
         /// <typeparam name="T">The type of <see cref="IIdItem"/> to upsert.</typeparam>
+        /// <param name="item">The item to store.</param>
+        /// <param name="cacheTimeout">
+        /// If this item is cached, this value (if supplied) will override <see cref="DefaultCacheTimeout"/>.
+        /// </param>
         /// <returns>
         /// <see langword="true"/> if the item was successfully persisted to the data store;
         /// otherwise <see langword="false"/>.
@@ -270,7 +301,7 @@ namespace NeverFoundry.DataStorage.EntityFramework
         /// to indicate that the operation did not fail (even though no storage operation took
         /// place, neither did any failure).
         /// </remarks>
-        public async Task<bool> StoreItemAsync<T>(T? item) where T : class, IIdItem
+        public async Task<bool> StoreItemAsync<T>(T? item, TimeSpan? cacheTimeout = null) where T : class, IIdItem
         {
             if (item is null)
             {

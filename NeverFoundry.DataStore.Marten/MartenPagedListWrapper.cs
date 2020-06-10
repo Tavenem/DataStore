@@ -18,7 +18,9 @@ namespace NeverFoundry.DataStorage.Marten
         /// <summary>
         /// The number of records in the paged query result.
         /// </summary>
-        public long Count => _list.Count;
+        public int Count => _list.Count <= int.MaxValue
+            ? (int)_list.Count
+            : int.MaxValue;
 
         /// <summary>
         /// The zero-based index of the first item in the current page, within the whole collection.

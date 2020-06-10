@@ -51,13 +51,13 @@ namespace NeverFoundry.DataStorage
         protected IdItem(string id) => Id = id;
 
         /// <summary>
-        /// Removes this item from the data store.
+        /// Removes this item from a data store.
         /// </summary>
         /// <returns>
         /// <see langword="true"/> if the item was successfully deleted; otherwise <see
         /// langword="false"/>.
         /// </returns>
-        public virtual Task<bool> DeleteAsync() => DataStore.RemoveItemAsync(this);
+        public virtual Task<bool> DeleteAsync(IDataStore dataStore) => dataStore.RemoveItemAsync(this);
 
         /// <summary>
         /// Determines whether the specified <see cref="IIdItem"/> instance is equal to this one.
@@ -92,13 +92,13 @@ namespace NeverFoundry.DataStorage
         public override int GetHashCode() => Id.GetHashCode();
 
         /// <summary>
-        /// Saves this item to the data store.
+        /// Saves this item to a data store.
         /// </summary>
         /// <returns>
         /// <see langword="true"/> if the item was successfully persisted to the data store;
         /// otherwise <see langword="false"/>.
         /// </returns>
-        public virtual Task<bool> SaveAsync() => DataStore.StoreItemAsync(this);
+        public virtual Task<bool> SaveAsync(IDataStore dataStore) => dataStore.StoreItemAsync(this);
 
         /// <summary>Returns a string equivalent of this instance.</summary>
         /// <returns>A string equivalent of this instance.</returns>
