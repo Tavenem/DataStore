@@ -180,6 +180,7 @@ namespace NeverFoundry.DataStorage.Marten
         /// <summary>
         /// Removes the stored item with the given id.
         /// </summary>
+        /// <typeparam name="T">The type of items to remove.</typeparam>
         /// <param name="item">
         /// <para>
         /// The item to remove.
@@ -193,7 +194,7 @@ namespace NeverFoundry.DataStorage.Marten
         /// <see langword="true"/> if the item was successfully removed; otherwise <see
         /// langword="false"/>.
         /// </returns>
-        public bool RemoveItem(IIdItem? item)
+        public bool RemoveItem<T>(T? item) where T : class, IIdItem
         {
             if (item is null)
             {
@@ -237,6 +238,7 @@ namespace NeverFoundry.DataStorage.Marten
         /// <summary>
         /// Removes the stored item with the given id.
         /// </summary>
+        /// <typeparam name="T">The type of items to remove.</typeparam>
         /// <param name="item">
         /// <para>
         /// The item to remove.
@@ -250,7 +252,7 @@ namespace NeverFoundry.DataStorage.Marten
         /// <see langword="true"/> if the item was successfully removed; otherwise <see
         /// langword="false"/>.
         /// </returns>
-        public async Task<bool> RemoveItemAsync(IIdItem? item)
+        public async Task<bool> RemoveItemAsync<T>(T? item) where T : class, IIdItem
         {
             if (item is null)
             {

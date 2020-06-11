@@ -409,6 +409,7 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// <summary>
         /// Removes the stored item with the given id.
         /// </summary>
+        /// <typeparam name="T">The type of items to remove.</typeparam>
         /// <param name="item">
         /// <para>
         /// The item to remove.
@@ -426,9 +427,15 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// This method is not implemented in the Cosmos implementation. Use the overload which
         /// takes an ID instead.
         /// </remarks>
-#pragma warning disable RCS1079 // Throwing of new NotImplementedException.
-        public bool RemoveItem(IIdItem? item) => throw new NotImplementedException();
-#pragma warning restore RCS1079 // Throwing of new NotImplementedException.
+        public bool RemoveItem<T>(T? item) where T : class, IIdItem
+        {
+            if (item is null)
+            {
+                return true;
+            }
+            var result = Container.DeleteItemAsync<T>(item.Id, new PartitionKey(item.Id)).GetAwaiter().GetResult();
+            return (int)result.StatusCode >= 200 && (int)result.StatusCode < 300;
+        }
 
         /// <summary>
         /// Removes the stored item with the given id.
@@ -523,6 +530,7 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// <summary>
         /// Removes the stored item with the given id.
         /// </summary>
+        /// <typeparam name="T">The type of items to remove.</typeparam>
         /// <param name="item">
         /// <para>
         /// The item to remove.
@@ -540,9 +548,82 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// This method is not implemented in the Cosmos implementation. Use the overload which
         /// takes an ID instead.
         /// </remarks>
-#pragma warning disable RCS1079 // Throwing of new NotImplementedException.
-        public Task<bool> RemoveItemAsync(IIdItem? item) => throw new NotImplementedException();
-#pragma warning restore RCS1079 // Throwing of new NotImplementedException.
+        public async Task<bool> RemoveItemAsync<T>(T? item) where T : class, IIdItem
+        {
+            if (item is null)
+            {
+                return true;
+            }
+            var result = await Container.DeleteItemAsync<T>(item.Id, new PartitionKey(item.Id)).ConfigureAwait(false);
+            return (int)result.StatusCode >= 200 && (int)result.StatusCode < 300;
+        }
+
+        /// <summary>
+        /// Removes the stored item with the given id.
+        /// </summary>
+        /// <typeparam name="T">The type of items to remove.</typeparam>
+        /// <param name="item">
+        /// <para>
+        /// The item to remove.
+        /// </para>
+        /// <para>
+        /// If <see langword="null"/> or empty no operation takes place, and <see langword="true"/>
+        /// is returned to indicate that there was no failure.
+        /// </para>
+        /// </param>
+        /// <param name="partitionKey">The partition key for items in the container.</param>
+        /// <returns>
+        /// <see langword="true"/> if the item was successfully removed; otherwise <see
+        /// langword="false"/>.
+        /// </returns>
+        /// <remarks>
+        /// This method is not implemented in the Cosmos implementation. Use the overload which
+        /// takes an ID instead.
+        /// </remarks>
+        public async Task<bool> RemoveItemAsync<T>(T? item, PartitionKey partitionKey) where T : class, IIdItem
+        {
+            if (item is null)
+            {
+                return true;
+            }
+            var result = await Container.DeleteItemAsync<T>(item.Id, partitionKey).ConfigureAwait(false);
+            return (int)result.StatusCode >= 200 && (int)result.StatusCode < 300;
+        }
+
+        /// <summary>
+        /// Removes the stored item with the given id.
+        /// </summary>
+        /// <typeparam name="T">The type of items to remove.</typeparam>
+        /// <param name="item">
+        /// <para>
+        /// The item to remove.
+        /// </para>
+        /// <para>
+        /// If <see langword="null"/> or empty no operation takes place, and <see langword="true"/>
+        /// is returned to indicate that there was no failure.
+        /// </para>
+        /// </param>
+        /// <param name="partitionKey">The partition key for items in the container.</param>
+        /// <returns>
+        /// <see langword="true"/> if the item was successfully removed; otherwise <see
+        /// langword="false"/>.
+        /// </returns>
+        /// <remarks>
+        /// This method is not implemented in the Cosmos implementation. Use the overload which
+        /// takes an ID instead.
+        /// </remarks>
+        public Task<bool> RemoveItemAsync<T>(T? item, string? partitionKey) where T : class, IIdItem
+        {
+            if (item is null)
+            {
+                return Task.FromResult(true);
+            }
+            if (string.IsNullOrEmpty(partitionKey))
+            {
+                return RemoveItemAsync<T>(item.Id);
+            }
+            return RemoveItemAsync<T>(item.Id, new PartitionKey(partitionKey));
+        }
 
         /// <summary>
         /// Upserts the given <paramref name="item"/>.

@@ -114,6 +114,7 @@ namespace NeverFoundry.DataStorage
         /// <summary>
         /// Removes the stored item with the given id.
         /// </summary>
+        /// <typeparam name="T">The type of items to remove.</typeparam>
         /// <param name="item">
         /// <para>
         /// The item to remove.
@@ -127,7 +128,7 @@ namespace NeverFoundry.DataStorage
         /// <see langword="true"/> if the item was successfully removed; otherwise <see
         /// langword="false"/>.
         /// </returns>
-        bool RemoveItem(IIdItem? item);
+        bool RemoveItem<T>(T? item) where T : class, IIdItem;
 
         /// <summary>
         /// Removes the stored item with the given id.
@@ -151,6 +152,7 @@ namespace NeverFoundry.DataStorage
         /// <summary>
         /// Removes the stored item with the given id.
         /// </summary>
+        /// <typeparam name="T">The type of items to remove.</typeparam>
         /// <param name="item">
         /// <para>
         /// The item to remove.
@@ -164,7 +166,7 @@ namespace NeverFoundry.DataStorage
         /// <see langword="true"/> if the item was successfully removed; otherwise <see
         /// langword="false"/>.
         /// </returns>
-        Task<bool> RemoveItemAsync(IIdItem? item);
+        Task<bool> RemoveItemAsync<T>(T? item) where T : class, IIdItem;
 
         /// <summary>
         /// Upserts the given <paramref name="item"/>.

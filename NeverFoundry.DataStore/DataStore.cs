@@ -132,6 +132,7 @@ namespace NeverFoundry.DataStorage
         /// <summary>
         /// Removes the stored item with the given id.
         /// </summary>
+        /// <typeparam name="T">The type of items to remove.</typeparam>
         /// <param name="item">
         /// <para>
         /// The item to remove.
@@ -145,7 +146,7 @@ namespace NeverFoundry.DataStorage
         /// <see langword="true"/> if the item was successfully removed; otherwise <see
         /// langword="false"/>.
         /// </returns>
-        public static bool RemoveItem(IIdItem? item) => Instance.RemoveItem(item);
+        public static bool RemoveItem<T>(T? item) where T : class, IIdItem => Instance.RemoveItem(item);
 
         /// <summary>
         /// Removes the stored item with the given id.
@@ -170,6 +171,7 @@ namespace NeverFoundry.DataStorage
         /// <summary>
         /// Removes the stored item with the given id.
         /// </summary>
+        /// <typeparam name="T">The type of items to remove.</typeparam>
         /// <param name="item">
         /// <para>
         /// The item to remove.
@@ -183,7 +185,7 @@ namespace NeverFoundry.DataStorage
         /// <see langword="true"/> if the item was successfully removed; otherwise <see
         /// langword="false"/>.
         /// </returns>
-        public static Task<bool> RemoveItemAsync(IIdItem? item)
+        public static Task<bool> RemoveItemAsync<T>(T? item) where T : class, IIdItem
             => Instance.RemoveItemAsync(item);
 
         /// <summary>

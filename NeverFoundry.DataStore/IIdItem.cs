@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 
 namespace NeverFoundry.DataStorage
 {
@@ -25,23 +24,5 @@ namespace NeverFoundry.DataStorage
         /// The ID of this item.
         /// </summary>
         string Id { get; }
-
-        /// <summary>
-        /// Removes this item from a data store.
-        /// </summary>
-        /// <returns>
-        /// <see langword="true"/> if the item was successfully deleted; otherwise <see
-        /// langword="false"/>.
-        /// </returns>
-        public virtual Task<bool> DeleteAsync(IDataStore dataStore) => dataStore.RemoveItemAsync(this);
-
-        /// <summary>
-        /// Saves this item to a data store.
-        /// </summary>
-        /// <returns>
-        /// <see langword="true"/> if the item was successfully persisted to the data store;
-        /// otherwise <see langword="false"/>.
-        /// </returns>
-        public virtual Task<bool> SaveAsync(IDataStore dataStore) => dataStore.StoreItemAsync(this);
     }
 }
