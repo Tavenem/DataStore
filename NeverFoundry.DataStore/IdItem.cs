@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace NeverFoundry.DataStorage
 {
@@ -21,10 +20,6 @@ namespace NeverFoundry.DataStorage
     /// default implementation generates a new <see cref="Guid"/>.
     /// </para>
     /// <para>
-    /// It provides <see langword="virtual"/>, asynchronous Save and Delete methods which invoke the
-    /// static DataStore object's own methods to do so.
-    /// </para>
-    /// <para>
     /// Equality and hashing are performed with the <see cref="Id"/> alone, which presumes that Ids
     /// are globally unique. If your persistence mechanism (and Id generation method) does not
     /// require or produce unique keys, the equality and hash code generation methods should be
@@ -36,6 +31,7 @@ namespace NeverFoundry.DataStorage
         /// <summary>
         /// The ID of this item.
         /// </summary>
+        [JsonPropertyName("id"), JsonInclude]
         public string Id { get; private protected set; }
 
         /// <summary>

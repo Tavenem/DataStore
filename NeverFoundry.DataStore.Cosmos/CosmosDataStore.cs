@@ -118,7 +118,7 @@ namespace NeverFoundry.DataStorage.Cosmos
             }
             return _cache.GetOrAdd(
                 id,
-                () => Container.ReadItemAsync<T>(id, new PartitionKey(id)).GetAwaiter().GetResult(),
+                () => Container.ReadItemAsync<T>(id, new PartitionKey(id)).GetAwaiter().GetResult().Resource,
                 cacheTimeout ?? DefaultCacheTimeout);
         }
 
@@ -208,7 +208,7 @@ namespace NeverFoundry.DataStorage.Cosmos
             }
             return await _cache.GetOrAddAsync(
                 id,
-                () => Container.ReadItemAsync<T>(id, new PartitionKey(id)),
+                async () => (await Container.ReadItemAsync<T>(id, new PartitionKey(id)).ConfigureAwait(false)).Resource,
                 cacheTimeout ?? DefaultCacheTimeout)
                 .ConfigureAwait(false);
         }
@@ -237,7 +237,7 @@ namespace NeverFoundry.DataStorage.Cosmos
             }
             return await _cache.GetOrAddAsync(
                 id,
-                () => Container.ReadItemAsync<T>(id, partitionKey),
+                async () => (await Container.ReadItemAsync<T>(id, partitionKey).ConfigureAwait(false)).Resource,
                 cacheTimeout ?? DefaultCacheTimeout)
                 .ConfigureAwait(false);
         }
@@ -284,7 +284,7 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// over-querying the data.
         /// </remarks>
         public IReadOnlyList<T> GetItems<T>() where T : class, IIdItem
-            => Container.GetItemLinqQueryable<T>(true).ToList().AsReadOnly();
+            => Container.GetItemLinqQueryable<T>(true).Where(x => x.IdItemTypeName.Equals($"IdItemType_{typeof(T).Name}")).ToList().AsReadOnly();
 
         /// <summary>
         /// Gets all items in the data store of the given type.
@@ -298,7 +298,7 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// </remarks>
         public async IAsyncEnumerable<T> GetItemsAsync<T>() where T : class, IIdItem
         {
-            var iterator = Container.GetItemLinqQueryable<T>().ToFeedIterator();
+            var iterator = Container.GetItemLinqQueryable<T>().Where(x => x.IdItemTypeName.Equals($"IdItemType_{typeof(T).Name}")).ToFeedIterator();
             while (iterator.HasMoreResults)
             {
                 foreach (var item in await iterator.ReadNextAsync().ConfigureAwait(false))
@@ -314,7 +314,7 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// <typeparam name="T">The type of item to query.</typeparam>
         /// <returns>An <see cref="IDataStoreQueryable{T}"/> of the given type of item.</returns>
         public IDataStoreQueryable<T> Query<T>() where T : class, IIdItem
-            => new CosmosDataStoreQueryable<T>(Container, Container.GetItemLinqQueryable<T>());
+            => new CosmosDataStoreQueryable<T>(Container, Container.GetItemLinqQueryable<T>().Where(x => x.IdItemTypeName.Equals($"IdItemType_{typeof(T).Name}")));
 
         /// <summary>
         /// Removes the stored item with the given id.

@@ -59,14 +59,24 @@ namespace NeverFoundry.DataStorage
         /// <summary>
         /// The total number of results, of which this page is a subset.
         /// </summary>
-        public long TotalCount { get; }
+        public long? TotalCount { get; }
 
         /// <summary>
         /// The total number of pages.
         /// </summary>
-        public long TotalPages => TotalCount % PageSize == 0
-            ? TotalCount / PageSize
-            : (TotalCount / PageSize) + 1;
+        public long? TotalPages
+        {
+            get
+            {
+                if (TotalCount.HasValue)
+                {
+                    return TotalCount.Value % PageSize == 0
+                        ? TotalCount.Value / PageSize
+                        : (TotalCount.Value / PageSize) + 1;
+                }
+                return null;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PagedList{T}"/> class that contains
@@ -78,7 +88,7 @@ namespace NeverFoundry.DataStorage
         /// <param name="pageNumber">The current page number.</param>
         /// <param name="pageSize">The page size.</param>
         /// <param name="totalCount">The total number of results, of which this page is a subset.</param>
-        public PagedList(IEnumerable<T>? collection, long pageNumber, long pageSize, long totalCount)
+        public PagedList(IEnumerable<T>? collection, long pageNumber, long pageSize, long? totalCount)
         {
             _list = collection?.ToList() ?? new List<T>();
             PageNumber = Math.Max(1, pageNumber);

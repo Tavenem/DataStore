@@ -55,12 +55,12 @@ namespace NeverFoundry.DataStorage.Marten
         /// <summary>
         /// The total number of results, of which this page is a subset.
         /// </summary>
-        public long TotalCount => _list.TotalItemCount;
+        public long? TotalCount => _list.TotalItemCount;
 
         /// <summary>
         /// The total number of pages.
         /// </summary>
-        public long TotalPages => _list.PageCount;
+        public long? TotalPages => _list.PageCount;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PagedList{T}"/> class that contains

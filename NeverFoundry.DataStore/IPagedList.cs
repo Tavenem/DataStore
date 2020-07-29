@@ -40,13 +40,25 @@ namespace NeverFoundry.DataStorage
         long PageSize { get; }
 
         /// <summary>
+        /// <para>
         /// The total number of results, of which this page is a subset.
+        /// </para>
+        /// <para>
+        /// Implementations are not required to provide this value. It may be <see
+        /// langword="null"/>, which indicates that the total is unknown.
+        /// </para>
         /// </summary>
-        long TotalCount { get; }
+        long? TotalCount { get; }
 
         /// <summary>
+        /// <para>
         /// The total number of pages.
+        /// </para>
+        /// <para>
+        /// Implementations are not required to provide this value. It may be <see
+        /// langword="null"/>, which indicates that the total is unknown.
+        /// </para>
         /// </summary>
-        long TotalPages { get; }
+        long? TotalPages { get; }
     }
 }

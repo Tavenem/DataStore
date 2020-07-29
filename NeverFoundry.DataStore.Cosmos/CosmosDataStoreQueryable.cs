@@ -359,18 +359,17 @@ namespace NeverFoundry.DataStorage
         /// cref="IDataStoreQueryable{T}" />.</returns>
         public IPagedList<T> GetPage(int pageNumber, int pageSize)
         {
-            var count = _source.CountAsync().GetAwaiter().GetResult();
             CosmosPagedList<T> page;
             if (!string.IsNullOrEmpty(_continuationToken)
                 && pageNumber == _lastPage + 1)
             {
                 page = _container.GetItemQueryIterator<T>(_source.ToQueryDefinition(), _continuationToken, new QueryRequestOptions { MaxItemCount = pageSize + 1 })
-                      .AsCosmosPagedListAsync(pageNumber, pageSize, count).GetAwaiter().GetResult();
+                      .AsCosmosPagedListAsync(pageNumber, pageSize).GetAwaiter().GetResult();
             }
             else
             {
                 page = _container.GetItemQueryIterator<T>(_source.Skip(pageNumber * pageSize).ToQueryDefinition(), null, new QueryRequestOptions { MaxItemCount = pageSize + 1 })
-                      .AsCosmosPagedListAsync(pageNumber, pageSize, count).GetAwaiter().GetResult();
+                      .AsCosmosPagedListAsync(pageNumber, pageSize).GetAwaiter().GetResult();
             }
             _continuationToken = page.ContinuationToken;
             _lastPage = pageNumber;
@@ -388,18 +387,17 @@ namespace NeverFoundry.DataStorage
         /// cref="IDataStoreQueryable{T}"/>.</returns>
         public async Task<IPagedList<T>> GetPageAsync(int pageNumber, int pageSize)
         {
-            var count = await _source.CountAsync().ConfigureAwait(false);
             CosmosPagedList<T> page;
             if (!string.IsNullOrEmpty(_continuationToken)
                 && pageNumber == _lastPage + 1)
             {
                 page = await _container.GetItemQueryIterator<T>(_source.ToQueryDefinition(), _continuationToken, new QueryRequestOptions { MaxItemCount = pageSize + 1 })
-                      .AsCosmosPagedListAsync(pageNumber, pageSize, count).ConfigureAwait(false);
+                      .AsCosmosPagedListAsync(pageNumber, pageSize).ConfigureAwait(false);
             }
             else
             {
                 page = await _container.GetItemQueryIterator<T>(_source.Skip(pageNumber * pageSize).ToQueryDefinition(), null, new QueryRequestOptions { MaxItemCount = pageSize + 1 })
-                  .AsCosmosPagedListAsync(pageNumber, pageSize, count).ConfigureAwait(false);
+                  .AsCosmosPagedListAsync(pageNumber, pageSize).ConfigureAwait(false);
             }
             _continuationToken = page.ContinuationToken;
             _lastPage = pageNumber;

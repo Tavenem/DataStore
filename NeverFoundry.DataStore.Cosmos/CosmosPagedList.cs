@@ -25,7 +25,6 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// list.</param>
         /// <param name="pageNumber">The current page number.</param>
         /// <param name="pageSize">The page size.</param>
-        /// <param name="totalCount">The total number of results, of which this page is a subset.</param>
         /// <param name="continuationToken">
         /// A continuation token which can be used to resume iteration on the underlying collection.
         /// </param>
@@ -33,9 +32,8 @@ namespace NeverFoundry.DataStorage.Cosmos
             IEnumerable<T>? collection,
             long pageNumber,
             long pageSize,
-            long totalCount,
             string? continuationToken = null)
-            : base(collection, pageNumber, pageSize, totalCount)
+            : base(collection, pageNumber, pageSize, null)
             => ContinuationToken = continuationToken;
 
         /// <summary>
@@ -47,12 +45,10 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// the new list.</param>
         /// <param name="pageNumber">The current page number.</param>
         /// <param name="pageSize">The page size.</param>
-        /// <param name="totalCount">The total number of results, of which this page is a subset.</param>
         public static async Task<CosmosPagedList<T>> FromFeedIteratorAsync(
             FeedIterator<T>? iterator,
             long pageNumber,
-            long pageSize,
-            long totalCount)
+            long pageSize)
         {
             var collection = new List<T>();
             string? continuationToken = null;
@@ -76,7 +72,7 @@ namespace NeverFoundry.DataStorage.Cosmos
                     }
                 }
             }
-            return new CosmosPagedList<T>(collection, pageNumber, pageSize, totalCount, continuationToken);
+            return new CosmosPagedList<T>(collection, pageNumber, pageSize, continuationToken);
         }
     }
 }

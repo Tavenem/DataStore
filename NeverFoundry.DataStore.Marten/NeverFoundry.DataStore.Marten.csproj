@@ -8,8 +8,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.21.0</Version>
+    <Version>0.23.1</Version>
     <Authors>Wil Stead</Authors>
     <Description>An implementation of NeverFoundry.DataStore for Marten.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -17,16 +16,17 @@
     <PackageTags>repository neverfoundry</PackageTags>
     <PackageId>NeverFoundry.DataStore.Marten</PackageId>
     <Product>NeverFoundry.DataStore.Marten</Product>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="LazyCache" Version="2.0.4" />
-    <PackageReference Include="Marten" Version="3.12.1" />
-    <PackageReference Include="NeverFoundry.DataStore" Version="0.21.0" />
+    <PackageReference Include="Marten" Version="3.12.3" />
+    <PackageReference Include="NeverFoundry.DataStore" Version="0.23.0" />
   </ItemGroup>
 
   <Target Name="NugetAdd" AfterTargets="Pack">

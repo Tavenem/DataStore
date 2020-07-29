@@ -122,10 +122,10 @@ namespace NeverFoundry.DataStorage.Marten
             }
             return await _cache.GetOrAddAsync(
                 id,
-                () =>
+                async () =>
                 {
                     using var session = DocumentStore.LightweightSession();
-                    return session.LoadAsync<T>(id);
+                    return await session.LoadAsync<T>(id).ConfigureAwait(false);
                 },
                 cacheTimeout ?? DefaultCacheTimeout)
                 .ConfigureAwait(false);
