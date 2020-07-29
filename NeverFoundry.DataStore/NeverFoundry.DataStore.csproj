@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>0.23.0</Version>
+    <Version>0.25.0</Version>
     <Authors>Wil Stead</Authors>
     <Description>
       A persistence-agnostic repository library. Intended to be used to build other

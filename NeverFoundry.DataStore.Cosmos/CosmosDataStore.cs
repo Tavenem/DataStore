@@ -284,7 +284,7 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// over-querying the data.
         /// </remarks>
         public IReadOnlyList<T> GetItems<T>() where T : class, IIdItem
-            => Container.GetItemLinqQueryable<T>(true).Where(x => x.IdItemTypeName.Equals($"IdItemType_{typeof(T).Name}")).ToList().AsReadOnly();
+            => Container.GetItemLinqQueryable<T>(true).Where(x => x.IdItemTypeName.Contains($":{typeof(T).Name}:")).ToList().AsReadOnly();
 
         /// <summary>
         /// Gets all items in the data store of the given type.
@@ -298,7 +298,7 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// </remarks>
         public async IAsyncEnumerable<T> GetItemsAsync<T>() where T : class, IIdItem
         {
-            var iterator = Container.GetItemLinqQueryable<T>().Where(x => x.IdItemTypeName.Equals($"IdItemType_{typeof(T).Name}")).ToFeedIterator();
+            var iterator = Container.GetItemLinqQueryable<T>().Where(x => x.IdItemTypeName.Contains($":{typeof(T).Name}:")).ToFeedIterator();
             while (iterator.HasMoreResults)
             {
                 foreach (var item in await iterator.ReadNextAsync().ConfigureAwait(false))
@@ -314,7 +314,7 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// <typeparam name="T">The type of item to query.</typeparam>
         /// <returns>An <see cref="IDataStoreQueryable{T}"/> of the given type of item.</returns>
         public IDataStoreQueryable<T> Query<T>() where T : class, IIdItem
-            => new CosmosDataStoreQueryable<T>(Container, Container.GetItemLinqQueryable<T>().Where(x => x.IdItemTypeName.Equals($"IdItemType_{typeof(T).Name}")));
+            => new CosmosDataStoreQueryable<T>(Container, Container.GetItemLinqQueryable<T>().Where(x => x.IdItemTypeName.Contains($":{typeof(T).Name}:")));
 
         /// <summary>
         /// Removes the stored item with the given id.
