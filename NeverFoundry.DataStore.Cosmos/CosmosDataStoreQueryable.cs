@@ -368,7 +368,7 @@ namespace NeverFoundry.DataStorage
             }
             else
             {
-                page = _container.GetItemQueryIterator<T>(_source.Skip(pageNumber * pageSize).ToQueryDefinition(), null, new QueryRequestOptions { MaxItemCount = pageSize + 1 })
+                page = _container.GetItemQueryIterator<T>(_source.Skip((pageNumber - 1) * pageSize).ToQueryDefinition(), null, new QueryRequestOptions { MaxItemCount = pageSize + 1 })
                       .AsCosmosPagedListAsync(pageNumber, pageSize).GetAwaiter().GetResult();
             }
             _continuationToken = page.ContinuationToken;
@@ -392,12 +392,12 @@ namespace NeverFoundry.DataStorage
                 && pageNumber == _lastPage + 1)
             {
                 page = await _container.GetItemQueryIterator<T>(_source.ToQueryDefinition(), _continuationToken, new QueryRequestOptions { MaxItemCount = pageSize + 1 })
-                      .AsCosmosPagedListAsync(pageNumber, pageSize).ConfigureAwait(false);
+                    .AsCosmosPagedListAsync(pageNumber, pageSize).ConfigureAwait(false);
             }
             else
             {
-                page = await _container.GetItemQueryIterator<T>(_source.Skip(pageNumber * pageSize).ToQueryDefinition(), null, new QueryRequestOptions { MaxItemCount = pageSize + 1 })
-                  .AsCosmosPagedListAsync(pageNumber, pageSize).ConfigureAwait(false);
+                page = await _container.GetItemQueryIterator<T>(_source.Skip((pageNumber - 1) * pageSize).ToQueryDefinition(), null, new QueryRequestOptions { MaxItemCount = pageSize + 1 })
+                    .AsCosmosPagedListAsync(pageNumber, pageSize).ConfigureAwait(false);
             }
             _continuationToken = page.ContinuationToken;
             _lastPage = pageNumber;

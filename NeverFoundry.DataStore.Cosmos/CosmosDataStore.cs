@@ -118,7 +118,22 @@ namespace NeverFoundry.DataStorage.Cosmos
             }
             return _cache.GetOrAdd(
                 id,
-                () => Container.ReadItemAsync<T>(id, new PartitionKey(id)).GetAwaiter().GetResult().Resource,
+                () =>
+                {
+                    try
+                    {
+                        var result = Container.ReadItemAsync<T>(id, new PartitionKey(id)).GetAwaiter().GetResult();
+                        if ((int)result.StatusCode >= 200 && (int)result.StatusCode < 300)
+                        {
+                            return result.Resource;
+                        }
+                    }
+                    catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        return null;
+                    }
+                    return null;
+                },
                 cacheTimeout ?? DefaultCacheTimeout);
         }
 
@@ -146,7 +161,22 @@ namespace NeverFoundry.DataStorage.Cosmos
             }
             return _cache.GetOrAdd(
                 id,
-                () => Container.ReadItemAsync<T>(id, partitionKey).GetAwaiter().GetResult(),
+                () =>
+                {
+                    try
+                    {
+                        var result = Container.ReadItemAsync<T>(id, partitionKey).GetAwaiter().GetResult();
+                        if ((int)result.StatusCode >= 200 && (int)result.StatusCode < 300)
+                        {
+                            return result.Resource;
+                        }
+                    }
+                    catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        return null;
+                    }
+                    return null;
+                },
                 cacheTimeout ?? DefaultCacheTimeout);
         }
 
@@ -208,7 +238,22 @@ namespace NeverFoundry.DataStorage.Cosmos
             }
             return await _cache.GetOrAddAsync(
                 id,
-                async () => (await Container.ReadItemAsync<T>(id, new PartitionKey(id)).ConfigureAwait(false)).Resource,
+                async () =>
+                {
+                    try
+                    {
+                        var result = await Container.ReadItemAsync<T>(id, new PartitionKey(id)).ConfigureAwait(false);
+                        if ((int)result.StatusCode >= 200 && (int)result.StatusCode < 300)
+                        {
+                            return result.Resource;
+                        }
+                    }
+                    catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        return null;
+                    }
+                    return null;
+                },
                 cacheTimeout ?? DefaultCacheTimeout)
                 .ConfigureAwait(false);
         }
@@ -237,7 +282,22 @@ namespace NeverFoundry.DataStorage.Cosmos
             }
             return await _cache.GetOrAddAsync(
                 id,
-                async () => (await Container.ReadItemAsync<T>(id, partitionKey).ConfigureAwait(false)).Resource,
+                async () =>
+                {
+                    try
+                    {
+                        var result = await Container.ReadItemAsync<T>(id, partitionKey).ConfigureAwait(false);
+                        if ((int)result.StatusCode >= 200 && (int)result.StatusCode < 300)
+                        {
+                            return result.Resource;
+                        }
+                    }
+                    catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        return null;
+                    }
+                    return null;
+                },
                 cacheTimeout ?? DefaultCacheTimeout)
                 .ConfigureAwait(false);
         }
@@ -648,7 +708,7 @@ namespace NeverFoundry.DataStorage.Cosmos
             {
                 return true;
             }
-            var result = Container.UpsertItemAsync(item).GetAwaiter().GetResult();
+            var result = Container.UpsertItemAsync(item, new PartitionKey(item.Id)).GetAwaiter().GetResult();
             if ((int)result.StatusCode >= 200 && (int)result.StatusCode < 300)
             {
                 _cache.Add(item.Id, item, cacheTimeout ?? DefaultCacheTimeout);
@@ -746,7 +806,7 @@ namespace NeverFoundry.DataStorage.Cosmos
             {
                 return true;
             }
-            var result = await Container.UpsertItemAsync(item).ConfigureAwait(false);
+            var result = await Container.UpsertItemAsync(item, new PartitionKey(item.Id)).ConfigureAwait(false);
             if ((int)result.StatusCode >= 200 && (int)result.StatusCode < 300)
             {
                 _cache.Add(item.Id, item, cacheTimeout ?? DefaultCacheTimeout);
