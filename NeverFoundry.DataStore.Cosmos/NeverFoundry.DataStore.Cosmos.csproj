@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>0.25.4</Version>
+    <Version>0.26.0</Version>
     <Authors>Wil Stead</Authors>
     <Description>An implementation of NeverFoundry.DataStore for Azure Cosmos DB.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

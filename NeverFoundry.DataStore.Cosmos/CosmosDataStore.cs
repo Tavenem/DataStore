@@ -43,7 +43,7 @@ namespace NeverFoundry.DataStorage.Cosmos
         /// This defaults to ten minutes for <see cref="CosmosDataStore"/>.
         /// </para>
         /// </summary>
-        public TimeSpan DefaultCacheTimeout { get; set; } = TimeSpan.FromMinutes(10);
+        public TimeSpan DefaultCacheTimeout { get; set; } = TimeSpan.FromMinutes(2);
 
         /// <summary>
         /// <para>
