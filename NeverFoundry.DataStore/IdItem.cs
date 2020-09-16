@@ -8,16 +8,15 @@ namespace NeverFoundry.DataStorage
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This is the basic unit of persistence for <see cref="DataStore"/>.
+    /// This is the basic unit of persistence for implementations of <see cref="IDataStore"/>.
     /// </para>
     /// <para>
     /// It uses a <see cref="string"/> key which may or may not be unique, depending on your
     /// persistence requirements.
     /// </para>
     /// <para>
-    /// The default, parameterless constructor automatically generates a new <see cref="Id"/> using
-    /// the <see cref="DataStore.CreateNewIdFor(Type)"/> method of <see cref="DataStore"/>, whose
-    /// default implementation generates a new <see cref="Guid"/>.
+    /// The default, parameterless constructor automatically generates a new <see cref="Id"/> as a
+    /// random string based on a <see cref="Guid"/>.
     /// </para>
     /// <para>
     /// Equality and hashing are performed with the <see cref="Id"/> alone, which presumes that Ids
@@ -35,9 +34,14 @@ namespace NeverFoundry.DataStorage
         public string Id { get; private protected set; }
 
         /// <summary>
+        /// <para>
         /// Initializes a new instance of <see cref="IdItem"/>.
+        /// </para>
+        /// <para>
+        /// Initializes <see cref="Id"/> to a random string based on a <see cref="Guid"/>.
+        /// </para>
         /// </summary>
-        protected IdItem() => Id = DataStore.CreateNewIdFor(GetType());
+        protected IdItem() => Id = Guid.NewGuid().ToString();
 
         /// <summary>
         /// Initializes a new instance of <see cref="IdItem"/>.

@@ -7,7 +7,7 @@ namespace NeverFoundry.DataStorage
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This is the basic unit of persistence for <see cref="DataStore"/>.
+    /// This is the basic unit of persistence for implementations of <see cref="IDataStore"/>.
     /// </para>
     /// <para>
     /// It uses a <see cref="string"/> key which may or may not be unique, depending on your
