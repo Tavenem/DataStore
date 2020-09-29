@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace NeverFoundry.DataStorage
 {
@@ -10,6 +11,7 @@ namespace NeverFoundry.DataStorage
     /// of this subset within the overall collection.
     /// </summary>
     /// <typeparam name="T">The type of items in the list.</typeparam>
+    [JsonConverter(typeof(PagedListConverter))]
     public class PagedList<T> : IPagedList<T>
     {
         private readonly List<T> _list;

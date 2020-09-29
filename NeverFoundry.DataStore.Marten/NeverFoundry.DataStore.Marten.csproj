@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>0.26.0</Version>
+    <Version>0.27.0</Version>
     <Authors>Wil Stead</Authors>
     <Description>An implementation of NeverFoundry.DataStore for Marten.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -24,9 +24,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="LazyCache" Version="2.0.4" />
+    <PackageReference Include="LazyCache" Version="2.1.2" />
     <PackageReference Include="Marten" Version="3.13.1" />
-    <PackageReference Include="NeverFoundry.DataStore" Version="0.26.0" />
+    <PackageReference Include="NeverFoundry.DataStore" Version="0.27.0" />
   </ItemGroup>
 
   <Target Name="NugetAdd" AfterTargets="Pack">
