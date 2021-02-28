@@ -95,8 +95,7 @@ namespace NeverFoundry.DataStorage
         /// The first element in this <see cref="IDataStoreQueryable{T}"/>, or a default value if
         /// the sequence contains no elements.
         /// </returns>
-        [return: MaybeNull]
-        T FirstOrDefault();
+        T? FirstOrDefault();
 
         /// <summary>
         /// Returns the first element of this <see cref="IDataStoreQueryable{T}"/> that satisfies a
@@ -108,32 +107,17 @@ namespace NeverFoundry.DataStorage
         /// passes the test specified by <paramref name="predicate"/>; otherwise, the first element
         /// in source that passes the test specified by <paramref name="predicate"/>.
         /// </returns>
-        [return: MaybeNull]
-        T FirstOrDefault(Expression<Func<T, bool>> predicate);
+        T? FirstOrDefault(Expression<Func<T, bool>> predicate);
 
         /// <summary>
-        /// <para>
         /// Asynchronously returns the first element of this <see cref="IDataStoreQueryable{T}"/>,
         /// or a default value if the sequence contains no elements.
-        /// </para>
-        /// <para>
-        /// Note: the return value may be <see langword="null"/>. The nullability features of the
-        /// language currently do not support indicating possible <see langword="null"/> values in
-        /// the result of a <see cref="Task{TResult}"/>.
-        /// </para>
         /// </summary>
         /// <returns>
-        /// <para>
         /// The first element in this <see cref="IDataStoreQueryable{T}"/>, or a default value if
         /// the sequence contains no elements.
-        /// </para>
-        /// <para>
-        /// Note: the return value may be <see langword="null"/>. The nullability features of the
-        /// language currently do not support indicating possible <see langword="null"/> values in
-        /// the result of a <see cref="Task{TResult}"/>.
-        /// </para>
         /// </returns>
-        Task<T> FirstOrDefaultAsync();
+        Task<T?> FirstOrDefaultAsync();
 
         /// <summary>
         /// <para>
@@ -159,7 +143,7 @@ namespace NeverFoundry.DataStorage
         /// the result of a <see cref="Task{TResult}"/>.
         /// </para>
         /// </returns>
-        Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
+        Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
 
         /// <summary>
         /// <para>
@@ -185,7 +169,7 @@ namespace NeverFoundry.DataStorage
         /// the result of a <see cref="Task{TResult}"/>.
         /// </para>
         /// </returns>
-        Task<T> FirstOrDefaultAsync(Func<T, ValueTask<bool>> predicate);
+        Task<T?> FirstOrDefaultAsync(Func<T, ValueTask<bool>> predicate);
 
         /// <summary>
         /// Gets a number of items from this <see cref="IDataStoreQueryable{T}"/> equal to <paramref
@@ -213,59 +197,29 @@ namespace NeverFoundry.DataStorage
         /// Returns the maximum value of this <see cref="IDataStoreQueryable{T}"/>.
         /// </summary>
         /// <returns>The maximum value of this <see cref="IDataStoreQueryable{T}"/>.</returns>
-        [return: MaybeNull]
-        T Max();
+        T? Max();
 
         /// <summary>
-        /// <para>
         /// Asynchronously returns the maximum value of this <see cref="IDataStoreQueryable{T}"/>.
-        /// </para>
-        /// <para>
-        /// Note: the return value may be <see langword="null"/>. The nullability features of the
-        /// language currently do not support indicating possible <see langword="null"/> values in
-        /// the result of a <see cref="Task{TResult}"/>.
-        /// </para>
         /// </summary>
         /// <returns>
-        /// <para>
         /// The maximum value of this <see cref="IDataStoreQueryable{T}"/>.
-        /// </para>
-        /// <para>
-        /// Note: the return value may be <see langword="null"/>. The nullability features of the
-        /// language currently do not support indicating possible <see langword="null"/> values in
-        /// the result of a <see cref="Task{TResult}"/>.
-        /// </para>
         /// </returns>
-        Task<T> MaxAsync();
+        Task<T?> MaxAsync();
 
         /// <summary>
         /// Returns the minimum value of this <see cref="IDataStoreQueryable{T}"/>.
         /// </summary>
         /// <returns>The minimum value of this <see cref="IDataStoreQueryable{T}"/>.</returns>
-        [return: MaybeNull]
-        T Min();
+        T? Min();
 
         /// <summary>
-        /// <para>
         /// Asynchronously returns the minimum value of this <see cref="IDataStoreQueryable{T}"/>.
-        /// </para>
-        /// <para>
-        /// Note: the return value may be <see langword="null"/>. The nullability features of the
-        /// language currently do not support indicating possible <see langword="null"/> values in
-        /// the result of a <see cref="Task{TResult}"/>.
-        /// </para>
         /// </summary>
         /// <returns>
-        /// <para>
         /// The minimum value of this <see cref="IDataStoreQueryable{T}"/>.
-        /// </para>
-        /// <para>
-        /// Note: the return value may be <see langword="null"/>. The nullability features of the
-        /// language currently do not support indicating possible <see langword="null"/> values in
-        /// the result of a <see cref="Task{TResult}"/>.
-        /// </para>
         /// </returns>
-        Task<T> MinAsync();
+        Task<T?> MinAsync();
 
         /// <summary>
         /// Filters the elements of this <see cref="IDataStoreQueryable{T}"/> based on a specified

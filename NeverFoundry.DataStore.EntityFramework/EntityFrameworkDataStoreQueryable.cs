@@ -114,8 +114,7 @@ namespace NeverFoundry.DataStorage.EntityFramework
         /// The first element in this <see cref="IDataStoreQueryable{T}" />, or a default value if
         /// the sequence contains no elements.
         /// </returns>
-        [return: MaybeNull]
-        public T FirstOrDefault() => _source.FirstOrDefault();
+        public T? FirstOrDefault() => _source.FirstOrDefault();
 
         /// <summary>
         /// Returns the first element of this <see cref="IDataStoreQueryable{T}"/> that satisfies a
@@ -127,84 +126,41 @@ namespace NeverFoundry.DataStorage.EntityFramework
         /// passes the test specified by <paramref name="predicate"/>; otherwise, the first element
         /// in source that passes the test specified by <paramref name="predicate"/>.
         /// </returns>
-        [return: MaybeNull]
-        public T FirstOrDefault(Expression<Func<T, bool>> predicate) => _source.FirstOrDefault(predicate);
+        public T? FirstOrDefault(Expression<Func<T, bool>> predicate) => _source.FirstOrDefault(predicate);
 
         /// <summary>
-        /// <para>
         /// Returns the first element of this <see cref="IDataStoreQueryable{T}" />, or a default
         /// value if the sequence contains no elements, asynchronously.
-        /// </para>
-        /// <para>
-        /// Note: the return value may be <see langword="null" />. The nullability features of the
-        /// language currently do not support indicating possible <see langword="null" /> values in
-        /// the result of a <see cref="Task{TResult}" />.
-        /// </para>
         /// </summary>
         /// <returns>
-        /// <para>
         /// The first element in this <see cref="IDataStoreQueryable{T}" />, or a default value if
         /// the sequence contains no elements.
-        /// </para>
-        /// <para>
-        /// Note: the return value may be <see langword="null" />. The nullability features of the
-        /// language currently do not support indicating possible <see langword="null" /> values in
-        /// the result of a <see cref="Task{TResult}" />.
-        /// </para>
         /// </returns>
-        public Task<T> FirstOrDefaultAsync() => _source.FirstOrDefaultAsync();
+        public async Task<T?> FirstOrDefaultAsync() => await _source.FirstOrDefaultAsync().ConfigureAwait(false);
 
         /// <summary>
-        /// <para>
         /// Asynchronously returns the first element of this <see cref="IDataStoreQueryable{T}"/>
         /// that satisfies a specified condition or a default value if no such element is found.
-        /// </para>
-        /// <para>
-        /// Note: the return value may be <see langword="null"/>. The nullability features of the
-        /// language currently do not support indicating possible <see langword="null"/> values in
-        /// the result of a <see cref="Task{TResult}"/>.
-        /// </para>
         /// </summary>
         /// <param name="predicate">A function to test each element for a condition.</param>
         /// <returns>
-        /// <para>
         /// default(TSource) if this <see cref="IDataStoreQueryable{T}"/> is empty or if no element
         /// passes the test specified by <paramref name="predicate"/>; otherwise, the first element
         /// in source that passes the test specified by <paramref name="predicate"/>.
-        /// </para>
-        /// <para>
-        /// Note: the return value may be <see langword="null"/>. The nullability features of the
-        /// language currently do not support indicating possible <see langword="null"/> values in
-        /// the result of a <see cref="Task{TResult}"/>.
-        /// </para>
         /// </returns>
-        public Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate) => _source.FirstOrDefaultAsync(predicate);
+        public async Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate) => await _source.FirstOrDefaultAsync(predicate).ConfigureAwait(false);
 
         /// <summary>
-        /// <para>
         /// Asynchronously returns the first element of this <see cref="IDataStoreQueryable{T}"/>
         /// that satisfies a specified condition or a default value if no such element is found.
-        /// </para>
-        /// <para>
-        /// Note: the return value may be <see langword="null"/>. The nullability features of the
-        /// language currently do not support indicating possible <see langword="null"/> values in
-        /// the result of a <see cref="Task{TResult}"/>.
-        /// </para>
         /// </summary>
         /// <param name="predicate">A function to test each element for a condition.</param>
         /// <returns>
-        /// <para>
         /// default(TSource) if this <see cref="IDataStoreQueryable{T}"/> is empty or if no element
         /// passes the test specified by <paramref name="predicate"/>; otherwise, the first element
         /// in source that passes the test specified by <paramref name="predicate"/>.
-        /// </para>
-        /// <para>
-        /// Note: the return value may be <see langword="null"/>. The nullability features of the
-        /// language currently do not support indicating possible <see langword="null"/> values in
-        /// the result of a <see cref="Task{TResult}"/>.
-        /// </para>
         /// </returns>
-        public async Task<T> FirstOrDefaultAsync(Func<T, ValueTask<bool>> predicate)
+        public async Task<T?> FirstOrDefaultAsync(Func<T, ValueTask<bool>> predicate)
         {
             await foreach (var item in _source.AsAsyncEnumerable())
             {
@@ -248,59 +204,29 @@ namespace NeverFoundry.DataStorage.EntityFramework
         /// Returns the maximum value of this <see cref="IDataStoreQueryable{T}"/>.
         /// </summary>
         /// <returns>The maximum value of this <see cref="IDataStoreQueryable{T}"/>.</returns>
-        [return: MaybeNull]
-        public T Max() => _source.Max();
+        public T? Max() => _source.Max();
 
         /// <summary>
-        /// <para>
         /// Asynchronously returns the maximum value of this <see cref="IDataStoreQueryable{T}"/>.
-        /// </para>
-        /// <para>
-        /// Note: the return value may be <see langword="null"/>. The nullability features of the
-        /// language currently do not support indicating possible <see langword="null"/> values in
-        /// the result of a <see cref="Task{TResult}"/>.
-        /// </para>
         /// </summary>
         /// <returns>
-        /// <para>
         /// The maximum value of this <see cref="IDataStoreQueryable{T}"/>.
-        /// </para>
-        /// <para>
-        /// Note: the return value may be <see langword="null"/>. The nullability features of the
-        /// language currently do not support indicating possible <see langword="null"/> values in
-        /// the result of a <see cref="Task{TResult}"/>.
-        /// </para>
         /// </returns>
-        public Task<T> MaxAsync() => _source.MaxAsync();
+        public async Task<T?> MaxAsync() => await _source.MaxAsync().ConfigureAwait(false);
 
         /// <summary>
         /// Returns the minimum value of this <see cref="IDataStoreQueryable{T}"/>.
         /// </summary>
         /// <returns>The minimum value of this <see cref="IDataStoreQueryable{T}"/>.</returns>
-        [return: MaybeNull]
-        public T Min() => _source.Min();
+        public T? Min() => _source.Min();
 
         /// <summary>
-        /// <para>
         /// Asynchronously returns the minimum value of this <see cref="IDataStoreQueryable{T}"/>.
-        /// </para>
-        /// <para>
-        /// Note: the return value may be <see langword="null"/>. The nullability features of the
-        /// language currently do not support indicating possible <see langword="null"/> values in
-        /// the result of a <see cref="Task{TResult}"/>.
-        /// </para>
         /// </summary>
         /// <returns>
-        /// <para>
         /// The minimum value of this <see cref="IDataStoreQueryable{T}"/>.
-        /// </para>
-        /// <para>
-        /// Note: the return value may be <see langword="null"/>. The nullability features of the
-        /// language currently do not support indicating possible <see langword="null"/> values in
-        /// the result of a <see cref="Task{TResult}"/>.
-        /// </para>
         /// </returns>
-        public Task<T> MinAsync() => _source.MinAsync();
+        public async Task<T?> MinAsync() => await _source.MinAsync().ConfigureAwait(false);
 
         /// <summary>
         /// Filters the elements of this <see cref="IDataStoreQueryable{T}"/> based on a specified

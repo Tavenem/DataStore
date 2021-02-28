@@ -10,7 +10,7 @@ namespace NeverFoundry.DataStorage
     /// </summary>
     public class InMemoryDataStore : IDataStore
     {
-        private readonly Dictionary<string, IIdItem> _data = new Dictionary<string, IIdItem>();
+        private readonly Dictionary<string, IIdItem> _data = new();
 
         /// <summary>
         /// <para>
@@ -101,7 +101,7 @@ namespace NeverFoundry.DataStorage
         /// </param>
         /// <returns>The item with the given id, or <see langword="null"/> if no item was found with
         /// that id.</returns>
-        public ValueTask<T?> GetItemAsync<T>(string? id, TimeSpan? cacheTimeout = null) where T : class, IIdItem => new ValueTask<T?>(GetItem<T>(id));
+        public ValueTask<T?> GetItemAsync<T>(string? id, TimeSpan? cacheTimeout = null) where T : class, IIdItem => new(GetItem<T>(id));
 
         /// <summary>
         /// Gets an <see cref="IDataStoreQueryable{T}"/> of the given type of item.
