@@ -29,7 +29,7 @@ public abstract class IdItem : IIdItem, IEquatable<IdItem>
     /// <summary>
     /// The ID of this item.
     /// </summary>
-    [JsonPropertyName("id"), JsonInclude, JsonPropertyOrder(-2)]
+    [JsonPropertyName("id"), JsonInclude, JsonPropertyOrder(-1)]
     public string Id { get; private protected set; }
 
     /// <summary>
@@ -55,7 +55,7 @@ public abstract class IdItem : IIdItem, IEquatable<IdItem>
     /// For example: ":BaseType:ChildType:".
     /// </para>
     /// </remarks>
-    [JsonPropertyName("$type"), JsonInclude, JsonPropertyOrder(-1)]
+    [JsonPropertyName("$type"), JsonInclude, JsonPropertyOrder(-2)]
     public virtual string IdItemTypeName => $":{GetType().Name}:";
 
     /// <summary>

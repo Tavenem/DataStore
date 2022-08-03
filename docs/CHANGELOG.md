@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.34.0-preview
+### Changed
+- Set `IdItemTypeName` JSON serialization order first, as required by System.Text.Json.
+
 ## 0.33.0-preview
 ### Changed
 - Add `IdItemTypeName` to `IdItem` base class.
