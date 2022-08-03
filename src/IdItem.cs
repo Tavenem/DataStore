@@ -34,6 +34,32 @@ public abstract class IdItem : IIdItem, IEquatable<IdItem>
 
     /// <summary>
     /// <para>
+    /// A built-in, read-only type discriminator.
+    /// </para>
+    /// <para>
+    /// This property's default implementation uses reflection to generate a string with the format
+    /// ":<c>GetType().Name</c>:".
+    /// </para>
+    /// <para>
+    /// The property can (and should) be overridden in subclasses to hard-code the discriminator
+    /// value, both in order to avoid reflection and also to guard against potential breaking
+    /// changes if a type is renamed.
+    /// </para>
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Inheritance and polymorphism can be modeled by chaining subtypes with the ':' character as a
+    /// separator.
+    /// </para>
+    /// <para>
+    /// For example: ":BaseType:ChildType:".
+    /// </para>
+    /// </remarks>
+    [JsonPropertyName("$type"), JsonInclude, JsonPropertyOrder(-1)]
+    public virtual string IdItemTypeName => $":{GetType().Name}:";
+
+    /// <summary>
+    /// <para>
     /// Initializes a new instance of <see cref="IdItem"/>.
     /// </para>
     /// <para>

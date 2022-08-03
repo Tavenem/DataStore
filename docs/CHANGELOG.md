@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.33.0-preview
+### Changed
+- Add `IdItemTypeName` to `IdItem` base class.
+
 ## 0.32.0-preview
 ### Changed
 - Restore `IdItemTypeName` for use with NoSQL providers. Recommended pattern is to use the same value for `JsonDerivedType` and `IdItemTypeName`.
