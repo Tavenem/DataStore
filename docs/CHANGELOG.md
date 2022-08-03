@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.32.0-preview
+### Changed
+- Restore `IdItemTypeName` for use with NoSQL providers. Recommended pattern is to use the same value for `JsonDerivedType` and `IdItemTypeName`.
+
 ## 0.31.0-preview
 ### Changed
 - Update to .NET 7 preview
