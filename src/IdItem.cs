@@ -27,10 +27,16 @@ namespace Tavenem.DataStorage;
 public abstract class IdItem : IIdItem, IEquatable<IdItem>
 {
     /// <summary>
+    /// <para>
     /// The ID of this item.
+    /// </para>
+    /// <para>
+    /// Settable for initialization and serialization purposes, but is intended to be stable for
+    /// existing items.
+    /// </para>
     /// </summary>
     [JsonPropertyName("id"), JsonInclude, JsonPropertyOrder(-1)]
-    public string Id { get; private protected set; }
+    public string Id { get; set; }
 
     /// <summary>
     /// <para>

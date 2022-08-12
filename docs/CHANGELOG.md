@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.35.0-preview
+### Changed
+- Made `Id` settable to allow source generated serializers to function.
+
 ## 0.34.0-preview
 ### Changed
 - Set `IdItemTypeName` JSON serialization order first, as required by System.Text.Json.
