@@ -60,9 +60,18 @@ public abstract class IdItem : IIdItem, IEquatable<IdItem>
     /// <para>
     /// For example: ":BaseType:ChildType:".
     /// </para>
+    /// <para>
+    /// The property's default implementation has a set accessor, but it performs no function. It
+    /// exists to allow overriding implementations to provide both get and set accessors, if
+    /// necessary.
+    /// </para>
     /// </remarks>
     [JsonPropertyName("$type"), JsonInclude, JsonPropertyOrder(-2)]
-    public virtual string IdItemTypeName => $":{GetType().Name}:";
+    public virtual string IdItemTypeName
+    {
+        get => $":{GetType().Name}:";
+        set { }
+    }
 
     /// <summary>
     /// <para>

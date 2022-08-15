@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.36.0-preview
+### Changed
+- Gave `IdItemTypeName` a set accessor (no-op in the default implementation).
+
 ## 0.35.0-preview
 ### Changed
 - Made `Id` settable to allow source generated serializers to function.
