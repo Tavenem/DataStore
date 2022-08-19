@@ -28,7 +28,12 @@ public interface IPagedList<out T> : IReadOnlyList<T>
     long LastIndexOnPage { get; }
 
     /// <summary>
+    /// <para>
     /// The current page number.
+    /// </para>
+    /// <para>
+    /// The first page is 1.
+    /// </para>
     /// </summary>
     long PageNumber { get; }
 

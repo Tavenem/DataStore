@@ -169,7 +169,7 @@ public interface IDataStoreQueryable<T>
 
     /// <summary>
     /// Gets a number of items from this <see cref="IDataStoreQueryable{T}"/> equal to <paramref
-    /// name="pageSize"/>, after skipping <paramref name="pageNumber"/> multiples of that
+    /// name="pageSize"/>, after skipping <paramref name="pageNumber"/>-1 multiples of that
     /// amount.
     /// </summary>
     /// <param name="pageNumber">The current page number.</param>
@@ -180,7 +180,7 @@ public interface IDataStoreQueryable<T>
 
     /// <summary>
     /// Asynchronously gets a number of items from this <see cref="IDataStoreQueryable{T}"/>
-    /// equal to <paramref name="pageSize"/>, after skipping <paramref name="pageNumber"/>
+    /// equal to <paramref name="pageSize"/>, after skipping <paramref name="pageNumber"/>-1
     /// multiples of that amount.
     /// </summary>
     /// <param name="pageNumber">The current page number.</param>

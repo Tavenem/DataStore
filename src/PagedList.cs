@@ -46,7 +46,12 @@ public class PagedList<T> : IPagedList<T>
     public long LastIndexOnPage => FirstIndexOnPage + (Count - 1);
 
     /// <summary>
+    /// <para>
     /// The current page number.
+    /// </para>
+    /// <para>
+    /// The first page is 1.
+    /// </para>
     /// </summary>
     public long PageNumber { get; }
 

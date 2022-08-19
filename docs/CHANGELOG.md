@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.36.1-preview
+### Changed
+- Clarify 1-based indexing of page numbers in `IPagedList`.
+
 ## 0.36.0-preview
 ### Changed
 - Gave `IdItemTypeName` a set accessor (no-op in the default implementation).
