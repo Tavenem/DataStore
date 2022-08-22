@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.36.2-preview
+### Added
+- Add `PagedListDTO<T>` for better (de)serialization support.
+
 ## 0.36.1-preview
 ### Changed
 - Clarify 1-based indexing of page numbers in `IPagedList`.
