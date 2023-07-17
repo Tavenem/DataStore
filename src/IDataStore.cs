@@ -24,10 +24,12 @@ public interface IDataStore
     /// <summary>
     /// Creates a new <see cref="IIdItem.Id"/> for an <see cref="IIdItem"/> of the given type.
     /// </summary>
-    /// <typeparam name="T">The type of <see cref="IIdItem"/> for which to generate an
-    /// id.</typeparam>
-    /// <returns>A new <see cref="IIdItem.Id"/> for an <see cref="IIdItem"/> of the given
-    /// type.</returns>
+    /// <typeparam name="T">
+    /// The type of <see cref="IIdItem"/> for which to generate an id.
+    /// </typeparam>
+    /// <returns>
+    /// A new <see cref="IIdItem.Id"/> for an <see cref="IIdItem"/> of the given type.
+    /// </returns>
     /// <remarks>
     /// Whether the id is guaranteed to be unique or not depends on your persistence model and
     /// choice of implementation.
@@ -37,9 +39,10 @@ public interface IDataStore
     /// <summary>
     /// Creates a new id for an item of the given <paramref name="type"/>.
     /// </summary>
-    /// <param name="type">The type for which to generate an id. Expected to be an instance of
-    /// <see cref="IIdItem"/>, but should not throw an exception even if a different type is
-    /// supplied.</param>
+    /// <param name="type">
+    /// The type for which to generate an id. Expected to be an instance of <see cref="IIdItem"/>,
+    /// but should not throw an exception even if a different type is supplied.
+    /// </param>
     /// <returns>A new id for an item of the given <paramref name="type"/>.</returns>
     /// <remarks>
     /// Whether the id is guaranteed to be unique or not depends on your persistence model and
@@ -53,14 +56,16 @@ public interface IDataStore
     /// <typeparam name="T">The type of <see cref="IIdItem"/> to retrieve.</typeparam>
     /// <param name="id">The unique id of the item to retrieve.</param>
     /// <param name="cacheTimeout">
-    /// If this item is cached, this value (if supplied) will override <see cref="DefaultCacheTimeout"/>.
+    /// If this item is cached, this value (if supplied) will override <see
+    /// cref="DefaultCacheTimeout"/>.
     /// </param>
-    /// <returns>The item with the given id, or <see langword="null"/> if no item was found with
-    /// that id.</returns>
+    /// <returns>
+    /// The item with the given id, or <see langword="null"/> if no item was found with that id.
+    /// </returns>
     /// <remarks>
     /// This presumes that <paramref name="id"/> is a unique key, and therefore returns only one
-    /// result. If your persistence model allows for non-unique keys and multiple results, use
-    /// an appropriately formed <see cref="Query{T}"/>.
+    /// result. If your persistence model allows for non-unique keys and multiple results, use an
+    /// appropriately formed <see cref="Query{T}"/>.
     /// </remarks>
     T? GetItem<T>(string? id, TimeSpan? cacheTimeout = null) where T : class, IIdItem;
 

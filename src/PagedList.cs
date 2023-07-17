@@ -11,38 +11,48 @@ namespace Tavenem.DataStorage;
 [JsonConverter(typeof(PagedListConverter))]
 public class PagedList<T> : IPagedList<T>
 {
-    private readonly List<T> _list;
-
     /// <summary>
     /// Return the paged query result.
     /// </summary>
     /// <param name="index">Index to fetch item from paged query result.</param>
     /// <returns>Item from paged query result.</returns>
-    public T this[int index] => _list[index];
+    public T this[int index] => Items is null
+        ? throw new IndexOutOfRangeException()
+        : Items[index];
 
     /// <summary>
     /// The number of records in the paged query result.
     /// </summary>
-    public int Count => _list.Count;
+    [JsonIgnore]
+    public int Count => Items?.Count ?? 0;
 
     /// <summary>
     /// The zero-based index of the first item in the current page, within the whole collection.
     /// </summary>
+    [JsonIgnore]
     public long FirstIndexOnPage => (PageNumber - 1) * PageSize;
 
     /// <summary>
     /// Whether there is next page available.
     /// </summary>
+    [JsonIgnore]
     public bool HasNextPage => LastIndexOnPage < TotalCount - 1;
 
     /// <summary>
     /// Whether there is a previous page available.
     /// </summary>
+    [JsonIgnore]
     public bool HasPreviousPage => PageNumber > 1;
+
+    /// <summary>
+    /// The current page of items.
+    /// </summary>
+    public IReadOnlyList<T>? Items { get; }
 
     /// <summary>
     /// The zero-based index of the last item in the current page, within the whole collection.
     /// </summary>
+    [JsonIgnore]
     public long LastIndexOnPage => FirstIndexOnPage + (Count - 1);
 
     /// <summary>
@@ -56,7 +66,7 @@ public class PagedList<T> : IPagedList<T>
     public long PageNumber { get; }
 
     /// <summary>
-    /// The page size.
+    /// The maximum number of items per page.
     /// </summary>
     public long PageSize { get; }
 
@@ -68,6 +78,7 @@ public class PagedList<T> : IPagedList<T>
     /// <summary>
     /// The total number of pages.
     /// </summary>
+    [JsonIgnore]
     public long? TotalPages
     {
         get
@@ -82,33 +93,42 @@ public class PagedList<T> : IPagedList<T>
         }
     }
 
+#pragma warning disable IDE0290 // Use primary constructor; need JsonConstructor
     /// <summary>
-    /// Initializes a new instance of the <see cref="PagedList{T}"/> class that contains
-    /// elements copied from the specified collection and has sufficient capacity to
-    /// accommodate the number of elements copied.
+    /// Constructs a new instance of <see cref="PagedList{T}"/>.
     /// </summary>
-    /// <param name="collection">The collection whose elements are copied to the new
-    /// list.</param>
-    /// <param name="pageNumber">The current page number.</param>
-    /// <param name="pageSize">The page size.</param>
-    /// <param name="totalCount">The total number of results, of which this page is a subset.</param>
-    public PagedList(IEnumerable<T>? collection, long pageNumber, long pageSize, long? totalCount)
+    /// <param name="items">The current page of items.</param>
+    /// <param name="pageNumber">
+    /// <para>
+    /// The current page number.
+    /// </para>
+    /// <para>
+    /// The first page is 1.
+    /// </para>
+    /// </param>
+    /// <param name="pageSize">The maximum number of items per page.</param>
+    /// <param name="totalCount">
+    /// The total number of results, of which this page is a subset.
+    /// </param>
+    [JsonConstructor]
+    public PagedList(IEnumerable<T>? items, long pageNumber, long pageSize, long? totalCount)
     {
-        _list = collection?.ToList() ?? new List<T>();
+        Items = items?.ToList()?.AsReadOnly();
         PageNumber = Math.Max(1, pageNumber);
         PageSize = Math.Max(0, pageSize);
         TotalCount = totalCount;
     }
+#pragma warning restore IDE0290 // Use primary constructor
 
     /// <summary>
     /// Returns an enumerator that iterates through the <see cref="PagedList{T}"/>.
     /// </summary>
     /// <returns>A <see cref="List{T}.Enumerator"/> for the <see cref="PagedList{T}"/>.</returns>
-    public IEnumerator<T> GetEnumerator() => _list.GetEnumerator();
+    public IEnumerator<T> GetEnumerator() => Items?.GetEnumerator() ?? Enumerable.Empty<T>().GetEnumerator();
 
     /// <summary>
     /// Returns an enumerator that iterates through the <see cref="PagedList{T}"/>.
     /// </summary>
     /// <returns>A <see cref="List{T}.Enumerator"/> for the <see cref="PagedList{T}"/>.</returns>
-    IEnumerator IEnumerable.GetEnumerator() => _list.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

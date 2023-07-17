@@ -1,4 +1,6 @@
-﻿namespace Tavenem.DataStorage;
+﻿using System.Text.Json.Serialization;
+
+namespace Tavenem.DataStorage;
 
 /// <summary>
 /// An item with an ID.
@@ -15,6 +17,8 @@
 /// It also has a built-in, read-only type discriminator property.
 /// </para>
 /// </remarks>
+[JsonPolymorphic(UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToNearestAncestor)]
+[JsonDerivedType(typeof(IdItem), nameof(IdItem))]
 public interface IIdItem : IEquatable<IIdItem>
 {
     /// <summary>

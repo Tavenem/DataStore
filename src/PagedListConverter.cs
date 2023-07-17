@@ -59,7 +59,7 @@ public class PagedListConverter : JsonConverterFactory
                 throw new JsonException();
             }
 
-            var collection = new List<T>();
+            IReadOnlyList<T>? collection = null;
             var pageNumber = 1L;
             var pageSize = 0L;
             long? totalCount = null;
@@ -110,8 +110,8 @@ public class PagedListConverter : JsonConverterFactory
                         }
                         totalCount = totalCountValue;
                         break;
-                    case "List":
-                        collection = JsonSerializer.Deserialize<List<T>>(ref reader, options);
+                    case nameof(PagedList<T>.Items):
+                        collection = JsonSerializer.Deserialize<IReadOnlyList<T>>(ref reader, options);
                         break;
                 }
             }
@@ -139,8 +139,8 @@ public class PagedListConverter : JsonConverterFactory
             {
                 writer.WriteNull(nameof(PagedList<T>.TotalCount));
             }
-            writer.WritePropertyName("List");
-            JsonSerializer.Serialize(writer, value.ToList(), options);
+            writer.WritePropertyName(nameof(PagedList<T>.Items));
+            JsonSerializer.Serialize(writer, value.Items, options);
             writer.WriteEndObject();
         }
     }

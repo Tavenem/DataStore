@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.37.0-preview
+### Changed
+- Update to .NET 8 preview
+- No longer serializes `IdItemTypeName` as "$type" to avoid conflicts with `System.Text.Json` built-in polymorphic (de)serialization
+- Serializes `IdItemTypeName` with its own property name, *after* `id`
+- Expose `Items` property in `PagedList`.
+### Removed
+- `PagedListDTO<T>`
+
 ## 0.36.2-preview
 ### Added
 - Add `PagedListDTO<T>` for better (de)serialization support.
@@ -18,7 +27,7 @@
 
 ## 0.34.0-preview
 ### Changed
-- Set `IdItemTypeName` JSON serialization order first, as required by System.Text.Json.
+- Set `IdItemTypeName` JSON serialization order first, as required by `System.Text.Json`.
 
 ## 0.33.0-preview
 ### Changed
@@ -31,7 +40,7 @@
 ## 0.31.0-preview
 ### Changed
 - Update to .NET 7 preview
-- Remove `IdItemTypeName` in favor of built-in polymorphic (de)serialization added to System.Text.Json
+- Remove `IdItemTypeName` in favor of built-in polymorphic (de)serialization added to `System.Text.Json`
 
 ## 0.30.0-preview
 ### Changed

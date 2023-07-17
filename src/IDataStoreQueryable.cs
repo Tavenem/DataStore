@@ -10,8 +10,10 @@ public interface IDataStoreQueryable<T>
     /// <summary>
     /// Determines whether this <see cref="IDataStoreQueryable{T}"/> contains any elements.
     /// </summary>
-    /// <returns><see langword="true"/> if the source sequence contains any elements; otherwise,
-    /// <see langword="false"/>.</returns>
+    /// <returns>
+    /// <see langword="true"/> if the source sequence contains any elements; otherwise, <see
+    /// langword="false"/>.
+    /// </returns>
     bool Any();
 
     /// <summary>
@@ -19,37 +21,42 @@ public interface IDataStoreQueryable<T>
     /// condition.
     /// </summary>
     /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <returns><see langword="true"/> if any elements in the source sequence pass the test in
-    /// the specified predicate; otherwise,
-    /// <see langword="false"/>.</returns>
+    /// <returns>
+    /// <see langword="true"/> if any elements in the source sequence pass the test in the specified
+    /// predicate; otherwise, <see langword="false"/>.
+    /// </returns>
     bool Any(Expression<Func<T, bool>> predicate);
 
     /// <summary>
     /// Asynchronously determines whether this <see cref="IDataStoreQueryable{T}"/> contains any
     /// elements.
     /// </summary>
-    /// <returns><see langword="true"/> if the source sequence contains any elements; otherwise,
-    /// <see langword="false"/>.</returns>
+    /// <returns>
+    /// <see langword="true"/> if the source sequence contains any elements; otherwise, <see
+    /// langword="false"/>.
+    /// </returns>
     Task<bool> AnyAsync();
 
     /// <summary>
-    /// Asynchronously determines whether any element of this <see
-    /// cref="IDataStoreQueryable{T}"/> satisfies a condition.
+    /// Asynchronously determines whether any element of this <see cref="IDataStoreQueryable{T}"/>
+    /// satisfies a condition.
     /// </summary>
     /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <returns><see langword="true"/> if any elements in the source sequence pass the test in
-    /// the specified predicate; otherwise,
-    /// <see langword="false"/>.</returns>
+    /// <returns>
+    /// <see langword="true"/> if any elements in the source sequence pass the test in the specified
+    /// predicate; otherwise, <see langword="false"/>.
+    /// </returns>
     Task<bool> AnyAsync(Expression<Func<T, bool>> predicate);
 
     /// <summary>
-    /// Asynchronously determines whether any element of this <see
-    /// cref="IDataStoreQueryable{T}"/> satisfies a condition.
+    /// Asynchronously determines whether any element of this <see cref="IDataStoreQueryable{T}"/>
+    /// satisfies a condition.
     /// </summary>
     /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <returns><see langword="true"/> if any elements in the source sequence pass the test in
-    /// the specified predicate; otherwise,
-    /// <see langword="false"/>.</returns>
+    /// <returns>
+    /// <see langword="true"/> if any elements in the source sequence pass the test in the specified
+    /// predicate; otherwise, <see langword="false"/>.
+    /// </returns>
     Task<bool> AnyAsync(Func<T, ValueTask<bool>> predicate);
 
     /// <summary>
@@ -99,9 +106,9 @@ public interface IDataStoreQueryable<T>
     /// </summary>
     /// <param name="predicate">A function to test each element for a condition.</param>
     /// <returns>
-    /// default(TSource) if this <see cref="IDataStoreQueryable{T}"/> is empty or if no element
-    /// passes the test specified by <paramref name="predicate"/>; otherwise, the first element
-    /// in source that passes the test specified by <paramref name="predicate"/>.
+    /// <c>default(TSource)</c> if this <see cref="IDataStoreQueryable{T}"/> is empty or if no
+    /// element passes the test specified by <paramref name="predicate"/>; otherwise, the first
+    /// element in source that passes the test specified by <paramref name="predicate"/>.
     /// </returns>
     T? FirstOrDefault(Expression<Func<T, bool>> predicate);
 
@@ -117,76 +124,77 @@ public interface IDataStoreQueryable<T>
 
     /// <summary>
     /// <para>
-    /// Asynchronously returns the first element of this <see cref="IDataStoreQueryable{T}"/>
-    /// that satisfies a specified condition or a default value if no such element is found.
+    /// Asynchronously returns the first element of this <see cref="IDataStoreQueryable{T}"/> that
+    /// satisfies a specified condition or a default value if no such element is found.
     /// </para>
     /// <para>
     /// Note: the return value may be <see langword="null"/>. The nullability features of the
-    /// language currently do not support indicating possible <see langword="null"/> values in
-    /// the result of a <see cref="Task{TResult}"/>.
+    /// language currently do not support indicating possible <see langword="null"/> values in the
+    /// result of a <see cref="Task{TResult}"/>.
     /// </para>
     /// </summary>
     /// <param name="predicate">A function to test each element for a condition.</param>
     /// <returns>
     /// <para>
-    /// default(TSource) if this <see cref="IDataStoreQueryable{T}"/> is empty or if no element
-    /// passes the test specified by <paramref name="predicate"/>; otherwise, the first element
-    /// in source that passes the test specified by <paramref name="predicate"/>.
+    /// <c>default(TSource)</c> if this <see cref="IDataStoreQueryable{T}"/> is empty or if no
+    /// element passes the test specified by <paramref name="predicate"/>; otherwise, the first
+    /// element in source that passes the test specified by <paramref name="predicate"/>.
     /// </para>
     /// <para>
     /// Note: the return value may be <see langword="null"/>. The nullability features of the
-    /// language currently do not support indicating possible <see langword="null"/> values in
-    /// the result of a <see cref="Task{TResult}"/>.
+    /// language currently do not support indicating possible <see langword="null"/> values in the
+    /// result of a <see cref="Task{TResult}"/>.
     /// </para>
     /// </returns>
     Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
 
     /// <summary>
     /// <para>
-    /// Asynchronously returns the first element of this <see cref="IDataStoreQueryable{T}"/>
-    /// that satisfies a specified condition or a default value if no such element is found.
+    /// Asynchronously returns the first element of this <see cref="IDataStoreQueryable{T}"/> that
+    /// satisfies a specified condition or a default value if no such element is found.
     /// </para>
     /// <para>
     /// Note: the return value may be <see langword="null"/>. The nullability features of the
-    /// language currently do not support indicating possible <see langword="null"/> values in
-    /// the result of a <see cref="Task{TResult}"/>.
+    /// language currently do not support indicating possible <see langword="null"/> values in the
+    /// result of a <see cref="Task{TResult}"/>.
     /// </para>
     /// </summary>
     /// <param name="predicate">A function to test each element for a condition.</param>
     /// <returns>
     /// <para>
-    /// default(TSource) if this <see cref="IDataStoreQueryable{T}"/> is empty or if no element
-    /// passes the test specified by <paramref name="predicate"/>; otherwise, the first element
-    /// in source that passes the test specified by <paramref name="predicate"/>.
+    /// <c>default(TSource)</c> if this <see cref="IDataStoreQueryable{T}"/> is empty or if no
+    /// element passes the test specified by <paramref name="predicate"/>; otherwise, the first
+    /// element in source that passes the test specified by <paramref name="predicate"/>.
     /// </para>
     /// <para>
     /// Note: the return value may be <see langword="null"/>. The nullability features of the
-    /// language currently do not support indicating possible <see langword="null"/> values in
-    /// the result of a <see cref="Task{TResult}"/>.
+    /// language currently do not support indicating possible <see langword="null"/> values in the
+    /// result of a <see cref="Task{TResult}"/>.
     /// </para>
     /// </returns>
     Task<T?> FirstOrDefaultAsync(Func<T, ValueTask<bool>> predicate);
 
     /// <summary>
     /// Gets a number of items from this <see cref="IDataStoreQueryable{T}"/> equal to <paramref
-    /// name="pageSize"/>, after skipping <paramref name="pageNumber"/>-1 multiples of that
-    /// amount.
+    /// name="pageSize"/>, after skipping <paramref name="pageNumber"/>-1 multiples of that amount.
     /// </summary>
     /// <param name="pageNumber">The current page number.</param>
     /// <param name="pageSize">The page size.</param>
-    /// <returns>An <see cref="IPagedList{T}"/> of items from this <see
-    /// cref="IDataStoreQueryable{T}"/>.</returns>
+    /// <returns>
+    /// An <see cref="IPagedList{T}"/> of items from this <see cref="IDataStoreQueryable{T}"/>.
+    /// </returns>
     IPagedList<T> GetPage(int pageNumber, int pageSize);
 
     /// <summary>
-    /// Asynchronously gets a number of items from this <see cref="IDataStoreQueryable{T}"/>
-    /// equal to <paramref name="pageSize"/>, after skipping <paramref name="pageNumber"/>-1
-    /// multiples of that amount.
+    /// Asynchronously gets a number of items from this <see cref="IDataStoreQueryable{T}"/> equal
+    /// to <paramref name="pageSize"/>, after skipping <paramref name="pageNumber"/>-1 multiples of
+    /// that amount.
     /// </summary>
     /// <param name="pageNumber">The current page number.</param>
     /// <param name="pageSize">The page size.</param>
-    /// <returns>An <see cref="IPagedList{T}"/> of items from this <see
-    /// cref="IDataStoreQueryable{T}"/>.</returns>
+    /// <returns>
+    /// An <see cref="IPagedList{T}"/> of items from this <see cref="IDataStoreQueryable{T}"/>.
+    /// </returns>
     Task<IPagedList<T>> GetPageAsync(int pageNumber, int pageSize);
 
     /// <summary>

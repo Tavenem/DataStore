@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <LangVersion>preview</LangVersion>
     <Nullable>enable</Nullable>
     <RootNamespace>Tavenem.DataStorage</RootNamespace>
@@ -17,7 +17,7 @@
       A persistence-agnostic repository library. Intended to be used to build other
       libraries which are decoupled from persistence choices.
     </Description>
-    <Copyright>Copyright © 2019-2021 Wil Stead</Copyright>
+    <Copyright>Copyright © Wil Stead</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Tavenem/DataStore</PackageProjectUrl>
     <PackageIcon>tavenem_128.png</PackageIcon>

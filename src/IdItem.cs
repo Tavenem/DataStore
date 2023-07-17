@@ -35,7 +35,7 @@ public abstract class IdItem : IIdItem, IEquatable<IdItem>
     /// existing items.
     /// </para>
     /// </summary>
-    [JsonPropertyName("id"), JsonInclude, JsonPropertyOrder(-1)]
+    [JsonPropertyName("id"), JsonInclude, JsonPropertyOrder(-2)]
     public string Id { get; set; }
 
     /// <summary>
@@ -66,7 +66,7 @@ public abstract class IdItem : IIdItem, IEquatable<IdItem>
     /// necessary.
     /// </para>
     /// </remarks>
-    [JsonPropertyName("$type"), JsonInclude, JsonPropertyOrder(-2)]
+    [JsonInclude, JsonPropertyOrder(-1)]
     public virtual string IdItemTypeName
     {
         get => $":{GetType().Name}:";

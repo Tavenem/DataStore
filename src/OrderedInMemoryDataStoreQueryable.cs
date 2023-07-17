@@ -5,13 +5,9 @@ namespace Tavenem.DataStorage;
 /// <summary>
 /// Provides LINQ operations on an <see cref="InMemoryDataStore"/>, after an ordering operation.
 /// </summary>
-public class OrderedInMemoryDataStoreQueryable<T> : InMemoryDataStoreQueryable<T>, IOrderedDataStoreQueryable<T>
+public class OrderedInMemoryDataStoreQueryable<T>(IOrderedEnumerable<T> source)
+    : InMemoryDataStoreQueryable<T>(source), IOrderedDataStoreQueryable<T>
 {
-    /// <summary>
-    /// Initializes a new instance of <see cref="OrderedInMemoryDataStoreQueryable{T}"/>.
-    /// </summary>
-    public OrderedInMemoryDataStoreQueryable(IOrderedEnumerable<T> source) : base(source) { }
-
     /// <summary>
     /// Performs a subsequent ordering of the elements in this <see
     /// cref="IOrderedDataStoreQueryable{T}"/> in the given order.

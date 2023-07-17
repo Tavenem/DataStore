@@ -63,7 +63,7 @@ public static class DataStorageExtensions
 
     private class ExpressionParameterReplacer : ExpressionVisitor
     {
-        private IDictionary<ParameterExpression, ParameterExpression> ParameterReplacements { get; }
+        private Dictionary<ParameterExpression, ParameterExpression> ParameterReplacements { get; }
 
         public ExpressionParameterReplacer(IList<ParameterExpression> fromParameters, IList<ParameterExpression> toParameters)
         {

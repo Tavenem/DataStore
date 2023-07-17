@@ -6,14 +6,9 @@ namespace Tavenem.DataStorage;
 /// <summary>
 /// Provides LINQ operations on an <see cref="InMemoryDataStore"/>.
 /// </summary>
-public class InMemoryDataStoreQueryable<T> : IDataStoreQueryable<T>
+public class InMemoryDataStoreQueryable<T>(IEnumerable<T> source) : IDataStoreQueryable<T>
 {
-    private protected readonly IEnumerable<T> _source;
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="InMemoryDataStoreQueryable{T}"/>.
-    /// </summary>
-    public InMemoryDataStoreQueryable(IEnumerable<T> source) => _source = source;
+    private protected readonly IEnumerable<T> _source = source;
 
     /// <summary>
     /// Determines whether this <see cref="IDataStoreQueryable{T}"/> contains any elements.
