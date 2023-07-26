@@ -9,7 +9,12 @@ namespace Tavenem.DataStorage;
 /// </summary>
 /// <typeparam name="T">The type of items in the list.</typeparam>
 [JsonConverter(typeof(PagedListConverter))]
-public class PagedList<T> : IPagedList<T>
+[method: JsonConstructor]
+public class PagedList<T>(
+    IEnumerable<T>? items,
+    long pageNumber,
+    long pageSize,
+    long? totalCount) : IPagedList<T>
 {
     /// <summary>
     /// Return the paged query result.
@@ -47,7 +52,7 @@ public class PagedList<T> : IPagedList<T>
     /// <summary>
     /// The current page of items.
     /// </summary>
-    public IReadOnlyList<T>? Items { get; }
+    public IReadOnlyList<T>? Items { get; } = items?.ToList()?.AsReadOnly();
 
     /// <summary>
     /// The zero-based index of the last item in the current page, within the whole collection.
@@ -63,17 +68,17 @@ public class PagedList<T> : IPagedList<T>
     /// The first page is 1.
     /// </para>
     /// </summary>
-    public long PageNumber { get; }
+    public long PageNumber { get; } = Math.Max(1, pageNumber);
 
     /// <summary>
     /// The maximum number of items per page.
     /// </summary>
-    public long PageSize { get; }
+    public long PageSize { get; } = Math.Max(0, pageSize);
 
     /// <summary>
     /// The total number of results, of which this page is a subset.
     /// </summary>
-    public long? TotalCount { get; }
+    public long? TotalCount { get; } = totalCount;
 
     /// <summary>
     /// The total number of pages.
@@ -92,33 +97,6 @@ public class PagedList<T> : IPagedList<T>
             return null;
         }
     }
-
-#pragma warning disable IDE0290 // Use primary constructor; need JsonConstructor
-    /// <summary>
-    /// Constructs a new instance of <see cref="PagedList{T}"/>.
-    /// </summary>
-    /// <param name="items">The current page of items.</param>
-    /// <param name="pageNumber">
-    /// <para>
-    /// The current page number.
-    /// </para>
-    /// <para>
-    /// The first page is 1.
-    /// </para>
-    /// </param>
-    /// <param name="pageSize">The maximum number of items per page.</param>
-    /// <param name="totalCount">
-    /// The total number of results, of which this page is a subset.
-    /// </param>
-    [JsonConstructor]
-    public PagedList(IEnumerable<T>? items, long pageNumber, long pageSize, long? totalCount)
-    {
-        Items = items?.ToList()?.AsReadOnly();
-        PageNumber = Math.Max(1, pageNumber);
-        PageSize = Math.Max(0, pageSize);
-        TotalCount = totalCount;
-    }
-#pragma warning restore IDE0290 // Use primary constructor
 
     /// <summary>
     /// Returns an enumerator that iterates through the <see cref="PagedList{T}"/>.

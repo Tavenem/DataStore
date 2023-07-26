@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.38.0-preview
+### Changed
+- `AsPagedList` extension returns `PagedList<T>` instead of `IPagedList<T>`
+
 ## 0.37.0-preview
 ### Changed
 - Update to .NET 8 preview

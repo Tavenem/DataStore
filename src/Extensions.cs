@@ -8,16 +8,16 @@ namespace Tavenem.DataStorage;
 public static class DataStorageExtensions
 {
     /// <summary>
-    /// Returns a <see cref="IPagedList{T}"/> wrapper for the current collection.
+    /// Returns a <see cref="PagedList{T}"/> wrapper for the current collection.
     /// </summary>
     /// <typeparam name="T">The type of items in the collection.</typeparam>
     /// <param name="collection">The current collection.</param>
     /// <param name="pageNumber">The current page number. The first page is 1.</param>
     /// <param name="pageSize">The page size.</param>
     /// <param name="totalCount">The total number of results, of which this page is a subset.</param>
-    /// <returns>An <see cref="IPagedList{T}"/> containing the items in the current collection.</returns>
-    public static IPagedList<T> AsPagedList<T>(this IEnumerable<T> collection, long pageNumber, long pageSize, long totalCount)
-        => new PagedList<T>(collection, pageNumber, pageSize, totalCount);
+    /// <returns>An <see cref="PagedList{T}"/> containing the items in the current collection.</returns>
+    public static PagedList<T> AsPagedList<T>(this IEnumerable<T> collection, long pageNumber, long pageSize, long totalCount)
+        => new(collection, pageNumber, pageSize, totalCount);
 
     /// <summary>
     /// Combines this <see cref="Expression{T}"/> with the given <see cref="Expression{T}"/> in
