@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.38.1-preview
+### Changed
+- Remove `JsonConstructor` from protected constructor on abstract `IdItem`
+
 ## 0.38.0-preview
 ### Changed
 - `AsPagedList` extension returns `PagedList<T>` instead of `IPagedList<T>`

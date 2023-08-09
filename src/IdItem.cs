@@ -87,7 +87,6 @@ public abstract class IdItem : IIdItem, IEquatable<IdItem>
     /// Initializes a new instance of <see cref="IdItem"/>.
     /// </summary>
     /// <param name="id">The item's <see cref="Id"/>.</param>
-    [JsonConstructor]
     protected IdItem(string id) => Id = id;
 
     /// <summary>
