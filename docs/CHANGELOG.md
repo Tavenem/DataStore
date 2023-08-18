@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.39.0-preview
+### Changed
+- Made `InMemoryDataStore` (de)serializable
+
 ## 0.38.1-preview
 ### Changed
 - Remove `JsonConstructor` from protected constructor on abstract `IdItem`

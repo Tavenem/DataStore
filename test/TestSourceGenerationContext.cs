@@ -12,6 +12,7 @@ public partial class SerializationTests
     [JsonSerializable(typeof(IReadOnlyList<TestIdItem>))]
     [JsonSerializable(typeof(PagedList<IIdItem>))]
     [JsonSerializable(typeof(PagedList<TestIdItem>))]
+    [JsonSerializable(typeof(InMemoryDataStore))]
     public partial class TestSourceGenerationContext
         : JsonSerializerContext
     { }

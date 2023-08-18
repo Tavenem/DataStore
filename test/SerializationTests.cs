@@ -61,6 +61,51 @@ public partial class SerializationTests
     }
 
     [TestMethod]
+    public void InMemoryDataStoreTest()
+    {
+        var options = new JsonSerializerOptions
+        {
+            TypeInfoResolver = new TestTypeResolver()
+        };
+        var value = new InMemoryDataStore();
+        Assert.IsTrue(value.StoreItem(new TestIdItem("test") { TestProperty = 1 }));
+        var json = JsonSerializer.Serialize(value, options);
+        Console.WriteLine(json);
+        var result = JsonSerializer.Deserialize<InMemoryDataStore>(json, options);
+        Assert.IsNotNull(result);
+        Assert.IsNotNull(result.Data);
+        Assert.IsTrue(result.Data.Count == 1);
+        Assert.IsTrue(result.Data.ContainsKey("test"));
+        Assert.AreEqual("test", result.Data["test"].Id);
+        Assert.IsTrue(result.Data["test"] is TestIdItem);
+        Assert.AreEqual(1, (result.Data["test"] as TestIdItem)?.TestProperty);
+        Assert.AreEqual(json, JsonSerializer.Serialize(result, options));
+    }
+
+    [TestMethod]
+    public void InMemoryDataStoreSourceGeneratedTest()
+    {
+        var options = new JsonSerializerOptions
+        {
+            TypeInfoResolver = new TestTypeResolver()
+        };
+        options.TypeInfoResolverChain.Add(TestSourceGenerationContext.Default);
+        var value = new InMemoryDataStore();
+        Assert.IsTrue(value.StoreItem(new TestIdItem("test") { TestProperty = 1 }));
+        var json = JsonSerializer.Serialize(value, options);
+        Console.WriteLine(json);
+        var result = JsonSerializer.Deserialize<InMemoryDataStore>(json, options);
+        Assert.IsNotNull(result);
+        Assert.IsNotNull(result.Data);
+        Assert.IsTrue(result.Data.Count == 1);
+        Assert.IsTrue(result.Data.ContainsKey("test"));
+        Assert.AreEqual("test", result.Data["test"].Id);
+        Assert.IsTrue(result.Data["test"] is TestIdItem);
+        Assert.AreEqual(1, (result.Data["test"] as TestIdItem)?.TestProperty);
+        Assert.AreEqual(json, JsonSerializer.Serialize(result, options));
+    }
+
+    [TestMethod]
     public void PagedListIdItemTest()
     {
         var value = new PagedList<TestIdItem>(

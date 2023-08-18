@@ -5,7 +5,15 @@
 /// </summary>
 public class InMemoryDataStore : IDataStore
 {
-    private readonly Dictionary<string, IIdItem> _data = new();
+    private Dictionary<string, IIdItem> _data = new();
+    /// <summary>
+    /// The stored data.
+    /// </summary>
+    public Dictionary<string, IIdItem> Data
+    {
+        get => _data;
+        set => _data = value ?? new();
+    }
 
     /// <summary>
     /// <para>
@@ -78,7 +86,7 @@ public class InMemoryDataStore : IDataStore
         {
             return default;
         }
-        else if (_data.TryGetValue(id, out var item)
+        else if (Data.TryGetValue(id, out var item)
             && item is T t)
         {
             return t;
@@ -103,7 +111,7 @@ public class InMemoryDataStore : IDataStore
     /// </summary>
     /// <typeparam name="T">The type of item to query.</typeparam>
     /// <returns>An <see cref="IDataStoreQueryable{T}"/> of the given type of item.</returns>
-    public IDataStoreQueryable<T> Query<T>() where T : class, IIdItem => new InMemoryDataStoreQueryable<T>(_data.Values.OfType<T>());
+    public IDataStoreQueryable<T> Query<T>() where T : class, IIdItem => new InMemoryDataStoreQueryable<T>(Data.Values.OfType<T>());
 
     /// <summary>
     /// Removes the stored item with the given id.
@@ -122,7 +130,7 @@ public class InMemoryDataStore : IDataStore
     /// <see langword="true"/> if the item was successfully removed; otherwise <see
     /// langword="false"/>.
     /// </returns>
-    public bool RemoveItem<T>(string? id) where T : class, IIdItem => string.IsNullOrEmpty(id) || _data.Remove(id);
+    public bool RemoveItem<T>(string? id) where T : class, IIdItem => string.IsNullOrEmpty(id) || Data.Remove(id);
 
     /// <summary>
     /// Removes the stored item with the given id.
@@ -141,7 +149,7 @@ public class InMemoryDataStore : IDataStore
     /// <see langword="true"/> if the item was successfully removed; otherwise <see
     /// langword="false"/>.
     /// </returns>
-    public bool RemoveItem<T>(T? item) where T : class, IIdItem => item is null || _data.Remove(item.Id);
+    public bool RemoveItem<T>(T? item) where T : class, IIdItem => item is null || Data.Remove(item.Id);
 
     /// <summary>
     /// Removes the stored item with the given id.
@@ -204,7 +212,7 @@ public class InMemoryDataStore : IDataStore
         {
             return true;
         }
-        _data[item.Id] = item;
+        Data[item.Id] = item;
         return true;
     }
 
