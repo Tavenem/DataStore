@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0
+### Added
+- Initial production release
+
 ## 0.39.0-preview
 ### Changed
 - Made `InMemoryDataStore` (de)serializable

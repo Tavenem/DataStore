@@ -22,9 +22,7 @@ In addition there are a handful of complementary NuGet packages which provide im
 
 ## Roadmap
 
-Tavenem.DataStore is currently in a **prerelease** state. Development is ongoing, and breaking changes are possible before the first production release.
-
-No release date is currently set for v1.0 of Tavenem.DataStore. The project is currently in a "wait and see" phase while its utility, completeness, and correctness are evaluated. When the project is judged to be in a satisfactory state, and further breaking changes to the interface are determined to be unlikely, a production release will be made.
+Development on Tavenem.DataStore is ongoing. Major releases with breaking changes are possible on an unpredictable cadence.
 
 ## Contributing
 
