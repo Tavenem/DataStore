@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using System.Text.Json.Serialization.Metadata;
 
 namespace Tavenem.DataStorage;
 
@@ -226,16 +227,27 @@ public interface IDataStoreQueryable<T>
     Task<T?> MinAsync();
 
     /// <summary>
-    /// Filters the elements of this <see cref="IDataStoreQueryable{T}"/> based on a specified
-    /// type.
+    /// Filters the elements of this <see cref="IDataStoreQueryable{T}"/> based on a specified type.
     /// </summary>
-    /// <typeparam name="TResult">The type to filter the elements of the sequence
-    /// on.</typeparam>
+    /// <typeparam name="TResult">
+    /// The type on which to filter the elements of the sequence.
+    /// </typeparam>
+    /// <param name="typeInfo">
+    /// <para>
+    /// <see cref="JsonTypeInfo{T}"/> for <typeparamref name="T"/>.
+    /// </para>
+    /// <para>
+    /// This parameter is useful only for data sources which (de)serialize to/from JSON, but the
+    /// overload is provided by <see cref="IDataStore"/> so that callers without knowledge of the
+    /// underlying storage implementation may supply the <see cref="JsonTypeInfo{T}"/> (when
+    /// available) in case it might be necessary.
+    /// </para>
+    /// </param>
     /// <returns>
     /// A collection that contains the elements from source that have type <typeparamref
     /// name="TResult"/>.
     /// </returns>
-    IDataStoreQueryable<TResult> OfType<TResult>();
+    IDataStoreQueryable<TResult> OfType<TResult>(JsonTypeInfo<TResult>? typeInfo = null);
 
     /// <summary>
     /// Sorts the elements of this <see cref="IDataStoreQueryable{T}"/> in ascending order
@@ -249,26 +261,51 @@ public interface IDataStoreQueryable<T>
     /// <summary>
     /// Projects each element of this <see cref="IDataStoreQueryable{T}"/> into a new form.
     /// </summary>
-    /// <typeparam name="TResult">The type of the value returned by the function represented by
-    /// selector.</typeparam>
+    /// <typeparam name="TResult">
+    /// The type of the value returned by the function represented by selector.
+    /// </typeparam>
     /// <param name="selector">A projection function to apply to each element.</param>
+    /// <param name="typeInfo">
+    /// <para>
+    /// <see cref="JsonTypeInfo{T}"/> for <typeparamref name="T"/>.
+    /// </para>
+    /// <para>
+    /// This parameter is useful only for data sources which (de)serialize to/from JSON, but the
+    /// overload is provided by <see cref="IDataStore"/> so that callers without knowledge of the
+    /// underlying storage implementation may supply the <see cref="JsonTypeInfo{T}"/> (when
+    /// available) in case it might be necessary.
+    /// </para>
+    /// </param>
     /// <returns>
     /// An <see cref="IDataStoreQueryable{T}"/> whose elements are the result of invoking a
     /// projection function on each element of this <see cref="IDataStoreQueryable{T}"/>.
     /// </returns>
-    IDataStoreQueryable<TResult> Select<TResult>(Expression<Func<T, TResult>> selector);
+    IDataStoreQueryable<TResult> Select<TResult>(Expression<Func<T, TResult>> selector, JsonTypeInfo<TResult>? typeInfo = null);
 
     /// <summary>
     /// Projects each element of this <see cref="IDataStoreQueryable{T}"/> into a new form.
     /// </summary>
-    /// <typeparam name="TResult">The type of the value returned by the function represented by
-    /// selector.</typeparam>
+    /// <typeparam name="TResult">
+    /// The type of the value returned by the function represented by
+    /// selector.
+    /// </typeparam>
     /// <param name="selector">A projection function to apply to each element.</param>
+    /// <param name="typeInfo">
+    /// <para>
+    /// <see cref="JsonTypeInfo{T}"/> for <typeparamref name="T"/>.
+    /// </para>
+    /// <para>
+    /// This parameter is useful only for data sources which (de)serialize to/from JSON, but the
+    /// overload is provided by <see cref="IDataStore"/> so that callers without knowledge of the
+    /// underlying storage implementation may supply the <see cref="JsonTypeInfo{T}"/> (when
+    /// available) in case it might be necessary.
+    /// </para>
+    /// </param>
     /// <returns>
     /// An <see cref="IAsyncEnumerable{T}"/> whose elements are the result of invoking a
     /// projection function on each element of this <see cref="IDataStoreQueryable{T}"/>.
     /// </returns>
-    IAsyncEnumerable<TResult> SelectAsync<TResult>(Func<T, ValueTask<TResult>> selector);
+    IAsyncEnumerable<TResult> SelectAsync<TResult>(Func<T, ValueTask<TResult>> selector, JsonTypeInfo<TResult>? typeInfo = null);
 
     /// <summary>
     /// Projects each element of this <see cref="IDataStoreQueryable{T}"/> to an <see
@@ -279,28 +316,53 @@ public interface IDataStoreQueryable<T>
     /// <paramref name="selector"/>.
     /// </typeparam>
     /// <param name="selector">A projection function to apply to each element.</param>
+    /// <param name="typeInfo">
+    /// <para>
+    /// <see cref="JsonTypeInfo{T}"/> for <typeparamref name="T"/>.
+    /// </para>
+    /// <para>
+    /// This parameter is useful only for data sources which (de)serialize to/from JSON, but the
+    /// overload is provided by <see cref="IDataStore"/> so that callers without knowledge of the
+    /// underlying storage implementation may supply the <see cref="JsonTypeInfo{T}"/> (when
+    /// available) in case it might be necessary.
+    /// </para>
+    /// </param>
     /// <returns>
     /// An <see cref="IDataStoreQueryable{T}"/> whose elements are the result of invoking a
     /// one-to-many projection function on each element of the input sequence.
     /// </returns>
-    IDataStoreQueryable<TResult> SelectMany<TResult>(Expression<Func<T, IEnumerable<TResult>>> selector);
+    IDataStoreQueryable<TResult> SelectMany<TResult>(Expression<Func<T, IEnumerable<TResult>>> selector, JsonTypeInfo<TResult>? typeInfo = null);
 
     /// <summary>
     /// Projects each element of this <see cref="IDataStoreQueryable{T}"/> to an <see
-    /// cref="IEnumerable{T}"/> and invokes a result selector function on each element therein.
-    /// The resulting values from each intermediate sequence are combined into a single,
-    /// one-dimensional sequence and returned.
+    /// cref="IEnumerable{T}"/> and invokes a result selector function on each element therein. The
+    /// resulting values from each intermediate sequence are combined into a single, one-dimensional
+    /// sequence and returned.
     /// </summary>
     /// <typeparam name="TCollection">
-    /// The type of the intermediate elements collected by the function represented by
-    /// <paramref name="collectionSelector"/>.
+    /// The type of the intermediate elements collected by the function represented by <paramref
+    /// name="collectionSelector"/>.
     /// </typeparam>
-    /// <typeparam name="TResult">The type of the elements of the resulting
-    /// sequence.</typeparam>
-    /// <param name="collectionSelector">A projection function to apply to each element of the
-    /// input sequence.</param>
-    /// <param name="resultSelector">A projection function to apply to each element of each
-    /// intermediate sequence.</param>
+    /// <typeparam name="TResult">
+    /// The type of the elements of the resulting sequence.
+    /// </typeparam>
+    /// <param name="collectionSelector">
+    /// A projection function to apply to each element of the input sequence.
+    /// </param>
+    /// <param name="resultSelector">
+    /// A projection function to apply to each element of each intermediate sequence.
+    /// </param>
+    /// <param name="typeInfo">
+    /// <para>
+    /// <see cref="JsonTypeInfo{T}"/> for <typeparamref name="T"/>.
+    /// </para>
+    /// <para>
+    /// This parameter is useful only for data sources which (de)serialize to/from JSON, but the
+    /// overload is provided by <see cref="IDataStore"/> so that callers without knowledge of the
+    /// underlying storage implementation may supply the <see cref="JsonTypeInfo{T}"/> (when
+    /// available) in case it might be necessary.
+    /// </para>
+    /// </param>
     /// <returns>
     /// An <see cref="IDataStoreQueryable{T}"/> whose elements are the result of invoking the
     /// one-to-many projection function <paramref name="collectionSelector"/> on each element of
@@ -309,7 +371,8 @@ public interface IDataStoreQueryable<T>
     /// </returns>
     IDataStoreQueryable<TResult> SelectMany<TCollection, TResult>(
         Expression<Func<T, IEnumerable<TCollection>>> collectionSelector,
-        Expression<Func<T, TCollection, TResult>> resultSelector);
+        Expression<Func<T, TCollection, TResult>> resultSelector,
+        JsonTypeInfo<TResult>? typeInfo = null);
 
     /// <summary>
     /// Projects each element of this <see cref="IDataStoreQueryable{T}"/> to an <see
@@ -320,29 +383,53 @@ public interface IDataStoreQueryable<T>
     /// <paramref name="selector"/>.
     /// </typeparam>
     /// <param name="selector">A projection function to apply to each element.</param>
+    /// <param name="typeInfo">
+    /// <para>
+    /// <see cref="JsonTypeInfo{T}"/> for <typeparamref name="T"/>.
+    /// </para>
+    /// <para>
+    /// This parameter is useful only for data sources which (de)serialize to/from JSON, but the
+    /// overload is provided by <see cref="IDataStore"/> so that callers without knowledge of the
+    /// underlying storage implementation may supply the <see cref="JsonTypeInfo{T}"/> (when
+    /// available) in case it might be necessary.
+    /// </para>
+    /// </param>
     /// <returns>
     /// An <see cref="IDataStoreQueryable{T}"/> whose elements are the result of invoking a
     /// one-to-many projection function on each element of the input sequence.
     /// </returns>
-    IAsyncEnumerable<TResult> SelectManyAsync<TResult>(Func<T, IAsyncEnumerable<TResult>> selector);
+    IAsyncEnumerable<TResult> SelectManyAsync<TResult>(Func<T, IAsyncEnumerable<TResult>> selector, JsonTypeInfo<TResult>? typeInfo = null);
 
     /// <summary>
     /// Projects each element of this <see cref="IDataStoreQueryable{T}"/> to an <see
-    /// cref="IEnumerable{T}"/>
-    /// and invokes a result selector function on each element therein. The resulting values
-    /// from each intermediate sequence are combined into a single, one-dimensional sequence and
-    /// returned.
+    /// cref="IEnumerable{T}"/> and invokes a result selector function on each element therein. The
+    /// resulting values from each intermediate sequence are combined into a single, one-dimensional
+    /// sequence and returned.
     /// </summary>
     /// <typeparam name="TCollection">
-    /// The type of the intermediate elements collected by the function represented by
-    /// <paramref name="collectionSelector"/>.
+    /// The type of the intermediate elements collected by the function represented by <paramref
+    /// name="collectionSelector"/>.
     /// </typeparam>
-    /// <typeparam name="TResult">The type of the elements of the resulting
-    /// sequence.</typeparam>
-    /// <param name="collectionSelector">A projection function to apply to each element of the
-    /// input sequence.</param>
-    /// <param name="resultSelector">A projection function to apply to each element of each
-    /// intermediate sequence.</param>
+    /// <typeparam name="TResult">
+    /// The type of the elements of the resulting sequence.
+    /// </typeparam>
+    /// <param name="collectionSelector">
+    /// A projection function to apply to each element of the input sequence.
+    /// </param>
+    /// <param name="resultSelector">
+    /// A projection function to apply to each element of each intermediate sequence.
+    /// </param>
+    /// <param name="typeInfo">
+    /// <para>
+    /// <see cref="JsonTypeInfo{T}"/> for <typeparamref name="T"/>.
+    /// </para>
+    /// <para>
+    /// This parameter is useful only for data sources which (de)serialize to/from JSON, but the
+    /// overload is provided by <see cref="IDataStore"/> so that callers without knowledge of the
+    /// underlying storage implementation may supply the <see cref="JsonTypeInfo{T}"/> (when
+    /// available) in case it might be necessary.
+    /// </para>
+    /// </param>
     /// <returns>
     /// An <see cref="IAsyncEnumerable{T}"/> whose elements are the result of invoking the
     /// one-to-many projection function <paramref name="collectionSelector"/> on each element of
@@ -351,24 +438,39 @@ public interface IDataStoreQueryable<T>
     /// </returns>
     IAsyncEnumerable<TResult> SelectManyAsync<TCollection, TResult>(
         Func<T, IEnumerable<TCollection>> collectionSelector,
-        Func<T, TCollection, ValueTask<TResult>> resultSelector);
+        Func<T, TCollection, ValueTask<TResult>> resultSelector,
+        JsonTypeInfo<TResult>? typeInfo = null);
 
     /// <summary>
     /// Projects each element of this <see cref="IDataStoreQueryable{T}"/> to an <see
-    /// cref="IEnumerable{T}"/> and invokes a result selector function on each element therein.
-    /// The resulting values from each intermediate sequence are combined into a single,
-    /// one-dimensional sequence and returned.
+    /// cref="IEnumerable{T}"/> and invokes a result selector function on each element therein. The
+    /// resulting values from each intermediate sequence are combined into a single, one-dimensional
+    /// sequence and returned.
     /// </summary>
     /// <typeparam name="TCollection">
-    /// The type of the intermediate elements collected by the function represented by
-    /// <paramref name="collectionSelector"/>.
+    /// The type of the intermediate elements collected by the function represented by <paramref
+    /// name="collectionSelector"/>.
     /// </typeparam>
-    /// <typeparam name="TResult">The type of the elements of the resulting
-    /// sequence.</typeparam>
-    /// <param name="collectionSelector">A projection function to apply to each element of the
-    /// input sequence.</param>
-    /// <param name="resultSelector">A projection function to apply to each element of each
-    /// intermediate sequence.</param>
+    /// <typeparam name="TResult">
+    /// The type of the elements of the resulting sequence.
+    /// </typeparam>
+    /// <param name="collectionSelector">
+    /// A projection function to apply to each element of the input sequence.
+    /// </param>
+    /// <param name="resultSelector">
+    /// A projection function to apply to each element of each intermediate sequence.
+    /// </param>
+    /// <param name="typeInfo">
+    /// <para>
+    /// <see cref="JsonTypeInfo{T}"/> for <typeparamref name="T"/>.
+    /// </para>
+    /// <para>
+    /// This parameter is useful only for data sources which (de)serialize to/from JSON, but the
+    /// overload is provided by <see cref="IDataStore"/> so that callers without knowledge of the
+    /// underlying storage implementation may supply the <see cref="JsonTypeInfo{T}"/> (when
+    /// available) in case it might be necessary.
+    /// </para>
+    /// </param>
     /// <returns>
     /// An <see cref="IAsyncEnumerable{T}"/> whose elements are the result of invoking the
     /// one-to-many projection function <paramref name="collectionSelector"/> on each element of
@@ -377,25 +479,39 @@ public interface IDataStoreQueryable<T>
     /// </returns>
     IAsyncEnumerable<TResult> SelectManyAsync<TCollection, TResult>(
         Func<T, IAsyncEnumerable<TCollection>> collectionSelector,
-        Func<T, TCollection, TResult> resultSelector);
+        Func<T, TCollection, TResult> resultSelector,
+        JsonTypeInfo<TResult>? typeInfo = null);
 
     /// <summary>
     /// Projects each element of this <see cref="IDataStoreQueryable{T}"/> to an <see
-    /// cref="IEnumerable{T}"/>
-    /// and invokes a result selector function on each element therein. The resulting values
-    /// from each intermediate sequence are combined into a single, one-dimensional sequence and
-    /// returned.
+    /// cref="IEnumerable{T}"/> and invokes a result selector function on each element therein. The
+    /// resulting values from each intermediate sequence are combined into a single, one-dimensional
+    /// sequence and returned.
     /// </summary>
     /// <typeparam name="TCollection">
-    /// The type of the intermediate elements collected by the function represented by
-    /// <paramref name="collectionSelector"/>.
+    /// The type of the intermediate elements collected by the function represented by <paramref
+    /// name="collectionSelector"/>.
     /// </typeparam>
-    /// <typeparam name="TResult">The type of the elements of the resulting
-    /// sequence.</typeparam>
-    /// <param name="collectionSelector">A projection function to apply to each element of the
-    /// input sequence.</param>
-    /// <param name="resultSelector">A projection function to apply to each element of each
-    /// intermediate sequence.</param>
+    /// <typeparam name="TResult">
+    /// The type of the elements of the resulting sequence.
+    /// </typeparam>
+    /// <param name="collectionSelector">
+    /// A projection function to apply to each element of the input sequence.
+    /// </param>
+    /// <param name="resultSelector">
+    /// A projection function to apply to each element of each intermediate sequence.
+    /// </param>
+    /// <param name="typeInfo">
+    /// <para>
+    /// <see cref="JsonTypeInfo{T}"/> for <typeparamref name="T"/>.
+    /// </para>
+    /// <para>
+    /// This parameter is useful only for data sources which (de)serialize to/from JSON, but the
+    /// overload is provided by <see cref="IDataStore"/> so that callers without knowledge of the
+    /// underlying storage implementation may supply the <see cref="JsonTypeInfo{T}"/> (when
+    /// available) in case it might be necessary.
+    /// </para>
+    /// </param>
     /// <returns>
     /// An <see cref="IAsyncEnumerable{T}"/> whose elements are the result of invoking the
     /// one-to-many projection function <paramref name="collectionSelector"/> on each element of
@@ -404,7 +520,8 @@ public interface IDataStoreQueryable<T>
     /// </returns>
     IAsyncEnumerable<TResult> SelectManyAsync<TCollection, TResult>(
         Func<T, IAsyncEnumerable<TCollection>> collectionSelector,
-        Func<T, TCollection, ValueTask<TResult>> resultSelector);
+        Func<T, TCollection, ValueTask<TResult>> resultSelector,
+        JsonTypeInfo<TResult>? typeInfo = null);
 
     /// <summary>
     /// Bypasses a specified number of elements in a sequence and then returns the remaining

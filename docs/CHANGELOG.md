@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0
+### Added
+- Overloads of certain methods with an additional `JsonTypeInfo<T>` parameter, to support source generated (de)serialization for relevant data sources
+
 ## 1.0
 ### Added
 - Initial production release
