@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.0
+Version 3 is is a is a major release that includes breaking changes to the API, as well as a number of new features and improvements.
+
+### TODO
+- TODO
+
 ## 2.0
 ### Added
 - Overloads of certain methods with an additional `JsonTypeInfo<T>` parameter, to support source generated (de)serialization for relevant data sources

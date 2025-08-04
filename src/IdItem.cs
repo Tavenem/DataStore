@@ -7,7 +7,7 @@ namespace Tavenem.DataStorage;
 /// </summary>
 /// <remarks>
 /// <para>
-/// This is the basic unit of persistence for implementations of <see cref="IDataStore"/>.
+/// This is the basic unit of persistence for implementations of <see cref="IIdItemDataStore"/>.
 /// </para>
 /// <para>
 /// It uses a <see cref="string"/> key which may or may not be unique, depending on your
@@ -66,7 +66,7 @@ public abstract class IdItem : IIdItem, IEquatable<IdItem>
     /// necessary.
     /// </para>
     /// </remarks>
-    [JsonInclude, JsonPropertyOrder(-1)]
+    [JsonPropertyName("_id_t"), JsonInclude, JsonPropertyOrder(-1)]
     public virtual string IdItemTypeName
     {
         get => $":{GetType().Name}:";

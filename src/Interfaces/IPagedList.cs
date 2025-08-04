@@ -1,10 +1,14 @@
-﻿namespace Tavenem.DataStorage;
+﻿using System.Text.Json.Serialization;
+using Tavenem.DataStorage.PagedLists;
+
+namespace Tavenem.DataStorage;
 
 /// <summary>
 /// A list of items which is a subset of a larger collection, with information about the place
 /// of this subset within the overall collection.
 /// </summary>
 /// <typeparam name="T">The type of items in the list.</typeparam>
+[JsonConverter(typeof(IPagedListConverter))]
 public interface IPagedList<out T> : IReadOnlyList<T>
 {
     /// <summary>

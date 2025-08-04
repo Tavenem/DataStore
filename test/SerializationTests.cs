@@ -1,13 +1,11 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Linq;
 using System.Text.Json;
 using Tavenem.DataStorage;
+using Tavenem.DataStorage.InMemory;
 
 namespace Tavenem.DataStore.Test;
 
 [TestClass]
-public partial class SerializationTests
+public partial class SerializationTests(TestContext testContext)
 {
     [TestMethod]
     public void IdItemTest()
@@ -61,20 +59,20 @@ public partial class SerializationTests
     }
 
     [TestMethod]
-    public void InMemoryDataStoreTest()
+    public async Task InMemoryDataStoreTest()
     {
         var options = new JsonSerializerOptions
         {
             TypeInfoResolver = new TestTypeResolver()
         };
         var value = new InMemoryDataStore();
-        Assert.IsTrue(value.StoreItem(new TestIdItem("test") { TestProperty = 1 }));
+        Assert.IsNotNull(await value.StoreItemAsync(new TestIdItem("test") { TestProperty = 1 }, cancellationToken: testContext.CancellationTokenSource.Token));
         var json = JsonSerializer.Serialize(value, options);
         Console.WriteLine(json);
         var result = JsonSerializer.Deserialize<InMemoryDataStore>(json, options);
         Assert.IsNotNull(result);
         Assert.IsNotNull(result.Data);
-        Assert.IsTrue(result.Data.Count == 1);
+        Assert.HasCount(1, result.Data);
         Assert.IsTrue(result.Data.ContainsKey("test"));
         Assert.AreEqual("test", result.Data["test"].Id);
         Assert.IsTrue(result.Data["test"] is TestIdItem);
@@ -83,7 +81,7 @@ public partial class SerializationTests
     }
 
     [TestMethod]
-    public void InMemoryDataStoreSourceGeneratedTest()
+    public async Task InMemoryDataStoreSourceGeneratedTest()
     {
         var options = new JsonSerializerOptions
         {
@@ -91,13 +89,13 @@ public partial class SerializationTests
         };
         options.TypeInfoResolverChain.Add(TestSourceGenerationContext.Default);
         var value = new InMemoryDataStore();
-        Assert.IsTrue(value.StoreItem(new TestIdItem("test") { TestProperty = 1 }));
+        Assert.IsNotNull(await value.StoreItemAsync(new TestIdItem("test") { TestProperty = 1 }, cancellationToken: testContext.CancellationTokenSource.Token));
         var json = JsonSerializer.Serialize(value, options);
         Console.WriteLine(json);
         var result = JsonSerializer.Deserialize<InMemoryDataStore>(json, options);
         Assert.IsNotNull(result);
         Assert.IsNotNull(result.Data);
-        Assert.IsTrue(result.Data.Count == 1);
+        Assert.HasCount(1, result.Data);
         Assert.IsTrue(result.Data.ContainsKey("test"));
         Assert.AreEqual("test", result.Data["test"].Id);
         Assert.IsTrue(result.Data["test"] is TestIdItem);
@@ -122,7 +120,7 @@ public partial class SerializationTests
         Assert.AreEqual(1, result!.PageNumber);
         Assert.AreEqual(10, result!.PageSize);
         Assert.AreEqual(10, result!.TotalCount);
-        Assert.AreEqual(10, result!.Count);
+        Assert.HasCount(10, result);
         Assert.AreEqual("0", result![0].Id);
         Assert.AreEqual(0, result![0].TestProperty);
         Assert.AreEqual("9", result![9].Id);
@@ -143,14 +141,27 @@ public partial class SerializationTests
         json = JsonSerializer.Serialize(value2, options);
         Console.WriteLine(json);
         var result2 = JsonSerializer.Deserialize<PagedList<IIdItem>>(json, options);
-        Assert.IsNotNull(result);
-        Assert.AreEqual(1, result!.PageNumber);
-        Assert.AreEqual(10, result!.PageSize);
-        Assert.AreEqual(10, result!.TotalCount);
-        Assert.AreEqual(10, result!.Count);
-        Assert.AreEqual("0", result![0].Id);
-        Assert.AreEqual("9", result![9].Id);
+        Assert.IsNotNull(result2);
+        Assert.AreEqual(1, result2!.PageNumber);
+        Assert.AreEqual(10, result2!.PageSize);
+        Assert.AreEqual(10, result2!.TotalCount);
+        Assert.HasCount(10, result2);
+        Assert.AreEqual("0", result2![0].Id);
+        Assert.AreEqual("9", result2![9].Id);
         Assert.AreEqual(json, JsonSerializer.Serialize(result2, options));
+
+        IPagedList<IIdItem> value3 = value2;
+        json = JsonSerializer.Serialize(value3, options);
+        Console.WriteLine(json);
+        var result3 = JsonSerializer.Deserialize<IPagedList<IIdItem>>(json, options);
+        Assert.IsNotNull(result3);
+        Assert.AreEqual(1, result3!.PageNumber);
+        Assert.AreEqual(10, result3!.PageSize);
+        Assert.AreEqual(10, result3!.TotalCount);
+        Assert.HasCount(10, result3);
+        Assert.AreEqual("0", result3![0].Id);
+        Assert.AreEqual("9", result3![9].Id);
+        Assert.AreEqual(json, JsonSerializer.Serialize(result3, options));
     }
 
     [TestMethod]
@@ -170,7 +181,7 @@ public partial class SerializationTests
         Assert.AreEqual(1, result!.PageNumber);
         Assert.AreEqual(10, result!.PageSize);
         Assert.AreEqual(10, result!.TotalCount);
-        Assert.AreEqual(10, result!.Count);
+        Assert.HasCount(10, result);
         Assert.AreEqual("0", result![0].Id);
         Assert.AreEqual(0, result![0].TestProperty);
         Assert.AreEqual("9", result![9].Id);
@@ -198,7 +209,7 @@ public partial class SerializationTests
         Assert.AreEqual(1, result!.PageNumber);
         Assert.AreEqual(10, result!.PageSize);
         Assert.AreEqual(10, result!.TotalCount);
-        Assert.AreEqual(10, result!.Count);
+        Assert.HasCount(10, result);
         Assert.AreEqual("0", result![0].Id);
         Assert.AreEqual("9", result![9].Id);
         Assert.AreEqual(json, JsonSerializer.Serialize(result2, options));
@@ -215,7 +226,7 @@ public partial class SerializationTests
         Assert.AreEqual(1, result!.PageNumber);
         Assert.AreEqual(10, result!.PageSize);
         Assert.AreEqual(10, result!.TotalCount);
-        Assert.AreEqual(10, result!.Count);
+        Assert.HasCount(10, result);
         Assert.AreEqual(0, result![0]);
         Assert.AreEqual(9, result![9]);
         Assert.AreEqual(json, JsonSerializer.Serialize(result));

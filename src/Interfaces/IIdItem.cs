@@ -7,7 +7,7 @@ namespace Tavenem.DataStorage;
 /// </summary>
 /// <remarks>
 /// <para>
-/// This is the basic unit of persistence for implementations of <see cref="IDataStore"/>.
+/// This is the basic unit of persistence for implementations of <see cref="IIdItemDataStore"/>.
 /// </para>
 /// <para>
 /// It uses a <see cref="string"/> key which may or may not be unique, depending on your
@@ -24,6 +24,7 @@ public interface IIdItem : IEquatable<IIdItem>
     /// <summary>
     /// The ID of this item.
     /// </summary>
+    [JsonPropertyName("id"), JsonInclude, JsonPropertyOrder(-2)]
     string Id { get; }
 
     /// <summary>
@@ -49,5 +50,15 @@ public interface IIdItem : IEquatable<IIdItem>
     /// For example: ":BaseType:ChildType:".
     /// </para>
     /// </remarks>
-    public string IdItemTypeName => $":{GetType().Name}:";
+    [JsonPropertyName("_id_t"), JsonInclude, JsonPropertyOrder(-1)]
+    string IdItemTypeName => $":{GetType().Name}:";
+
+    /// <summary>
+    /// Determines whether the specified <see cref="IIdItem"/> instance is equal to this one.
+    /// </summary>
+    /// <param name="other">The <see cref="IIdItem"/> instance to compare with this one.</param>
+    /// <returns><see langword="true"/> if the specified <see cref="IIdItem"/> instance is equal
+    /// to this once; otherwise, <see langword="false"/>.</returns>
+    bool IEquatable<IIdItem>.Equals(IIdItem? other)
+        => !string.IsNullOrEmpty(Id) && string.Equals(Id, other?.Id, StringComparison.Ordinal);
 }

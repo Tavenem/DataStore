@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Tavenem.DataStorage;
+namespace Tavenem.DataStorage.PagedLists;
 
 /// <summary>
 /// A converter for <see cref="PagedList{T}"/>.
@@ -35,7 +35,7 @@ public class PagedListConverter : JsonConverterFactory
         var valueType = typeToConvert.GetGenericArguments()[0];
 
         return (JsonConverter)Activator.CreateInstance(
-            typeof(PagedListConverterInner<>).MakeGenericType(new Type[] { valueType }),
+            typeof(PagedListConverterInner<>).MakeGenericType([valueType]),
             BindingFlags.Instance | BindingFlags.Public,
             binder: null,
             args: null,
@@ -78,7 +78,7 @@ public class PagedListConverter : JsonConverterFactory
 
                 switch (reader.GetString())
                 {
-                    case nameof(PagedList<T>.PageNumber):
+                    case nameof(PagedList<>.PageNumber):
                         if (!reader.Read()
                             || reader.TokenType != JsonTokenType.Number
                             || !reader.TryGetInt64(out pageNumber))
@@ -86,7 +86,7 @@ public class PagedListConverter : JsonConverterFactory
                             throw new JsonException();
                         }
                         break;
-                    case nameof(PagedList<T>.PageSize):
+                    case nameof(PagedList<>.PageSize):
                         if (!reader.Read()
                             || reader.TokenType != JsonTokenType.Number
                             || !reader.TryGetInt64(out pageSize))
@@ -94,7 +94,7 @@ public class PagedListConverter : JsonConverterFactory
                             throw new JsonException();
                         }
                         break;
-                    case nameof(PagedList<T>.TotalCount):
+                    case nameof(PagedList<>.TotalCount):
                         if (!reader.Read())
                         {
                             throw new JsonException();
@@ -110,7 +110,7 @@ public class PagedListConverter : JsonConverterFactory
                         }
                         totalCount = totalCountValue;
                         break;
-                    case nameof(PagedList<T>.Items):
+                    case nameof(PagedList<>.Items):
                         collection = JsonSerializer.Deserialize<IReadOnlyList<T>>(ref reader, options);
                         break;
                 }
@@ -129,17 +129,17 @@ public class PagedListConverter : JsonConverterFactory
             JsonSerializerOptions options)
         {
             writer.WriteStartObject();
-            writer.WriteNumber(nameof(PagedList<T>.PageNumber), value.PageNumber);
-            writer.WriteNumber(nameof(PagedList<T>.PageSize), value.PageSize);
+            writer.WriteNumber(nameof(PagedList<>.PageNumber), value.PageNumber);
+            writer.WriteNumber(nameof(PagedList<>.PageSize), value.PageSize);
             if (value.TotalCount.HasValue)
             {
-                writer.WriteNumber(nameof(PagedList<T>.TotalCount), value.TotalCount.Value);
+                writer.WriteNumber(nameof(PagedList<>.TotalCount), value.TotalCount.Value);
             }
             else
             {
-                writer.WriteNull(nameof(PagedList<T>.TotalCount));
+                writer.WriteNull(nameof(PagedList<>.TotalCount));
             }
-            writer.WritePropertyName(nameof(PagedList<T>.Items));
+            writer.WritePropertyName(nameof(PagedList<>.Items));
             JsonSerializer.Serialize(writer, value.Items, options);
             writer.WriteEndObject();
         }

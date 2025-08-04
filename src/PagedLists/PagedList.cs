@@ -1,13 +1,27 @@
 ﻿using System.Collections;
 using System.Text.Json.Serialization;
+using Tavenem.DataStorage.PagedLists;
 
 namespace Tavenem.DataStorage;
 
 /// <summary>
-/// A list of items which is a subset of a larger collection, with information about the place
-/// of this subset within the overall collection.
+/// A list of items which is a subset of a larger collection, with information about the place of
+/// this subset within the overall collection.
 /// </summary>
 /// <typeparam name="T">The type of items in the list.</typeparam>
+/// <param name="items">The current page of items.</param>
+/// <param name="pageNumber">
+/// <para>
+/// The current page number.
+/// </para>
+/// <para>
+/// The first page is 1.
+/// </para>
+/// </param>
+/// <param name="pageSize">The maximum number of items per page.</param>
+/// <param name="totalCount">
+/// The total number of results, of which this page is a subset.
+/// </param>
 [JsonConverter(typeof(PagedListConverter))]
 [method: JsonConstructor]
 public class PagedList<T>(
