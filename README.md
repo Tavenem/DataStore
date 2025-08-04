@@ -1,4 +1,4 @@
-![build](https://img.shields.io/github/workflow/status/Tavenem/DataStore/publish/main) [![NuGet downloads](https://img.shields.io/nuget/dt/Tavenem.DataStore)](https://www.nuget.org/packages/Tavenem.DataStore/)
+![build](https://img.shields.io/github/actions/workflow/status/Tavenem/DataStore/publish.yml) [![NuGet downloads](https://img.shields.io/nuget/dt/Tavenem.DataStore)](https://www.nuget.org/packages/Tavenem.DataStore/)
 
 Tavenem.DataStore
 ==
