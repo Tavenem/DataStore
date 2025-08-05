@@ -39,7 +39,7 @@ public abstract class InMemoryDataStore<TKey, TItem> : IInMemoryDataStore, IData
 
     /// <summary>
     /// <para>
-    /// Indicates whether this <see cref="IIdItemDataStore"/> implementation allows items to be
+    /// Indicates whether this <see cref="IDataStore"/> implementation allows items to be
     /// cached.
     /// </para>
     /// <para>
