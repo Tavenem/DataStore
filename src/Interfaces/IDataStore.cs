@@ -14,7 +14,7 @@ public interface IDataStore
     TimeSpan DefaultCacheTimeout { get; set; }
 
     /// <summary>
-    /// Indicates whether this <see cref="IDataStore{TItem}"/> implementation allows items to
+    /// Indicates whether this <see cref="IDataStore"/> implementation allows items to
     /// be cached.
     /// </summary>
     /// <remarks>

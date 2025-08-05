@@ -1,4 +1,6 @@
-﻿namespace Tavenem.DataStorage.Interfaces;
+﻿using System.Text.Json.Serialization.Metadata;
+
+namespace Tavenem.DataStorage.Interfaces;
 
 /// <summary>
 /// An <see cref="IDataStoreQueryable{TSource}"/> which supports the <see cref="OfType{TResult}"/>
@@ -22,9 +24,20 @@ public interface IDataStoreOfTypeQueryable<TSource> : IDataStoreQueryable<TSourc
     /// specified type.
     /// </summary>
     /// <typeparam name="TResult">The type to filter the elements of the sequence on.</typeparam>
+    /// <param name="typeInfo">
+    /// <para>
+    /// <see cref="JsonTypeInfo{T}"/> for <typeparamref name="TResult"/>.
+    /// </para>
+    /// <para>
+    /// This parameter is useful only for data sources which (de)serialize to/from JSON, but the
+    /// parameter is provided so that callers without knowledge of the underlying storage
+    /// implementation may supply the <see cref="JsonTypeInfo{T}"/> (when available) in case it
+    /// might be necessary.
+    /// </para>
+    /// </param>
     /// <returns>
     /// A collection that contains the elements from this source that have type <typeparamref
     /// name="TResult"/>.
     /// </returns>
-    IDataStoreOfTypeQueryable<TResult> OfType<TResult>() where TResult : TSource;
+    IDataStoreOfTypeQueryable<TResult> OfType<TResult>(JsonTypeInfo<TResult>? typeInfo = null) where TResult : TSource;
 }

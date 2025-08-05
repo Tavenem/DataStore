@@ -45,9 +45,7 @@ public class InMemoryDataStoreQueryable<TSource>(IInMemoryDataStore dataStore, I
     /// </summary>
     public IInMemoryDataStore InMemoryProvider { get; } = dataStore;
 
-    /// <summary>
-    /// The <see cref="InMemoryDataStore"/> provider for this queryable.
-    /// </summary>
+    /// <inheritdoc/>
     IDataStore IDataStoreQueryable<TSource>.Provider => InMemoryProvider;
 
     /// <summary>
