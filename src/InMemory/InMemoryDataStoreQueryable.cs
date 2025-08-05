@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Linq.Expressions;
 using System.Numerics;
+using System.Text.Json.Serialization.Metadata;
 using Tavenem.DataStorage.Interfaces;
 
 namespace Tavenem.DataStorage.InMemory;
@@ -398,7 +399,7 @@ public class InMemoryDataStoreQueryable<TSource>(IInMemoryDataStore dataStore, I
     }
 
     /// <inheritdoc />
-    public IDataStoreOfTypeQueryable<TResult> OfType<TResult>() where TResult : TSource
+    public IDataStoreOfTypeQueryable<TResult> OfType<TResult>(JsonTypeInfo<TResult>? typeInfo = null) where TResult : TSource
         => new InMemoryDataStoreQueryable<TResult>(InMemoryProvider, Source.OfType<TResult>());
 
     /// <inheritdoc />
