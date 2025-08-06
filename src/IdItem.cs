@@ -24,8 +24,13 @@ namespace Tavenem.DataStorage;
 /// overridden in derived classes to ensure correct behavior.
 /// </para>
 /// </remarks>
-public abstract class IdItem : IIdItem, IEquatable<IdItem>
+public abstract class IdItem : IIdItem<IdItem>, IEquatable<IdItem>
 {
+    /// <summary>
+    /// The <see cref="IdItemTypeName"/> for this class.
+    /// </summary>
+    public const string IIdItemTypeName = $":{nameof(IdItem)}:";
+
     /// <summary>
     /// <para>
     /// The ID of this item.
@@ -39,39 +44,27 @@ public abstract class IdItem : IIdItem, IEquatable<IdItem>
     public string Id { get; set; }
 
     /// <summary>
-    /// <para>
     /// A built-in, read-only type discriminator.
-    /// </para>
-    /// <para>
-    /// This property's default implementation uses reflection to generate a string with the format
-    /// ":<c>GetType().Name</c>:".
-    /// </para>
-    /// <para>
-    /// The property can (and should) be overridden in subclasses to hard-code the discriminator
-    /// value, both in order to avoid reflection and also to guard against potential breaking
-    /// changes if a type is renamed.
-    /// </para>
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Inheritance and polymorphism can be modeled by chaining subtypes with the ':' character as a
+    /// Inheritance and polymorphism are modeled by chaining subtypes with the ':' character as a
     /// separator.
     /// </para>
     /// <para>
     /// For example: ":BaseType:ChildType:".
     /// </para>
     /// <para>
-    /// The property's default implementation has a set accessor, but it performs no function. It
-    /// exists to allow overriding implementations to provide both get and set accessors, if
-    /// necessary.
+    /// This property has a public <c>init</c> accessor for source generated deserialization
+    /// support, but it is expected to do nothing.
+    /// </para>
+    /// <para>
+    /// Note that this property is expected to always return the same value as <see
+    /// cref="IIdItem.GetIdItemTypeName"/> for this type.
     /// </para>
     /// </remarks>
     [JsonPropertyName("_id_t"), JsonInclude, JsonPropertyOrder(-1)]
-    public virtual string IdItemTypeName
-    {
-        get => $":{GetType().Name}:";
-        set { }
-    }
+    public abstract string IdItemTypeName { get; init; }
 
     /// <summary>
     /// <para>
@@ -90,13 +83,44 @@ public abstract class IdItem : IIdItem, IEquatable<IdItem>
     protected IdItem(string id) => Id = id;
 
     /// <summary>
-    /// Determines whether the specified <see cref="IIdItem"/> instance is equal to this one.
+    /// <para>
+    /// Gets the <see cref="IdItemTypeName"/> for any instance of this class as a static method.
+    /// </para>
+    /// <para>
+    /// This method's default implementation is suitable only for the <see cref="IdItem"/> class
+    /// itself. It should be overridden in subclasses to return the correct discriminator value.
+    /// </para>
     /// </summary>
-    /// <param name="other">The <see cref="IIdItem"/> instance to compare with this one.</param>
-    /// <returns><see langword="true"/> if the specified <see cref="IIdItem"/> instance is equal
-    /// to this once; otherwise, <see langword="false"/>.</returns>
-    public bool Equals(IIdItem? other)
-        => !string.IsNullOrEmpty(Id) && string.Equals(Id, other?.Id, StringComparison.Ordinal);
+    /// <returns>The <see cref="IdItemTypeName"/> for any instance of this class.</returns>
+    /// <remarks>
+    /// <para>
+    /// The value returned by this method is expected to start and end with the ':' character.
+    /// </para>
+    /// <para>
+    /// Inheritance and polymorphism should be modeled by chaining subtypes with the ':' character
+    /// as a separator.
+    /// </para>
+    /// <para>
+    /// For example: ":BaseType:ChildType:".
+    /// </para>
+    /// <para>
+    /// Note that the <see cref="IdItemTypeName"/> property for all instances of this type are
+    /// expected to always return the same value as this method.
+    /// </para>
+    /// </remarks>
+    static string IIdItem.GetIdItemTypeName() => IIdItemTypeName;
+
+    /// <summary>
+    /// Determines whether the specified <see cref="IIdItem{TSelf}"/> instance is equal to this one.
+    /// </summary>
+    /// <param name="other">
+    /// The <see cref="IIdItem{TSelf}"/> instance to compare with this one.
+    /// </param>
+    /// <returns>
+    /// <see langword="true"/> if the specified <see cref="IIdItem{TSelf}"/> instance is equal to
+    /// this once; otherwise, <see langword="false"/>.
+    /// </returns>
+    public bool Equals(IIdItem? other) => ((IIdItem)this).IdItemIsEqual(other);
 
     /// <summary>
     /// Determines whether the specified <see cref="IdItem"/> instance is equal to this one.
@@ -104,8 +128,7 @@ public abstract class IdItem : IIdItem, IEquatable<IdItem>
     /// <param name="other">The <see cref="IdItem"/> instance to compare with this one.</param>
     /// <returns><see langword="true"/> if the specified <see cref="IdItem"/> instance is equal
     /// to this once; otherwise, <see langword="false"/>.</returns>
-    public bool Equals(IdItem? other)
-        => !string.IsNullOrEmpty(Id) && string.Equals(Id, other?.Id, StringComparison.Ordinal);
+    public bool Equals(IdItem? other) => ((IIdItem)this).IdItemIsEqual(other);
 
     /// <summary>
     /// Determines whether the specified object is equal to the current object.
@@ -119,11 +142,11 @@ public abstract class IdItem : IIdItem, IEquatable<IdItem>
     /// Returns the hash code for this instance.
     /// </summary>
     /// <returns>The hash code for this instance.</returns>
-    public override int GetHashCode() => Id.GetHashCode();
+    public override int GetHashCode() => ((IIdItem)this).GetHashCode();
 
     /// <summary>Returns a string equivalent of this instance.</summary>
     /// <returns>A string equivalent of this instance.</returns>
-    public override string ToString() => Id;
+    public override string ToString() => ((IIdItem)this).ToString();
 
     /// <summary>
     /// Indicates whether two <see cref="IdItem"/> instances are equal.

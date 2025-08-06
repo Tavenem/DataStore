@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using Tavenem.DataStorage.PagedLists;
 
 namespace Tavenem.DataStorage;
 
@@ -8,6 +7,38 @@ namespace Tavenem.DataStorage;
 /// </summary>
 public static class DataStorageExtensions
 {
+    /// <summary>
+    /// Extensions for <see cref="IIdItem{T}"/> types.
+    /// </summary>
+    extension<T>(IIdItem<T> item) where T : IIdItem<T>
+    {
+        /// <summary>
+        /// <para>
+        /// Gets the <see cref="IIdItem.IdItemTypeName"/> for any instance of this class as a static
+        /// method.
+        /// </para>
+        /// <para>
+        /// This method's default implementation is suitable only for the <see cref="IdItem"/> class
+        /// itself. It should be overridden in subclasses to return the correct discriminator value.
+        /// </para>
+        /// </summary>
+        /// <returns>The <see cref="IIdItem.IdItemTypeName"/> for any instance of this
+        /// class.</returns>
+        /// <remarks>
+        /// <para>
+        /// The value returned by this method is expected to start and end with the ':' character.
+        /// </para>
+        /// <para>
+        /// Inheritance and polymorphism should be modeled by chaining subtypes with the ':'
+        /// character as a separator.
+        /// </para>
+        /// <para>
+        /// For example: ":BaseType:ChildType:".
+        /// </para>
+        /// </remarks>
+        public string GetIdItemTypeName() => T.GetIdItemTypeName();
+    }
+
     /// <summary>
     /// Returns a <see cref="PagedList{T}"/> wrapper for the current collection.
     /// </summary>
@@ -33,7 +64,7 @@ public static class DataStorageExtensions
     /// An <see cref="Expression{T}"/> which represents a <see cref="Func{T}"/> that returns a
     /// <see cref="bool"/>.
     /// </param>
-    /// <returns>A combined expression.</returns>
+    /// <returns>A combined expression.</returns>`
     public static Expression<Func<T, bool>> AndAlso<T>(this Expression<Func<T, bool>> first, Expression<Func<T, bool>> second)
         => Expression.Lambda<Func<T, bool>>(
             Expression.AndAlso(

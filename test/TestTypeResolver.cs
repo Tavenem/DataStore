@@ -14,7 +14,7 @@ public class TestTypeResolver : DefaultJsonTypeInfoResolver
 
         if (jsonTypeInfo.Type == typeof(IIdItem))
         {
-            var derivedType = new JsonDerivedType(typeof(TestIdItem), TestIdItem.TestIdItemTypeName);
+            var derivedType = new JsonDerivedType(typeof(TestIdItem), TestIdItem.IIdItemTypeName);
             if (jsonTypeInfo.PolymorphismOptions is null)
             {
                 jsonTypeInfo.PolymorphismOptions = new JsonPolymorphismOptions

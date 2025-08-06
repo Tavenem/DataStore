@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.0-preview.1
+## 3.1-preview.2
 Version 3 is is a is a major release that includes significant breaking changes to the API, as well as a number of new features and improvements.
 
 The primary objectives of this version were to make `IDataStore` more flexible regarding item and key types, and to enable more comprehensive support for LINQ operations on `IDataStoreQueryable<TSource>` which better match the expected range of features found on a standard `IQueryable<TSource>`.
@@ -44,7 +44,9 @@ The primary objectives of this version were to make `IDataStore` more flexible r
   - `IIdItemDataStore` which replicates the original by extending `IDataStore<string, IIdItem>`
 - `IDataStoreQueryable<TSource>` now implements `IAsyncEnumerable<TSource>` and provides default implementations of a variety of LINQ methods which perform client-side logic on the asynchronously enumerated results. Implementations can override these methods to provide more efficient implementations which execute the logic in the underlying data source.
 - All asynchronous methods of `IDataStore` and `IDataStoreQueryable<TSource>` now take a `CancellationToken` parameter
-- `IIdItem` now provides the default implementation of `IEquatable<IIdItem>` previously provided by `IdItem`, as well as defining the JSON serialization behavior of its properties
+- The original `IIdItem` has been divided into two separate implementations:
+  - `IIdItem<TSelf>` which provides a default implementation of `IdItemTypeName` and default equality operators
+  - `IIdItem` which now provides the default implementation of `IEquatable<IIdItem>` previously provided by `IdItem`, as well as defining the JSON serialization behavior of its properties
   - This should make it easier to use the opinionated defaults for an `IIdItem` without deriving from the `IdItem` base class
 - `IdItemTypeName` (on both `IIdItem` and `IdItem`) now uses the `JsonPropertyName` "_id_t" (both for brevity to minimize object size, and to better indicate its use as a type discriminator rather than an object property).
   - ***N.B. This is a breaking change that may affect the ability to deserialize existing data.*** A thoughtful migration strategy to move from v0-2 to v3 is essential.
