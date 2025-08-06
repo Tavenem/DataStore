@@ -10,7 +10,12 @@ public partial class SerializationTests(TestContext testContext)
     [TestMethod]
     public void IdItemTest()
     {
-        var value = new TestIdItem("test") { TestProperty = 1 };
+        var value = new TestIdItem();
+        Assert.IsNotNull(value.Id);
+
+        value = new TestIdItem("test") { TestProperty = 1 };
+        Assert.AreEqual($":{nameof(TestIdItem)}:", value.IdItemTypeName);
+
         var json = JsonSerializer.Serialize(value);
         Console.WriteLine(json);
         var result = JsonSerializer.Deserialize<TestIdItem>(json);
@@ -66,7 +71,12 @@ public partial class SerializationTests(TestContext testContext)
             TypeInfoResolver = new TestTypeResolver()
         };
         var value = new InMemoryDataStore();
-        Assert.IsNotNull(await value.StoreItemAsync(new TestIdItem("test") { TestProperty = 1 }, cancellationToken: testContext.CancellationTokenSource.Token));
+
+        var item = new TestIdItem("test") { TestProperty = 1 };
+        Assert.AreEqual(nameof(IIdItem.IdItemTypePropertyName), value.GetTypeDiscriminatorName(item));
+        Assert.AreEqual(TestIdItem.IIdItemTypeName, value.GetTypeDiscriminatorValue(item));
+
+        Assert.IsNotNull(await value.StoreItemAsync(item, cancellationToken: testContext.CancellationTokenSource.Token));
         var json = JsonSerializer.Serialize(value, options);
         Console.WriteLine(json);
         var result = JsonSerializer.Deserialize<InMemoryDataStore>(json, options);

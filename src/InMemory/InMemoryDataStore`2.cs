@@ -123,6 +123,26 @@ public abstract class InMemoryDataStore<TKey, TItem> : IInMemoryDataStore, IData
     public ValueTask<T?> GetItemAsync<T>(TKey? id, JsonTypeInfo<T>? typeInfo, TimeSpan? cacheTimeout = null, CancellationToken cancellationToken = default) where T : TItem
         => GetItemAsync<T>(id, cacheTimeout, cancellationToken);
 
+    /// <summary>
+    /// Gets the name of the property used to discriminate types, if any.
+    /// </summary>
+    /// <typeparam name="T">The type of item.</typeparam>
+    /// <param name="item">The item whose discriminator property is being obtained.</param>
+    /// <returns>
+    /// The name of the property used to discriminate types, if any.
+    /// </returns>
+    public virtual string? GetTypeDiscriminatorName<T>(T item) where T : TItem => null;
+
+    /// <summary>
+    /// Gets the value of the item's type discriminator, if any.
+    /// </summary>
+    /// <typeparam name="T">The type of item.</typeparam>
+    /// <param name="item">The item whose type discriminator is being obtained.</param>
+    /// <returns>
+    /// The value of <paramref name="item"/>'s type discriminator, if any.
+    /// </returns>
+    public virtual string? GetTypeDiscriminatorValue<T>(T item) where T : TItem => null;
+
     /// <inheritdoc />
     public IDataStoreQueryable<T> Query<T>(JsonTypeInfo<T>? typeInfo = null) where T : TItem
         => new InMemoryDataStoreQueryable<T>(this, Data.Values.OfType<T>().AsQueryable());

@@ -13,4 +13,30 @@ public class InMemoryDataStore : InMemoryDataStore<string, IIdItem>, IIdItemData
 
     /// <inheritdoc />
     public override string GetKey<T>(T item) => item.Id;
+
+    /// <summary>
+    /// Gets the name of the property used to discriminate types, if any.
+    /// </summary>
+    /// <typeparam name="T">The type of item.</typeparam>
+    /// <param name="item">The item whose discriminator property is being obtained.</param>
+    /// <returns>
+    /// The name of the property used to discriminate types, if any.
+    /// </returns>
+    /// <remarks>
+    /// Always returns <see cref="IIdItem.IdItemTypePropertyName"/> for <see cref="InMemoryDataStore"/>.
+    /// </remarks>
+    public override string? GetTypeDiscriminatorName<T>(T item) => nameof(IIdItem.IdItemTypePropertyName);
+
+    /// <summary>
+    /// Gets the value of the item's type discriminator, if any.
+    /// </summary>
+    /// <typeparam name="T">The type of item.</typeparam>
+    /// <param name="item">The item whose type discriminator is being obtained.</param>
+    /// <returns>
+    /// The value of <paramref name="item"/>'s type discriminator, if any.
+    /// </returns>
+    /// <remarks>
+    /// Always returns <see cref="IIdItem.GetIdItemTypeName"/> for <see cref="InMemoryDataStore"/>.
+    /// </remarks>
+    public override string? GetTypeDiscriminatorValue<T>(T item) => T.GetIdItemTypeName();
 }

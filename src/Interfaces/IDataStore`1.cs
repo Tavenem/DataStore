@@ -10,6 +10,34 @@ namespace Tavenem.DataStorage;
 public interface IDataStore<in TItem> : IDataStore where TItem : notnull
 {
     /// <summary>
+    /// Gets the name of the property used to discriminate types, if any.
+    /// </summary>
+    /// <typeparam name="T">The type of item.</typeparam>
+    /// <param name="item">The item whose discriminator property is being obtained.</param>
+    /// <returns>
+    /// The name of the property used to discriminate types, if any.
+    /// </returns>
+    /// <remarks>
+    /// This method may return <see langword="null"/> unconditionally if the data source does not
+    /// make use of type discriminators.
+    /// </remarks>
+    string? GetTypeDiscriminatorName<T>(T item) where T : TItem;
+
+    /// <summary>
+    /// Gets the value of the item's type discriminator, if any.
+    /// </summary>
+    /// <typeparam name="T">The type of item.</typeparam>
+    /// <param name="item">The item whose type discriminator is being obtained.</param>
+    /// <returns>
+    /// The value of <paramref name="item"/>'s type discriminator, if any.
+    /// </returns>
+    /// <remarks>
+    /// This method may return <see langword="null"/> unconditionally if the data source does not
+    /// make use of type discriminators.
+    /// </remarks>
+    string? GetTypeDiscriminatorValue<T>(T item) where T : TItem;
+
+    /// <summary>
     /// Gets an <see cref="IDataStoreQueryable{T}"/> of the given type of item.
     /// </summary>
     /// <typeparam name="T">The type of item to query.</typeparam>
