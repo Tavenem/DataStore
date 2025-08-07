@@ -166,7 +166,7 @@ public abstract class InMemoryDataStore<TKey, TItem> : IInMemoryDataStore, IData
         => new InMemoryDataStoreQueryable<T>(this, Data.Values.OfType<T>().AsQueryable());
 
     /// <inheritdoc />
-    public ValueTask<bool> RemoveItemAsync<T>(TKey? id, CancellationToken cancellationToken = default) where T : TItem => new(id is null || Data.Remove(id));
+    public ValueTask<bool> RemoveItemAsync(TKey? id, CancellationToken cancellationToken = default) => new(id is null || Data.Remove(id));
 
     /// <inheritdoc />
     public ValueTask<bool> RemoveItemAsync<T>(T? item, CancellationToken cancellationToken = default) where T : TItem => new(item is null || Data.Remove(GetKey(item)));

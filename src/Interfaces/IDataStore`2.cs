@@ -112,7 +112,6 @@ public interface IDataStore<TKey, in TItem> : IDataStore<TItem>
     /// <summary>
     /// Removes the stored item with the given id.
     /// </summary>
-    /// <typeparam name="T">The type of item to remove.</typeparam>
     /// <param name="id">
     /// <para>
     /// The id of the item to remove.
@@ -130,5 +129,5 @@ public interface IDataStore<TKey, in TItem> : IDataStore<TItem>
     /// <exception cref="OperationCanceledException">
     /// If the <see cref="CancellationToken"/> is cancelled.
     /// </exception>
-    ValueTask<bool> RemoveItemAsync<T>(TKey? id, CancellationToken cancellationToken = default) where T : TItem;
+    ValueTask<bool> RemoveItemAsync(TKey? id, CancellationToken cancellationToken = default);
 }
