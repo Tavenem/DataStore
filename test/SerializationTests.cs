@@ -73,7 +73,7 @@ public partial class SerializationTests(TestContext testContext)
         var value = new InMemoryDataStore();
 
         var item = new TestIdItem("test") { TestProperty = 1 };
-        Assert.AreEqual(nameof(IIdItem.IdItemTypePropertyName), value.GetTypeDiscriminatorName(item));
+        Assert.AreEqual(IIdItem.IdItemTypePropertyName, value.GetTypeDiscriminatorName(item));
         Assert.AreEqual(TestIdItem.IIdItemTypeName, value.GetTypeDiscriminatorValue(item));
 
         Assert.IsNotNull(await value.StoreItemAsync(item, cancellationToken: testContext.CancellationTokenSource.Token));
