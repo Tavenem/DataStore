@@ -127,11 +127,29 @@ public abstract class InMemoryDataStore<TKey, TItem> : IInMemoryDataStore, IData
     /// Gets the name of the property used to discriminate types, if any.
     /// </summary>
     /// <typeparam name="T">The type of item.</typeparam>
+    /// <returns>
+    /// The name of the property used to discriminate types, if any.
+    /// </returns>
+    public virtual string? GetTypeDiscriminatorName<T>() where T : TItem => null;
+
+    /// <summary>
+    /// Gets the name of the property used to discriminate types, if any.
+    /// </summary>
+    /// <typeparam name="T">The type of item.</typeparam>
     /// <param name="item">The item whose discriminator property is being obtained.</param>
     /// <returns>
     /// The name of the property used to discriminate types, if any.
     /// </returns>
     public virtual string? GetTypeDiscriminatorName<T>(T item) where T : TItem => null;
+
+    /// <summary>
+    /// Gets the value of the item's type discriminator, if any.
+    /// </summary>
+    /// <typeparam name="T">The type of item.</typeparam>
+    /// <returns>
+    /// The value of <typeparamref name="T"/>'s type discriminator, if any.
+    /// </returns>
+    public virtual string? GetTypeDiscriminatorValue<T>() where T : TItem => null;
 
     /// <summary>
     /// Gets the value of the item's type discriminator, if any.
