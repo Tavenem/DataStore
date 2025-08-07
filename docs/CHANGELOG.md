@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.1-preview.2
+## 3.1-preview.5
 Version 3 is is a is a major release that includes significant breaking changes to the API, as well as a number of new features and improvements.
 
 The primary objectives of this version were to make `IDataStore` more flexible regarding item and key types, and to enable more comprehensive support for LINQ operations on `IDataStoreQueryable<TSource>` which better match the expected range of features found on a standard `IQueryable<TSource>`.
