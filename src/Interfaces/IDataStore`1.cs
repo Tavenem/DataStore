@@ -13,6 +13,19 @@ public interface IDataStore<in TItem> : IDataStore where TItem : notnull
     /// Gets the name of the property used to discriminate types, if any.
     /// </summary>
     /// <typeparam name="T">The type of item.</typeparam>
+    /// <returns>
+    /// The name of the property used to discriminate types, if any.
+    /// </returns>
+    /// <remarks>
+    /// This method may return <see langword="null"/> unconditionally if the data source does not
+    /// make use of type discriminators.
+    /// </remarks>
+    string? GetTypeDiscriminatorName<T>() where T : TItem;
+
+    /// <summary>
+    /// Gets the name of the property used to discriminate types, if any.
+    /// </summary>
+    /// <typeparam name="T">The type of item.</typeparam>
     /// <param name="item">The item whose discriminator property is being obtained.</param>
     /// <returns>
     /// The name of the property used to discriminate types, if any.
@@ -22,6 +35,19 @@ public interface IDataStore<in TItem> : IDataStore where TItem : notnull
     /// make use of type discriminators.
     /// </remarks>
     string? GetTypeDiscriminatorName<T>(T item) where T : TItem;
+
+    /// <summary>
+    /// Gets the value of the item's type discriminator, if any.
+    /// </summary>
+    /// <typeparam name="T">The type of item.</typeparam>
+    /// <returns>
+    /// The value of <typeparamref name="T"/>'s type discriminator, if any.
+    /// </returns>
+    /// <remarks>
+    /// This method may return <see langword="null"/> unconditionally if the data source does not
+    /// make use of type discriminators.
+    /// </remarks>
+    string? GetTypeDiscriminatorValue<T>() where T : TItem;
 
     /// <summary>
     /// Gets the value of the item's type discriminator, if any.
