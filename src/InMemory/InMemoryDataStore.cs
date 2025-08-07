@@ -24,7 +24,7 @@ public class InMemoryDataStore : InMemoryDataStore<string, IIdItem>, IIdItemData
     /// <remarks>
     /// Always returns <see cref="IIdItem.IdItemTypePropertyName"/> for <see cref="InMemoryDataStore"/>.
     /// </remarks>
-    public override string? GetTypeDiscriminatorName<T>() => nameof(IIdItem.IdItemTypePropertyName);
+    public override string? GetTypeDiscriminatorName<T>() => IIdItem.IdItemTypePropertyName;
 
     /// <summary>
     /// Gets the name of the property used to discriminate types, if any.
