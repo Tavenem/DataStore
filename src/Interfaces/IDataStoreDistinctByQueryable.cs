@@ -19,6 +19,7 @@ namespace Tavenem.DataStorage.Interfaces;
 /// in order to iterate only the elements which satisfy the condition).
 /// </remarks>
 public interface IDataStoreDistinctByQueryable<TSource> : IDataStoreQueryable<TSource>
+    where TSource : notnull
 {
     /// <summary>
     /// Returns distinct elements from a sequence according to a specified key selector function.

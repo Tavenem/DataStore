@@ -19,6 +19,7 @@ namespace Tavenem.DataStorage.Interfaces;
 /// require multiple iterations and/or higher resource use.
 /// </remarks>
 public interface IDataStoreOrderableQueryable<TSource> : IDataStoreQueryable<TSource>
+    where TSource : notnull
 {
     /// <summary>
     /// Sorts the elements of this sequence in ascending order by using a specified comparer.

@@ -18,6 +18,7 @@ namespace Tavenem.DataStorage.Interfaces;
 /// to iterate only the last element).
 /// </remarks>
 public interface IDataStoreLastQueryable<TSource> : IDataStoreQueryable<TSource>
+    where TSource : notnull
 {
     /// <summary>
     /// Returns the last element of this source, asynchronously.

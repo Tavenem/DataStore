@@ -18,6 +18,7 @@ namespace Tavenem.DataStorage.Interfaces;
 /// result in a more expensive database call than necessary (e.g. retrieving the full list).
 /// </remarks>
 public interface IDataStoreSkipWhileQueryable<TSource> : IDataStoreQueryable<TSource>
+    where TSource : notnull
 {
     /// <summary>
     /// Bypasses elements in a sequence as long as a specified condition is true and then returns

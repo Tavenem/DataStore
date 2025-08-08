@@ -20,6 +20,7 @@ namespace Tavenem.DataStorage.Interfaces;
 /// result in a more expensive database call than necessary.
 /// </remarks>
 public interface IDataStoreSelectManyQueryable<TSource> : IDataStoreQueryable<TSource>
+    where TSource : notnull
 {
     /// <summary>
     /// Projects each element of a sequence to an <see cref="IEnumerable{T}"/> and invokes a result
@@ -46,7 +47,7 @@ public interface IDataStoreSelectManyQueryable<TSource> : IDataStoreQueryable<TS
     /// </returns>
     IDataStoreSelectManyQueryable<TResult> SelectMany<TCollection, TResult>(
         Expression<Func<TSource, IEnumerable<TCollection>>> collectionSelector,
-        Expression<Func<TSource, TCollection, TResult>> resultSelector);
+        Expression<Func<TSource, TCollection, TResult>> resultSelector) where TResult : notnull;
 
     /// <summary>
     /// Projects each element of a sequence to an <see cref="IEnumerable{T}"/> that incorporates the
@@ -74,5 +75,5 @@ public interface IDataStoreSelectManyQueryable<TSource> : IDataStoreQueryable<TS
     /// </returns>
     IDataStoreSelectManyQueryable<TResult> SelectMany<TCollection, TResult>(
         Expression<Func<TSource, int, IEnumerable<TCollection>>> collectionSelector,
-        Expression<Func<TSource, TCollection, TResult>> resultSelector);
+        Expression<Func<TSource, TCollection, TResult>> resultSelector) where TResult : notnull;
 }

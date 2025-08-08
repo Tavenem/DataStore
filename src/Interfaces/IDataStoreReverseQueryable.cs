@@ -15,6 +15,7 @@
 /// require multiple iterations and/or higher resource use.
 /// </remarks>
 public interface IDataStoreReverseQueryable<TSource> : IDataStoreQueryable<TSource>
+    where TSource : notnull
 {
     /// <summary>
     /// Inverts the order of the elements in this sequence.

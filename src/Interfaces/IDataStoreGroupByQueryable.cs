@@ -16,6 +16,7 @@ namespace Tavenem.DataStorage.Interfaces;
 /// result in a more expensive database call than necessary.
 /// </remarks>
 public interface IDataStoreGroupByQueryable<TSource> : IDataStoreQueryable<TSource>
+    where TSource : notnull
 {
     /// <summary>
     /// Groups the elements of a sequence according to a specified key selector function and creates
@@ -39,7 +40,7 @@ public interface IDataStoreGroupByQueryable<TSource> : IDataStoreQueryable<TSour
     IDataStoreGroupByQueryable<TResult> GroupBy<TKey, TResult>(
         Expression<Func<TSource, TKey>> keySelector,
         Expression<Func<TKey, IEnumerable<TSource>, TResult>> resultSelector,
-        IEqualityComparer<TKey>? comparer = null);
+        IEqualityComparer<TKey>? comparer = null) where TResult : notnull;
 
     /// <summary>
     /// Groups the elements of a sequence according to a specified key selector function and creates
@@ -72,7 +73,7 @@ public interface IDataStoreGroupByQueryable<TSource> : IDataStoreQueryable<TSour
         Expression<Func<TSource, TKey>> keySelector,
         Expression<Func<TSource, TElement>> elementSelector,
         Expression<Func<TKey, IEnumerable<TElement>, TResult>> resultSelector,
-        IEqualityComparer<TKey>? comparer = null);
+        IEqualityComparer<TKey>? comparer = null) where TResult : notnull;
 
     /// <summary>
     /// Groups the elements of a sequence according to a specified key selector function and

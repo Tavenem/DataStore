@@ -18,6 +18,7 @@ namespace Tavenem.DataStorage.Interfaces;
 /// to iterate only the matching elements).
 /// </remarks>
 public interface IDataStoreOfTypeQueryable<TSource> : IDataStoreQueryable<TSource>
+    where TSource : notnull
 {
     /// <summary>
     /// Filters the elements of this <see cref="IDataStoreOfTypeQueryable{TSource}"/> based on a
