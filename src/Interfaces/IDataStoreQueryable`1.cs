@@ -479,7 +479,7 @@ public interface IDataStoreQueryable<TSource> : IAsyncEnumerable<TSource>
     /// and should not result in this method returning <see langword="false"/> for the first element
     /// of the tuple.
     /// </remarks>
-    ValueTask<(bool Success, int Count)> TryGetNonEnumeratedCountAsync(CancellationToken cancellationToken = default);
+    ValueTask<(bool Success, int Count)> TryGetNonEnumeratedCountAsync(CancellationToken cancellationToken = default) => new((false, 0));
 
     /// <summary>
     /// Attempts to determine the number of elements in this sequence without forcing an
@@ -498,5 +498,5 @@ public interface IDataStoreQueryable<TSource> : IAsyncEnumerable<TSource>
     /// and should not result in this method returning <see langword="false"/> for the first element
     /// of the tuple.
     /// </remarks>
-    ValueTask<(bool Success, long Count)> TryGetNonEnumeratedLongCountAsync(CancellationToken cancellationToken = default);
+    ValueTask<(bool Success, long Count)> TryGetNonEnumeratedLongCountAsync(CancellationToken cancellationToken = default) => new((false, 0));
 }
