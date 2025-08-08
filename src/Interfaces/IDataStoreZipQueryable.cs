@@ -19,6 +19,7 @@ namespace Tavenem.DataStorage.Interfaces;
 /// result in a more expensive database call than necessary.
 /// </remarks>
 public interface IDataStoreZipQueryable<TSource> : IDataStoreQueryable<TSource>
+    where TSource : notnull
 {
     /// <summary>
     /// Merges two sequences by using the specified predicate function.
@@ -35,7 +36,7 @@ public interface IDataStoreZipQueryable<TSource> : IDataStoreQueryable<TSource>
     /// </returns>
     IDataStoreZipQueryable<TResult> Zip<TSecond, TResult>(
         IEnumerable<TSecond> source2,
-        Expression<Func<TSource, TSecond, TResult>> resultSelector);
+        Expression<Func<TSource, TSecond, TResult>> resultSelector) where TResult : notnull;
 
     /// <summary>
     /// Produces a sequence of tuples with elements from the three specified sequences.

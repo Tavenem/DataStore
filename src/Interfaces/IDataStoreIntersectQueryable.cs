@@ -15,6 +15,7 @@
 /// result in a more expensive database call than necessary.
 /// </remarks>
 public interface IDataStoreIntersectQueryable<TSource> : IDataStoreQueryable<TSource>
+    where TSource : notnull
 {
     /// <summary>
     /// Produces the set intersection of two sequences by using the specified <see

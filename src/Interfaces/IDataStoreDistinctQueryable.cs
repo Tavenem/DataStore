@@ -16,6 +16,7 @@
 /// in order to iterate only the elements which satisfy the condition).
 /// </remarks>
 public interface IDataStoreDistinctQueryable<TSource> : IDataStoreQueryable<TSource>
+    where TSource : notnull
 {
     /// <summary>
     /// Returns distinct elements from a sequence by using a specified equality comparer to compare

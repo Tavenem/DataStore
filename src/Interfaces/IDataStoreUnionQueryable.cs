@@ -15,6 +15,7 @@
 /// result in a more expensive database call than necessary.
 /// </remarks>
 public interface IDataStoreUnionQueryable<TSource> : IDataStoreQueryable<TSource>
+    where TSource : notnull
 {
     /// <summary>
     /// Produces the set union of two sequences by using a specified <see

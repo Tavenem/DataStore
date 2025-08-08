@@ -13,6 +13,7 @@ namespace Tavenem.DataStorage.InMemory;
 /// <param name="source">An <see cref="IOrderedQueryable{TSource}"/>.</param>
 public class OrderedInMemoryDataStoreQueryable<TSource>(IInMemoryDataStore dataStore, IOrderedQueryable<TSource> source)
     : InMemoryDataStoreQueryable<TSource>(dataStore, source), IOrderedDataStoreQueryable<TSource>
+    where TSource : notnull
 {
     /// <summary>
     /// Gets the source <see cref="IQueryable{T}"/> for this instance.

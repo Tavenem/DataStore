@@ -16,6 +16,7 @@ namespace Tavenem.DataStorage.Interfaces;
 /// result in a more expensive database call than necessary.
 /// </remarks>
 public interface IDataStoreJoinQueryable<TSource> : IDataStoreQueryable<TSource>
+    where TSource : notnull
 {
     /// <summary>
     /// Correlates the elements of two sequences based on matching keys. A specified <see
@@ -48,7 +49,7 @@ public interface IDataStoreJoinQueryable<TSource> : IDataStoreQueryable<TSource>
         Expression<Func<TSource, TKey>> outerKeySelector,
         Expression<Func<TInner, TKey>> innerKeySelector,
         Expression<Func<TSource, TInner, TResult>> resultSelector,
-        IEqualityComparer<TKey>? comparer = null);
+        IEqualityComparer<TKey>? comparer = null) where TResult : notnull;
 
     /// <summary>
     /// Correlates the elements of two sequences based on matching keys. A specified <see
@@ -81,7 +82,7 @@ public interface IDataStoreJoinQueryable<TSource> : IDataStoreQueryable<TSource>
         Expression<Func<TSource, TKey>> outerKeySelector,
         Expression<Func<TInner, TKey>> innerKeySelector,
         Expression<Func<TSource, TInner?, TResult>> resultSelector,
-        IEqualityComparer<TKey>? comparer = null);
+        IEqualityComparer<TKey>? comparer = null) where TResult : notnull;
 
     /// <summary>
     /// Correlates the elements of two sequences based on matching keys. A specified <see
@@ -114,5 +115,5 @@ public interface IDataStoreJoinQueryable<TSource> : IDataStoreQueryable<TSource>
         Expression<Func<TSource, TKey>> outerKeySelector,
         Expression<Func<TInner, TKey>> innerKeySelector,
         Expression<Func<TSource?, TInner, TResult>> resultSelector,
-        IEqualityComparer<TKey>? comparer = null);
+        IEqualityComparer<TKey>? comparer = null) where TResult : notnull;
 }

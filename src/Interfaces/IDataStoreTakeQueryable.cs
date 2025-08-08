@@ -15,6 +15,7 @@
 /// result in a more expensive database call than necessary (e.g. retrieving the full list).
 /// </remarks>
 public interface IDataStoreTakeQueryable<TSource> : IDataStoreQueryable<TSource>
+    where TSource : notnull
 {
     /// <summary>
     /// Returns a specified number of contiguous elements from the start of this sequence.

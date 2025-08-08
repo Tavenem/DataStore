@@ -19,6 +19,7 @@ namespace Tavenem.DataStorage.Interfaces;
 /// result in a more expensive database call than necessary.
 /// </remarks>
 public interface IDataStoreGroupJoinQueryable<TSource> : IDataStoreQueryable<TSource>
+    where TSource : notnull
 {
     /// <summary>
     /// Correlates the elements of two sequences based on key equality and groups the results. A
@@ -52,5 +53,5 @@ public interface IDataStoreGroupJoinQueryable<TSource> : IDataStoreQueryable<TSo
         Expression<Func<TSource, TKey>> outerKeySelector,
         Expression<Func<TInner, TKey>> innerKeySelector,
         Expression<Func<TSource, IEnumerable<TInner>, TResult>> resultSelector,
-        IEqualityComparer<TKey>? comparer = null);
+        IEqualityComparer<TKey>? comparer = null) where TResult : notnull;
 }

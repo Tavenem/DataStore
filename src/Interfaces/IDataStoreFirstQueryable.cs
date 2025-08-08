@@ -18,6 +18,7 @@ namespace Tavenem.DataStorage.Interfaces;
 /// to iterate only the first element).
 /// </remarks>
 public interface IDataStoreFirstQueryable<TSource> : IDataStoreQueryable<TSource>
+    where TSource : notnull
 {
     /// <summary>
     /// Asynchronously returns the first element of this source.

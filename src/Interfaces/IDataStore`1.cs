@@ -79,7 +79,7 @@ public interface IDataStore<in TItem> : IDataStore where TItem : notnull
     /// </para>
     /// </param>
     /// <returns>An <see cref="IDataStoreQueryable{T}"/> of the given type of item.</returns>
-    IDataStoreQueryable<T> Query<T>(JsonTypeInfo<T>? typeInfo = null) where T : TItem;
+    IDataStoreQueryable<T> Query<T>(JsonTypeInfo<T>? typeInfo = null) where T : notnull, TItem;
 
     /// <summary>
     /// Removes the stored item with the given id.

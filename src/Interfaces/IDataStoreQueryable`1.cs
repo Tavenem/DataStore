@@ -9,7 +9,7 @@ namespace Tavenem.DataStorage.Interfaces;
 /// <typeparam name="TSource">
 /// The type of the elements of the source.
 /// </typeparam>
-public interface IDataStoreQueryable<TSource> : IAsyncEnumerable<TSource>
+public interface IDataStoreQueryable<TSource> : IAsyncEnumerable<TSource> where TSource : notnull
 {
     /// <summary>
     /// The <see cref="IDataStore"/> provider for this queryable.

@@ -18,6 +18,7 @@ namespace Tavenem.DataStorage.Interfaces;
 /// result in a more expensive database call than necessary.
 /// </remarks>
 public interface IDataStoreUnionByQueryable<TSource> : IDataStoreQueryable<TSource>
+    where TSource : notnull
 {
     /// <summary>
     /// Produces the set union of two sequences by using a specified <see

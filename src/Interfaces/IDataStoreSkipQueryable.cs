@@ -15,6 +15,7 @@
 /// result in a more expensive database call than necessary (e.g. retrieving the full list).
 /// </remarks>
 public interface IDataStoreSkipQueryable<TSource> : IDataStoreQueryable<TSource>
+    where TSource : notnull
 {
     /// <summary>
     /// Bypasses a specified number of elements in a sequence and then returns the remaining

@@ -18,6 +18,7 @@ namespace Tavenem.DataStorage.Interfaces;
 /// result in a more expensive database call than necessary.
 /// </remarks>
 public interface IDataStoreSelectQueryable<TSource> : IDataStoreQueryable<TSource>
+    where TSource : notnull
 {
     /// <summary>
     /// Projects each element of this sequence into a new form.
@@ -30,7 +31,7 @@ public interface IDataStoreSelectQueryable<TSource> : IDataStoreQueryable<TSourc
     /// An <see cref="IDataStoreSelectQueryable{T}"/> whose elements are the result of invoking a
     /// projection function on each element of this source.
     /// </returns>
-    IDataStoreSelectQueryable<TResult> Select<TResult>(Expression<Func<TSource, TResult>> selector);
+    IDataStoreSelectQueryable<TResult> Select<TResult>(Expression<Func<TSource, TResult>> selector) where TResult : notnull;
 
     /// <summary>
     /// Projects each element of this sequence into a new form by incorporating the element's index.
@@ -43,5 +44,5 @@ public interface IDataStoreSelectQueryable<TSource> : IDataStoreQueryable<TSourc
     /// An <see cref="IDataStoreSelectQueryable{T}"/> whose elements are the result of invoking a
     /// projection function on each element of this source.
     /// </returns>
-    IDataStoreSelectQueryable<TResult> Select<TResult>(Expression<Func<TSource, int, TResult>> selector);
+    IDataStoreSelectQueryable<TResult> Select<TResult>(Expression<Func<TSource, int, TResult>> selector) where TResult : notnull;
 }

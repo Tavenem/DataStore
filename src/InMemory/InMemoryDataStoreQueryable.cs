@@ -40,6 +40,7 @@ public class InMemoryDataStoreQueryable<TSource>(IInMemoryDataStore dataStore, I
     IDataStoreWhereQueryable<TSource>,
     IDataStoreZipQueryable<TSource>,
     IEnumerable<TSource>
+    where TSource : notnull
 {
     /// <summary>
     /// The <see cref="InMemoryDataStore"/> provider for this queryable.
@@ -238,7 +239,7 @@ public class InMemoryDataStoreQueryable<TSource>(IInMemoryDataStore dataStore, I
     public IDataStoreGroupByQueryable<TResult> GroupBy<TKey, TResult>(
         Expression<Func<TSource, TKey>> keySelector,
         Expression<Func<TKey, IEnumerable<TSource>, TResult>> resultSelector,
-        IEqualityComparer<TKey>? comparer = null)
+        IEqualityComparer<TKey>? comparer = null) where TResult : notnull
         => new InMemoryDataStoreQueryable<TResult>(InMemoryProvider, Source.GroupBy(keySelector, resultSelector, comparer));
 
     /// <inheritdoc />
@@ -246,7 +247,7 @@ public class InMemoryDataStoreQueryable<TSource>(IInMemoryDataStore dataStore, I
         Expression<Func<TSource, TKey>> keySelector,
         Expression<Func<TSource, TElement>> elementSelector,
         Expression<Func<TKey, IEnumerable<TElement>, TResult>> resultSelector,
-        IEqualityComparer<TKey>? comparer = null)
+        IEqualityComparer<TKey>? comparer = null) where TResult : notnull
         => new InMemoryDataStoreQueryable<TResult>(InMemoryProvider, Source.GroupBy(keySelector, elementSelector, resultSelector, comparer));
 
     /// <inheritdoc />
@@ -268,7 +269,7 @@ public class InMemoryDataStoreQueryable<TSource>(IInMemoryDataStore dataStore, I
         Expression<Func<TSource, TKey>> outerKeySelector,
         Expression<Func<TInner, TKey>> innerKeySelector,
         Expression<Func<TSource, IEnumerable<TInner>, TResult>> resultSelector,
-        IEqualityComparer<TKey>? comparer = null)
+        IEqualityComparer<TKey>? comparer = null) where TResult : notnull
         => new InMemoryDataStoreQueryable<TResult>(InMemoryProvider, Source.GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, comparer));
 
     /// <inheritdoc />
@@ -288,7 +289,7 @@ public class InMemoryDataStoreQueryable<TSource>(IInMemoryDataStore dataStore, I
         Expression<Func<TSource, TKey>> outerKeySelector,
         Expression<Func<TInner, TKey>> innerKeySelector,
         Expression<Func<TSource, TInner, TResult>> resultSelector,
-        IEqualityComparer<TKey>? comparer = null)
+        IEqualityComparer<TKey>? comparer = null) where TResult : notnull
         => new InMemoryDataStoreQueryable<TResult>(InMemoryProvider, Source.Join(inner, outerKeySelector, innerKeySelector, resultSelector, comparer));
 
     /// <inheritdoc />
@@ -317,7 +318,7 @@ public class InMemoryDataStoreQueryable<TSource>(IInMemoryDataStore dataStore, I
         Expression<Func<TSource, TKey>> outerKeySelector,
         Expression<Func<TInner, TKey>> innerKeySelector,
         Expression<Func<TSource, TInner?, TResult>> resultSelector,
-        IEqualityComparer<TKey>? comparer = null)
+        IEqualityComparer<TKey>? comparer = null) where TResult : notnull
         => new InMemoryDataStoreQueryable<TResult>(InMemoryProvider, Source.LeftJoin(inner, outerKeySelector, innerKeySelector, resultSelector, comparer));
 
     /// <inheritdoc />
@@ -428,27 +429,27 @@ public class InMemoryDataStoreQueryable<TSource>(IInMemoryDataStore dataStore, I
         Expression<Func<TSource, TKey>> outerKeySelector,
         Expression<Func<TInner, TKey>> innerKeySelector,
         Expression<Func<TSource?, TInner, TResult>> resultSelector,
-        IEqualityComparer<TKey>? comparer = null)
+        IEqualityComparer<TKey>? comparer = null) where TResult : notnull
         => new InMemoryDataStoreQueryable<TResult>(InMemoryProvider, Source.RightJoin(inner, outerKeySelector, innerKeySelector, resultSelector, comparer));
 
     /// <inheritdoc />
-    public IDataStoreSelectQueryable<TResult> Select<TResult>(Expression<Func<TSource, TResult>> selector)
+    public IDataStoreSelectQueryable<TResult> Select<TResult>(Expression<Func<TSource, TResult>> selector) where TResult : notnull
         => new InMemoryDataStoreQueryable<TResult>(InMemoryProvider, Source.Select(selector));
 
     /// <inheritdoc />
-    public IDataStoreSelectQueryable<TResult> Select<TResult>(Expression<Func<TSource, int, TResult>> selector)
+    public IDataStoreSelectQueryable<TResult> Select<TResult>(Expression<Func<TSource, int, TResult>> selector) where TResult : notnull
         => new InMemoryDataStoreQueryable<TResult>(InMemoryProvider, Source.Select(selector));
 
     /// <inheritdoc />
     public IDataStoreSelectManyQueryable<TResult> SelectMany<TCollection, TResult>(
         Expression<Func<TSource, IEnumerable<TCollection>>> collectionSelector,
-        Expression<Func<TSource, TCollection, TResult>> resultSelector)
+        Expression<Func<TSource, TCollection, TResult>> resultSelector) where TResult : notnull
         => new InMemoryDataStoreQueryable<TResult>(InMemoryProvider, Source.SelectMany(collectionSelector, resultSelector));
 
     /// <inheritdoc />
     public IDataStoreSelectManyQueryable<TResult> SelectMany<TCollection, TResult>(
         Expression<Func<TSource, int, IEnumerable<TCollection>>> collectionSelector,
-        Expression<Func<TSource, TCollection, TResult>> resultSelector)
+        Expression<Func<TSource, TCollection, TResult>> resultSelector) where TResult : notnull
         => new InMemoryDataStoreQueryable<TResult>(InMemoryProvider, Source.SelectMany(collectionSelector, resultSelector));
 
     /// <inheritdoc />
@@ -570,7 +571,7 @@ public class InMemoryDataStoreQueryable<TSource>(IInMemoryDataStore dataStore, I
     /// <inheritdoc />
     public IDataStoreZipQueryable<TResult> Zip<TSecond, TResult>(
         IEnumerable<TSecond> source2,
-        Expression<Func<TSource, TSecond, TResult>> resultSelector)
+        Expression<Func<TSource, TSecond, TResult>> resultSelector) where TResult : notnull
         => new InMemoryDataStoreQueryable<TResult>(InMemoryProvider, Source.Zip(source2, resultSelector));
 
     /// <inheritdoc />

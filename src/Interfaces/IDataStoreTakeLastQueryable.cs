@@ -15,6 +15,7 @@
 /// result in a more expensive database call than necessary (e.g. retrieving the full list).
 /// </remarks>
 public interface IDataStoreTakeLastQueryable<TSource> : IDataStoreQueryable<TSource>
+    where TSource : notnull
 {
     /// <summary>
     /// Returns a new queryable sequence that contains the last <paramref name="count"/> elements

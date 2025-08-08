@@ -10,6 +10,7 @@ namespace Tavenem.DataStorage.Interfaces;
 /// The type of the elements of the source.
 /// </typeparam>
 public interface IOrderedDataStoreQueryable<TSource> : IDataStoreQueryable<TSource>
+    where TSource : notnull
 {
     /// <summary>
     /// Performs a subsequent ordering of the elements in this <see
