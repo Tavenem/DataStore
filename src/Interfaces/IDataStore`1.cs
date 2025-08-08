@@ -20,7 +20,7 @@ public interface IDataStore<in TItem> : IDataStore where TItem : notnull
     /// This method may return <see langword="null"/> unconditionally if the data source does not
     /// make use of type discriminators.
     /// </remarks>
-    string? GetTypeDiscriminatorName<T>() where T : TItem;
+    string? GetTypeDiscriminatorName<T>() where T : TItem => null;
 
     /// <summary>
     /// Gets the name of the property used to discriminate types, if any.
@@ -34,7 +34,7 @@ public interface IDataStore<in TItem> : IDataStore where TItem : notnull
     /// This method may return <see langword="null"/> unconditionally if the data source does not
     /// make use of type discriminators.
     /// </remarks>
-    string? GetTypeDiscriminatorName<T>(T item) where T : TItem;
+    string? GetTypeDiscriminatorName<T>(T item) where T : TItem => null;
 
     /// <summary>
     /// Gets the value of the item's type discriminator, if any.
@@ -47,7 +47,7 @@ public interface IDataStore<in TItem> : IDataStore where TItem : notnull
     /// This method may return <see langword="null"/> unconditionally if the data source does not
     /// make use of type discriminators.
     /// </remarks>
-    string? GetTypeDiscriminatorValue<T>() where T : TItem;
+    string? GetTypeDiscriminatorValue<T>() where T : TItem => null;
 
     /// <summary>
     /// Gets the value of the item's type discriminator, if any.
@@ -61,7 +61,7 @@ public interface IDataStore<in TItem> : IDataStore where TItem : notnull
     /// This method may return <see langword="null"/> unconditionally if the data source does not
     /// make use of type discriminators.
     /// </remarks>
-    string? GetTypeDiscriminatorValue<T>(T item) where T : TItem;
+    string? GetTypeDiscriminatorValue<T>(T item) where T : TItem => null;
 
     /// <summary>
     /// Gets an <see cref="IDataStoreQueryable{T}"/> of the given type of item.
