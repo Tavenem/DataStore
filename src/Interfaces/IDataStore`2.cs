@@ -129,5 +129,5 @@ public interface IDataStore<TKey, in TItem> : IDataStore<TItem>
     /// <exception cref="OperationCanceledException">
     /// If the <see cref="CancellationToken"/> is cancelled.
     /// </exception>
-    ValueTask<bool> RemoveItemAsync(TKey? id, CancellationToken cancellationToken = default);
+    ValueTask<bool> RemoveItemAsync<T>(TKey? id, CancellationToken cancellationToken = default) where T : TItem;
 }
