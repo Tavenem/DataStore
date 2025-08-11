@@ -66,8 +66,7 @@ public interface IIdItem : IEquatable<IIdItem>
     /// <see langword="true"/> if the specified <see cref="IIdItem"/> instance is equal to this
     /// once; otherwise, <see langword="false"/>.
     /// </returns>
-    bool IEquatable<IIdItem>.Equals(IIdItem? other)
-        => !string.IsNullOrEmpty(Id) && string.Equals(Id, other?.Id, StringComparison.Ordinal);
+    bool IEquatable<IIdItem>.Equals(IIdItem? other) => IdItemIsEqual(other);
 
     /// <summary>
     /// Determines whether the specified object is equal to the current object.
@@ -75,7 +74,7 @@ public interface IIdItem : IEquatable<IIdItem>
     /// <param name="obj">The object to compare with the current object.</param>
     /// <returns><see langword="true"/> if the specified object is equal to the current object;
     /// otherwise, <see langword="false"/>.</returns>
-    public virtual bool Equals(object? obj) => obj is IIdItem other && Equals(other);
+    public virtual bool Equals(object? obj) => obj is IIdItem other && IdItemIsEqual(other);
 
     /// <summary>
     /// Returns the hash code for this instance.
@@ -121,7 +120,7 @@ public interface IIdItem : IEquatable<IIdItem>
     /// once; otherwise, <see langword="false"/>.
     /// </returns>
     public bool IdItemIsEqual(IIdItem? other)
-        => ((IEquatable<IIdItem>)this).Equals(other);
+        => !string.IsNullOrEmpty(Id) && string.Equals(Id, other?.Id, StringComparison.Ordinal);
 
     /// <summary>Returns a string equivalent of this instance.</summary>
     /// <returns>A string equivalent of this instance.</returns>
