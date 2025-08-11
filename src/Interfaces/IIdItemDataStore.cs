@@ -100,5 +100,5 @@ public interface IIdItemDataStore : IDataStore<string, IIdItem>
     /// If the <see cref="CancellationToken"/> is cancelled.
     /// </exception>
     ValueTask<bool> IDataStore<IIdItem>.RemoveItemAsync<T>(T? item, CancellationToken cancellationToken) where T : default
-        => RemoveItemAsync(item?.Id, cancellationToken);
+        => RemoveItemAsync<T>(item?.Id, cancellationToken);
 }
